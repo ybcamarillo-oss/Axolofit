@@ -819,11 +819,16 @@ function Onboarding({ onDone }) {
     { emoji: "📊", title: "Plan 100% personalizado", desc: "Calorías, macros, grasa corporal y peso ideal calculados para tu cuerpo." },
     { emoji: "🎮", title: "Aprende jugando", desc: "Minijuegos, retos y tips para desarrollar hábitos sin aburrirte." },
   ];
+  React.useEffect(() => {
+    if (step !== "welcome") return;
+    const t = setInterval(() => setSlide(s => (s + 1) % 4), 3000);
+    return () => clearInterval(t);
+  }, [step]);
 
   if (step === "welcome")
     return (
       <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", padding: "16px 20px", gap: 4 }}>
-        <Axo paletteKey="durazno" size={150} />
+        <Axo paletteKey="durazno" size={150} evo="huevo" />
         <h1 className="display" style={{ fontSize: 30, margin: "2px 0 10px" }}>AxoloFit</h1>
         <div style={{ width: "100%", maxWidth: 310 }}>
           <div style={{ background: "#ffffff99", borderRadius: 20, padding: "18px 16px", textAlign: "center", minHeight: 118, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
@@ -846,7 +851,7 @@ function Onboarding({ onDone }) {
       <div className="screen">
         <Header title="Tu objetivo" back={() => setStep("welcome")} />
         <div className="scroll">
-          <div className="center" style={{ marginBottom: 8 }}><Axo paletteKey="durazno" size={130} /></div>
+          <div className="center" style={{ marginBottom: 8 }}><Axo paletteKey="durazno" size={130} evo="huevo" /></div>
           <h2 className="display" style={{ fontSize: 22, textAlign: "center", marginBottom: 4 }}>¿Cuál es tu objetivo?</h2>
           <p className="muted" style={{ textAlign: "center", marginBottom: 20, fontSize: 14 }}>Esto ajusta tus calorías y macros automáticamente.</p>
           <div className="col">
@@ -939,7 +944,7 @@ function Onboarding({ onDone }) {
       <div className="screen">
         <Header title="Tu plan" back={() => setStep("medidas")} />
         <div className="scroll">
-          <div className="center" style={{ marginBottom: 2 }}><Axo paletteKey="durazno" size={120} /></div>
+          <div className="center" style={{ marginBottom: 2 }}><Axo paletteKey="durazno" size={120} evo="huevo" /></div>
           <div className="card hero-card">
             <span className="muted">Tu meta diaria · {d.objetivo === "ganar" ? "⬆️ Ganar peso" : d.objetivo === "mantener" ? "⚖️ Mantener" : "⬇️ Perder peso"}</span>
             <div className="big-num">{r.objetivoDeficit}<small> kcal</small></div>
@@ -987,10 +992,11 @@ function Onboarding({ onDone }) {
 
   return (
     <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)" }}>
-      <Axo paletteKey="durazno" accessory="flor" size={200} />
-      <h2 className="display" style={{ fontSize: 26, margin: "4px 0" }}>¿Cómo se llama?</h2>
+      <Axo paletteKey="durazno" size={200} evo="huevo" />
+      <h2 className="display" style={{ fontSize: 24, margin: "4px 0 2px" }}>¡Está a punto de nacer!</h2>
+      <p className="muted" style={{ fontSize: 14, marginBottom: 10 }}>¿Cómo lo vas a llamar?</p>
       <input className="name-input" value={name} maxLength={14} onChange={(e) => setName(e.target.value)} />
-      <button className="btn primary big" onClick={() => onDone({ ...d }, name || "Axo")}>Empezar juntos 💗</button>
+      <button className="btn primary big" onClick={() => onDone({ ...d }, name || "Axo")}>¡Que nazca! 🥚💗</button>
     </div>
   );
 }
@@ -1472,9 +1478,9 @@ function App() {
             accessory: axo.accesorio || p.accessory,
             outfit: axo.outfit || p.outfit,
           }));
-          setLevel(axo.nivel || 4);
-          setXp(axo.xp || 60);
-          setStreak(axo.racha || 0);
+          setLevel(axo.nivel != null ? axo.nivel : 1);
+          setXp(axo.xp != null ? axo.xp : 0);
+          setStreak(axo.racha != null ? axo.racha : 0);
         }
         if (comidas && comidas.length > 0) {
           setLog(comidas.map((c, i) => ({ id: c.id, n: c.nombre, kcal: c.kcal, p: c.proteina, c: c.carbos, g: c.grasa, qty: 1, uid: i + 1 })));
@@ -1542,7 +1548,7 @@ function App() {
   const [level, setLevel] = useState(1);
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
-  const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : streak >= 3 ? "cria" : "huevo";
+  const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : "cria";
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest((b) => ({ ...b, [g]: Math.max(b[g] || 0, v) }));
   const [log, setLog] = useState([]);
@@ -1605,7 +1611,7 @@ function App() {
       </div>
       <div className="scroll" ref={sRef("home")} onScroll={sSave("home")}>
         <div className="center axo-stage" onClick={blowKiss}>
-          <p className="axo-line">{eating ? "¡Miam! 😋 (se soba la pancita)" : kissing ? "¡" + petName + " te manda un beso! 💗" : celebrated ? "¡" + petName + " está feliz! 💗" : hungry ? "Tengo hambre… ¿me das de comer? 🥺" : "Tócame para un besito 💗"}</p>
+          <p className="axo-line">{eating ? "¡Miam! 😋 (se soba la pancita)" : kissing ? "¡" + petName + " te manda un beso! 💗" : celebrated ? "¡" + petName + " está feliz! 💗" : (hungry && streak === 0) ? "¡Acabo de nacer! Dame de comer 🥺" : hungry ? "Tengo hambre… ¿me das de comer? 🥺" : "Tócame para un besito 💗"}</p>
           <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={computedEvo} rubbing={eating} mood={(celebrated || kissing || eating) ? "amor" : hungry ? "triste" : "feliz"} size={210} />
           {kissing && <Heart className="flying-heart" style={{ left: "56%", top: "44%" }} size={28} color="#FF4D7D" fill="#FF6F9C" />}
         </div>
