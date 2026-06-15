@@ -563,7 +563,7 @@ function AuthScreen({
     }
     setCargando(false);
   };
-  const PassInput = () => /*#__PURE__*/React.createElement("div", {
+  const passInputJSX = /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative",
       marginBottom: 10
@@ -752,7 +752,7 @@ function AuthScreen({
     value: email,
     onChange: e => setEmail(e.target.value),
     autoCapitalize: "none"
-  }), /*#__PURE__*/React.createElement(PassInput, null), error && /*#__PURE__*/React.createElement("p", {
+  }), passInputJSX, error && /*#__PURE__*/React.createElement("p", {
     style: {
       color: "#c0392b",
       fontSize: 13,
