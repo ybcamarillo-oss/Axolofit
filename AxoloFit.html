@@ -2716,6 +2716,11 @@ function Onboarding({
     title: "Aprende jugando",
     desc: "Minijuegos, retos y tips para desarrollar hábitos sin aburrirte."
   }];
+  React.useEffect(() => {
+    if (step !== "welcome") return;
+    const t = setInterval(() => setSlide(s => (s + 1) % 4), 3000);
+    return () => clearInterval(t);
+  }, [step]);
   if (step === "welcome") return /*#__PURE__*/React.createElement("div", {
     className: "screen center",
     style: {
@@ -2725,7 +2730,8 @@ function Onboarding({
     }
   }, /*#__PURE__*/React.createElement(Axo, {
     paletteKey: "durazno",
-    size: 150
+    size: 150,
+    evo: "huevo"
   }), /*#__PURE__*/React.createElement("h1", {
     className: "display",
     style: {
@@ -2812,7 +2818,8 @@ function Onboarding({
     }
   }, /*#__PURE__*/React.createElement(Axo, {
     paletteKey: "durazno",
-    size: 130
+    size: 130,
+    evo: "huevo"
   })), /*#__PURE__*/React.createElement("h2", {
     className: "display",
     style: {
@@ -3057,7 +3064,8 @@ function Onboarding({
       }
     }, /*#__PURE__*/React.createElement(Axo, {
       paletteKey: "durazno",
-      size: 120
+      size: 120,
+      evo: "huevo"
     })), /*#__PURE__*/React.createElement("div", {
       className: "card hero-card"
     }, /*#__PURE__*/React.createElement("span", {
@@ -3181,15 +3189,21 @@ function Onboarding({
     }
   }, /*#__PURE__*/React.createElement(Axo, {
     paletteKey: "durazno",
-    accessory: "flor",
-    size: 200
+    size: 200,
+    evo: "huevo"
   }), /*#__PURE__*/React.createElement("h2", {
     className: "display",
     style: {
-      fontSize: 26,
-      margin: "4px 0"
+      fontSize: 24,
+      margin: "4px 0 2px"
     }
-  }, "\xBFC\xF3mo se llama?"), /*#__PURE__*/React.createElement("input", {
+  }, "\xA1Est\xE1 a punto de nacer!"), /*#__PURE__*/React.createElement("p", {
+    className: "muted",
+    style: {
+      fontSize: 14,
+      marginBottom: 10
+    }
+  }, "\xBFC\xF3mo lo vas a llamar?"), /*#__PURE__*/React.createElement("input", {
     className: "name-input",
     value: name,
     maxLength: 14,
@@ -3199,7 +3213,7 @@ function Onboarding({
     onClick: () => onDone({
       ...d
     }, name || "Axo")
-  }, "Empezar juntos \uD83D\uDC97"));
+  }, "\xA1Que nazca! \uD83E\uDD5A\uD83D\uDC97"));
 }
 
 /* ---------- NUEVA CONTRASEÑA (recovery flow) ---------- */
@@ -4679,9 +4693,9 @@ function App() {
             accessory: axo.accesorio || p.accessory,
             outfit: axo.outfit || p.outfit
           }));
-          setLevel(axo.nivel || 4);
-          setXp(axo.xp || 60);
-          setStreak(axo.racha || 0);
+          setLevel(axo.nivel != null ? axo.nivel : 1);
+          setXp(axo.xp != null ? axo.xp : 0);
+          setStreak(axo.racha != null ? axo.racha : 0);
         }
         if (comidas && comidas.length > 0) {
           setLog(comidas.map((c, i) => ({
@@ -4826,7 +4840,7 @@ function App() {
   const [level, setLevel] = useState(1);
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
-  const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : streak >= 3 ? "cria" : "huevo";
+  const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : "cria";
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest(b => ({
     ...b,
@@ -5008,7 +5022,7 @@ function App() {
     onClick: blowKiss
   }, /*#__PURE__*/React.createElement("p", {
     className: "axo-line"
-  }, eating ? "¡Miam! 😋 (se soba la pancita)" : kissing ? "¡" + petName + " te manda un beso! 💗" : celebrated ? "¡" + petName + " está feliz! 💗" : hungry ? "Tengo hambre… ¿me das de comer? 🥺" : "Tócame para un besito 💗"), /*#__PURE__*/React.createElement(Axo, {
+  }, eating ? "¡Miam! 😋 (se soba la pancita)" : kissing ? "¡" + petName + " te manda un beso! 💗" : celebrated ? "¡" + petName + " está feliz! 💗" : hungry && streak === 0 ? "¡Acabo de nacer! Dame de comer 🥺" : hungry ? "Tengo hambre… ¿me das de comer? 🥺" : "Tócame para un besito 💗"), /*#__PURE__*/React.createElement(Axo, {
     paletteKey: pet.palette,
     accessory: pet.accessory,
     outfit: pet.outfit,
