@@ -5602,7 +5602,17 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement(Pencil, {
     size: 18
-  }), " Rehacer mi perfil"), /*#__PURE__*/React.createElement("div", {
+  }), " Rehacer mi perfil"), /*#__PURE__*/React.createElement("button", {
+    className: "list-row",
+    style: {
+      color: "#c0392b"
+    },
+    onClick: async () => {
+      await sb.auth.signOut();
+      setUserId(null);
+      setPhase("auth");
+    }
+  }, "\uD83D\uDEAA Cerrar sesi\xF3n"), /*#__PURE__*/React.createElement("div", {
     className: "studio"
   }, /*#__PURE__*/React.createElement(StudioLogo, null), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
