@@ -635,17 +635,29 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
             <path d="M118 94 Q127 84 136 94" stroke="#5b4636" strokeWidth="4.2" fill="none" strokeLinecap="round" />
           </g>
         ) : mood === "triste" ? (
-          <g>
-            <path d="M61 86 Q72 77 84 81" stroke="#8a7560" strokeWidth="2.8" fill="none" strokeLinecap="round" />
-            <path d="M139 86 Q128 77 116 81" stroke="#8a7560" strokeWidth="2.8" fill="none" strokeLinecap="round" />
-            <ellipse cx="74" cy="98" rx="8.5" ry="9.5" fill="#4a3b30" />
-            <circle cx="71" cy="94" r="3" fill="#fff" />
-            <circle cx="77" cy="101" r="1.3" fill="#fff" opacity="0.7" />
-            <ellipse cx="126" cy="98" rx="8.5" ry="9.5" fill="#4a3b30" />
-            <circle cx="123" cy="94" r="3" fill="#fff" />
-            <circle cx="129" cy="101" r="1.3" fill="#fff" opacity="0.7" />
-            <path d="M81 106 q3 7 0 12 q-3 -2 -3 -6 q0 -4 3 -6 Z" fill="#9BD4F5" opacity="0.9" />
-          </g>
+          evo === "cria" ? (
+            <g>
+              <circle cx="72" cy="97" r="13" fill="#4a3b30" />
+              <circle cx="66" cy="91" r="4.5" fill="#fff" />
+              <circle cx="76" cy="102" r="2" fill="#fff" opacity="0.55" />
+              <circle cx="128" cy="97" r="13" fill="#4a3b30" />
+              <circle cx="122" cy="91" r="4.5" fill="#fff" />
+              <circle cx="132" cy="102" r="2" fill="#fff" opacity="0.55" />
+              <ellipse cx="62" cy="112" rx="2.8" ry="4.5" fill="#9BD4F5" opacity="0.8" />
+            </g>
+          ) : (
+            <g>
+              <path d="M65 88 Q73 83 82 85" stroke="#8a7560" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6" />
+              <path d="M118 85 Q127 83 135 88" stroke="#8a7560" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6" />
+              <ellipse cx="74" cy="98" rx="8.5" ry="9.5" fill="#4a3b30" />
+              <circle cx="71" cy="94" r="3" fill="#fff" />
+              <circle cx="77" cy="101" r="1.3" fill="#fff" opacity="0.7" />
+              <ellipse cx="126" cy="98" rx="8.5" ry="9.5" fill="#4a3b30" />
+              <circle cx="123" cy="94" r="3" fill="#fff" />
+              <circle cx="129" cy="101" r="1.3" fill="#fff" opacity="0.7" />
+              <ellipse cx="65" cy="109" rx="2.5" ry="4" fill="#9BD4F5" opacity="0.72" />
+            </g>
+          )
         ) : evo === "cria" ? (
           <g>
             <circle cx="72" cy="95" r="13" fill="#4a3b30" />
@@ -666,7 +678,9 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
         {mood === "amor"
           ? <path d="M92 106 q8 9 16 0 q-8 6 -16 0" fill="#D06A78" stroke="#B85767" strokeWidth="1.7" />
           : mood === "triste"
-          ? <path d="M91 116 Q100 110 109 116" stroke="#5b4636" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+          ? evo === "cria"
+            ? <path d="M94 118 Q100 113 106 118" stroke="#5b4636" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+            : <path d="M91 116 Q100 110 109 116" stroke="#5b4636" strokeWidth="3.2" fill="none" strokeLinecap="round" />
           : <path d="M82 105 Q100 126 118 105" stroke="#5b4636" strokeWidth="3.4" fill="none" strokeLinecap="round" />}
         {/* accesorios */}
         {accessory === "flor" && (
@@ -1636,7 +1650,7 @@ function App() {
       <div className="scroll" ref={sRef("home")} onScroll={sSave("home")}>
         <div className="center axo-stage" onClick={blowKiss}>
           <p className="axo-line">{eating ? "¡Miam! 😋 (se soba la pancita)" : kissing ? "¡" + petName + " te manda un beso! 💗" : celebrated ? "¡" + petName + " está feliz! 💗" : (hungry && streak === 0) ? "¡Acabo de nacer! Dame de comer 🥺" : hungry ? "Tengo hambre… ¿me das de comer? 🥺" : "Tócame para un besito 💗"}</p>
-          <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={computedEvo} rubbing={eating} mood={(celebrated || kissing || eating) ? "amor" : hungry ? "triste" : "feliz"} size={210} />
+          <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={computedEvo} rubbing={eating} mood={(celebrated || kissing || eating) ? "amor" : hungry ? "triste" : "feliz"} size={computedEvo === "cria" ? 162 : 210} />
           {kissing && <Heart className="flying-heart" style={{ left: "56%", top: "44%" }} size={28} color="#FF4D7D" fill="#FF6F9C" />}
         </div>
         <div style={{ textAlign: "center", marginTop: 2, marginBottom: 10 }}><button className="btn" style={{ background: "linear-gradient(135deg,#F7CCD4,#E79FAE)", color: "#5E4334", padding: "10px 22px", fontSize: 15, fontFamily: "Fredoka", fontWeight: 600, borderRadius: 16, boxShadow: "0 6px 18px #e79fae44", border: "none" }} onClick={() => setScreen("pet")}>✨ Vestir a {petName}</button></div>
