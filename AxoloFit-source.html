@@ -810,16 +810,34 @@ function Onboarding({ onDone }) {
   const [d, setD] = useState({ ...DEMO });
   const [name, setName] = useState("Axo");
   const [skipWarn, setSkipWarn] = useState(false);
+  const [slide, setSlide] = useState(0);
+  const [showInfo, setShowInfo] = useState(false);
   const set = (k, v) => setD((p) => ({ ...p, [k]: v }));
+  const SLIDES = [
+    { emoji: "🦎", title: "Tu ajolote crece contigo", desc: "Mientras mejor comes, más feliz y fuerte se vuelve. Cuídalo y él te cuida." },
+    { emoji: "🌮", title: "Comida mexicana de verdad", desc: "Tacos, pozole, quesadillas y más. Sin dietas raras, sin alimentos imposibles." },
+    { emoji: "📊", title: "Plan 100% personalizado", desc: "Calorías, macros, grasa corporal y peso ideal calculados para tu cuerpo." },
+    { emoji: "🎮", title: "Aprende jugando", desc: "Minijuegos, retos y tips para desarrollar hábitos sin aburrirte." },
+  ];
 
   if (step === "welcome")
     return (
-      <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)" }}>
-        <Axo paletteKey="durazno" size={210} />
-        <h1 className="display" style={{ fontSize: 34, margin: "6px 0 2px" }}>AxoloFit</h1>
-        <p className="muted" style={{ maxWidth: 290, margin: "0 auto 8px" }}>Cuida tu alimentación cuidando a tu ajolote. Mientras mejor comes, más feliz y fuerte se vuelve.</p>
-        <button className="btn primary big" style={{ background: "linear-gradient(180deg,#F7CCD4,#E79FAE)", boxShadow: "0 8px 20px #e79fae55" }} onClick={() => setStep("objetivo")}>Crear mi ajolote</button>
-        <button className="btn ghost" onClick={() => onDone({ ...DEMO }, "Axo")}>Ver demo rápido</button>
+      <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", padding: "16px 20px", gap: 4 }}>
+        <Axo paletteKey="durazno" size={150} />
+        <h1 className="display" style={{ fontSize: 30, margin: "2px 0 10px" }}>AxoloFit</h1>
+        <div style={{ width: "100%", maxWidth: 310 }}>
+          <div style={{ background: "#ffffff99", borderRadius: 20, padding: "18px 16px", textAlign: "center", minHeight: 118, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ fontSize: 42, marginBottom: 7 }}>{SLIDES[slide].emoji}</div>
+            <p className="display" style={{ fontSize: 16, marginBottom: 5, color: "#2A2D43" }}>{SLIDES[slide].title}</p>
+            <p className="muted" style={{ fontSize: 13, lineHeight: 1.45, maxWidth: 240 }}>{SLIDES[slide].desc}</p>
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", gap: 7, margin: "11px 0 14px" }}>
+            {SLIDES.map((_, i) => (
+              <button key={i} onClick={() => setSlide(i)} style={{ width: i === slide ? 22 : 8, height: 8, borderRadius: 4, border: "none", background: i === slide ? "#E79FAE" : "#d7dbe6", cursor: "pointer", padding: 0, transition: "width .2s" }} />
+            ))}
+          </div>
+        </div>
+        <button className="btn primary big" style={{ background: "linear-gradient(180deg,#F7CCD4,#E79FAE)", boxShadow: "0 8px 20px #e79fae55", width: "100%", maxWidth: 310 }} onClick={() => setStep("objetivo")}>Crear mi ajolote 💗</button>
       </div>
     );
 
@@ -933,6 +951,26 @@ function Onboarding({ onDone }) {
             )}
           </div>
           {!r.bf && <p className="muted sm" style={{ marginTop: -2, marginBottom: 10 }}>Sin medidas solo calculamos por peso. Agrégalas en tu perfil para ver % grasa, ICM y peso ideal.</p>}
+          <button onClick={() => setShowInfo(s => !s)} style={{ width: "100%", background: "#f4f6fb", border: "none", borderRadius: 14, padding: "11px 14px", fontFamily: "Nunito", fontWeight: 700, fontSize: 13, color: "#7a8099", cursor: "pointer", marginBottom: 8, textAlign: "left" }}>
+            {showInfo ? "▲ Ocultar explicaciones" : "ℹ️ ¿Qué significa cada dato?"}
+          </button>
+          {showInfo && (
+            <div style={{ background: "#f4f6fb", borderRadius: 14, padding: "12px 14px", fontSize: 13, lineHeight: 1.65, color: "#4a4f6a", marginBottom: 10 }}>
+              {[
+                ["IMC","Índice de Masa Corporal. Relación entre tu peso y estatura al cuadrado. Normal: 18.5–24.9."],
+                ["% Grasa","Porcentaje estimado de tejido graso usando el método US Navy (circunferencias)."],
+                ["Masa magra","Tu peso sin grasa: músculos, huesos, agua y órganos."],
+                ["Metab. basal","Calorías mínimas que tu cuerpo necesita aunque no te muevas nada (fórmula Mifflin-St Jeor)."],
+                ["Gasto total","Calorías que realmente gastas en el día según tu nivel de actividad."],
+                ["Agua","Litros diarios recomendados según tu peso (35 ml/kg)."],
+                ["Estructura","Tamaño de tu armazón ósea (pequeña/mediana/grande) calculado con estatura ÷ circunferencia de muñeca."],
+                ["Peso ideal","Peso saludable estimado para tu estatura y estructura usando la fórmula de Hamwi."],
+                ["ICM","Índice Cintura-Muñeca. Indica cómo se distribuye tu grasa corporal y tu riesgo cardiometabólico."],
+              ].map(([term, def]) => (
+                <p key={term} style={{ marginBottom: 7 }}><b style={{ color: "#2A2D43" }}>{term}</b> — {def}</p>
+              ))}
+            </div>
+          )}
           <div className="safety"><ShieldCheck size={18} /><p>Estos cálculos son orientativos y no sustituyen a un profesional de la salud. Nunca te pediremos comer por debajo de un mínimo seguro. Si tu relación con la comida te preocupa, entra a <b>Más → Apoyo</b>.</p></div>
         </div>
         <div className="footer-cta"><button className="btn primary big" onClick={() => setStep("nombrar")}>¡Me encanta!</button></div>
