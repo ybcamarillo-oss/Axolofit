@@ -4826,6 +4826,7 @@ function App() {
   const [level, setLevel] = useState(4);
   const [xp, setXp] = useState(60);
   const [streak, setStreak] = useState(7);
+  const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : streak >= 3 ? "cria" : "huevo";
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest(b => ({
     ...b,
@@ -5021,7 +5022,7 @@ function App() {
     outfit: pet.outfit,
     estilo: pet.estilo,
     chub: chub,
-    evo: pet.evo,
+    evo: computedEvo,
     rubbing: eating,
     mood: celebrated || kissing || eating ? "amor" : hungry ? "triste" : "feliz",
     size: 210
@@ -5434,14 +5435,14 @@ function App() {
       outfit: pet.outfit,
       estilo: pet.estilo,
       chub: chub,
-      evo: pet.evo,
+      evo: computedEvo,
       size: {
         huevo: 120,
         cria: 145,
         joven: 168,
         adulto: 188,
         mistico: 196
-      }[pet.evo] || 168
+      }[computedEvo] || 168
     })), /*#__PURE__*/React.createElement("p", {
       className: "muted sm",
       style: {
@@ -5453,28 +5454,26 @@ function App() {
         color: "#9aa0b4",
         letterSpacing: 0.3
       }
-    }, "\uD83C\uDF31 EVOLUCIONES \u2014 toca para ver"), /*#__PURE__*/React.createElement("div", {
+    }, "\uD83C\uDF31 EVOLUCI\xD3N DE ", petName.toUpperCase()), /*#__PURE__*/React.createElement("div", {
       className: "evo-row"
-    }, [["huevo", "🥚", "Huevo"], ["cria", "🐣", "Cría"], ["joven", "🦎", "Joven"], ["adulto", "⭐", "Adulto"], ["mistico", "✨", "Místico"]].map(([k, em, e]) => {
-      const on = pet.evo === k;
-      return /*#__PURE__*/React.createElement("button", {
+    }, [["huevo", "🥚", "Huevo", 0], ["cria", "🐣", "Cría", 3], ["joven", "🦎", "Joven", 7], ["adulto", "⭐", "Adulto", 21], ["mistico", "✨", "Místico", 60]].map(([k, em, e, dias], idx, arr) => {
+      const evoOrder = arr.map(x => x[0]);
+      const curIdx = evoOrder.indexOf(computedEvo);
+      const thisIdx = evoOrder.indexOf(k);
+      const reached = thisIdx <= curIdx;
+      const current = k === computedEvo;
+      return /*#__PURE__*/React.createElement("div", {
         key: k,
-        className: "evo " + (on ? "done" : ""),
         style: {
-          cursor: "pointer",
-          border: on ? "2px solid #7C5CFF" : "2px solid #e8eaf2",
-          background: on ? "#F2EEFF" : "#fff",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          border: current ? "2px solid #7C5CFF" : reached ? "2px solid #34BC97" : "2px solid #e8eaf2",
+          background: current ? "#F2EEFF" : reached ? "#EAF7F2" : "#fff",
           borderRadius: 14,
           padding: "6px 4px",
           flex: 1,
           margin: "0 3px"
-        },
-        onClick: () => {
-          updatePet({
-            ...pet,
-            evo: k
-          });
-          showToast("Evolución: " + e + " " + em);
         }
       }, /*#__PURE__*/React.createElement("span", {
         style: {
@@ -5485,10 +5484,22 @@ function App() {
           display: "block",
           fontFamily: "Fredoka",
           fontSize: 11,
-          color: on ? "#7C5CFF" : "#9aa0b4",
+          color: current ? "#7C5CFF" : reached ? "#34BC97" : "#9aa0b4",
           marginTop: 2
         }
-      }, e));
+      }, e), !reached && /*#__PURE__*/React.createElement("small", {
+        style: {
+          fontSize: 9,
+          color: "#b0b6c8",
+          marginTop: 1
+        }
+      }, "d\xEDa ", dias), current && /*#__PURE__*/React.createElement("small", {
+        style: {
+          fontSize: 9,
+          color: "#7C5CFF",
+          marginTop: 1
+        }
+      }, "actual"));
     })), /*#__PURE__*/React.createElement("p", {
       className: "muted sm",
       style: {
@@ -5501,7 +5512,7 @@ function App() {
       joven: "En plena forma.",
       adulto: "Fuerte y maduro, con su aura dorada.",
       mistico: "¡Forma legendaria! Brilla con estrellas a su alrededor."
-    }[pet.evo]), /*#__PURE__*/React.createElement("p", {
+    }[computedEvo]), /*#__PURE__*/React.createElement("p", {
       className: "muted sm",
       style: {
         marginBottom: 8
@@ -7133,7 +7144,7 @@ function App() {
     outfit: pet.outfit,
     estilo: pet.estilo,
     chub: chub,
-    evo: pet.evo,
+    evo: computedEvo,
     mood: "amor",
     rubbing: true,
     size: 130
