@@ -619,8 +619,8 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
           <circle cx="120" cy="60" r="3" /><circle cx="68" cy="70" r="2.4" /><circle cx="129" cy="74" r="2.6" /><circle cx="100" cy="46" r="2.2" />
         </g>
         {/* cachetes */}
-        <ellipse cx="70" cy="100" rx="12" ry="8.5" fill={pal.blush} opacity="0.62" />
-        <ellipse cx="130" cy="100" rx="12" ry="8.5" fill={pal.blush} opacity="0.62" />
+        <ellipse cx="70" cy="100" rx={evo === "cria" ? 16 : 12} ry={evo === "cria" ? 12 : 8.5} fill={pal.blush} opacity={evo === "cria" ? 0.75 : 0.62} />
+        <ellipse cx="130" cy="100" rx={evo === "cria" ? 16 : 12} ry={evo === "cria" ? 12 : 8.5} fill={pal.blush} opacity={evo === "cria" ? 0.75 : 0.62} />
         {/* cejas (galan) */}
         {estilo === "galan" && (
           <g>
@@ -645,6 +645,15 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
             <circle cx="123" cy="94" r="3" fill="#fff" />
             <circle cx="129" cy="101" r="1.3" fill="#fff" opacity="0.7" />
             <path d="M81 106 q3 7 0 12 q-3 -2 -3 -6 q0 -4 3 -6 Z" fill="#9BD4F5" opacity="0.9" />
+          </g>
+        ) : evo === "cria" ? (
+          <g>
+            <circle cx="72" cy="95" r="13" fill="#4a3b30" />
+            <circle cx="66" cy="89" r="4.5" fill="#fff" />
+            <circle cx="76" cy="100" r="2" fill="#fff" opacity="0.55" />
+            <circle cx="128" cy="95" r="13" fill="#4a3b30" />
+            <circle cx="122" cy="89" r="4.5" fill="#fff" />
+            <circle cx="132" cy="100" r="2" fill="#fff" opacity="0.55" />
           </g>
         ) : (
           <g>
@@ -1613,6 +1622,8 @@ function App() {
   if (phase === "onboarding")
     return <div className="root"><div className="phone"><Onboarding onDone={async (p, name) => {
       setProfile(p); setPetName(name); setPhase("app"); setScreen("home");
+      scrollPositions.current = {};
+      try { window.scrollTo(0, 0); } catch(e) {}
       if (userId) await guardarPerfil(userId, p, name);
     }} /></div></div>;
 
