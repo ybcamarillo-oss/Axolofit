@@ -2111,17 +2111,17 @@ function Axo({
   })), /*#__PURE__*/React.createElement("ellipse", {
     cx: "70",
     cy: "100",
-    rx: "12",
-    ry: "8.5",
+    rx: evo === "cria" ? 16 : 12,
+    ry: evo === "cria" ? 12 : 8.5,
     fill: pal.blush,
-    opacity: "0.62"
+    opacity: evo === "cria" ? 0.75 : 0.62
   }), /*#__PURE__*/React.createElement("ellipse", {
     cx: "130",
     cy: "100",
-    rx: "12",
-    ry: "8.5",
+    rx: evo === "cria" ? 16 : 12,
+    ry: evo === "cria" ? 12 : 8.5,
     fill: pal.blush,
-    opacity: "0.62"
+    opacity: evo === "cria" ? 0.75 : 0.62
   }), estilo === "galan" && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
     d: "M62 80 l 16 -4",
     stroke: "#5b4636",
@@ -2196,6 +2196,38 @@ function Axo({
     d: "M81 106 q3 7 0 12 q-3 -2 -3 -6 q0 -4 3 -6 Z",
     fill: "#9BD4F5",
     opacity: "0.9"
+  })) : evo === "cria" ? /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", {
+    cx: "72",
+    cy: "95",
+    r: "13",
+    fill: "#4a3b30"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "66",
+    cy: "89",
+    r: "4.5",
+    fill: "#fff"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "76",
+    cy: "100",
+    r: "2",
+    fill: "#fff",
+    opacity: "0.55"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "128",
+    cy: "95",
+    r: "13",
+    fill: "#4a3b30"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "122",
+    cy: "89",
+    r: "4.5",
+    fill: "#fff"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "132",
+    cy: "100",
+    r: "2",
+    fill: "#fff",
+    opacity: "0.55"
   })) : /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
     d: "M64 94 Q73 84 82 94",
     stroke: "#5b4636",
@@ -5006,6 +5038,10 @@ function App() {
       setPetName(name);
       setPhase("app");
       setScreen("home");
+      scrollPositions.current = {};
+      try {
+        window.scrollTo(0, 0);
+      } catch (e) {}
       if (userId) await guardarPerfil(userId, p, name);
     }
   })));
