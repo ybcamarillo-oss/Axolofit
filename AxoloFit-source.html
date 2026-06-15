@@ -7,6 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -65,9 +66,8 @@ html,body { height:100%; }
 .axo-line:before { content: ''; position: absolute; bottom: -11px; left: 50%; transform: translateX(-50%); border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 11px solid #FFE0EA; }
 .axo-line:after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 9px solid #fff; }
 @keyframes speechpop { 0% { transform: scale(.7); opacity: 0 } 100% { transform: scale(1); opacity: 1 } }
-.rings { display: flex; justify-content: space-around; align-items: center; background: #fff; border-radius: 22px; padding: 14px 6px; box-shadow: 0 6px 20px #0000000c; margin-bottom: 12px; }
+.rings { display: flex; justify-content: space-around; background: #fff; border-radius: 22px; padding: 14px 6px; box-shadow: 0 6px 20px #0000000c; margin-bottom: 12px; }
 .ring-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.ring-main { background: linear-gradient(180deg,#F4F0FF,#fff); border-radius: 18px; padding: 8px 10px 6px; }
 .ring-c { text-align: center; line-height: 1.05; color: #2A2D43; } .ring-c b { font-family: 'Fredoka'; font-size: 16px; display: block; } .ring-c span { font-size: 10px; color: #9aa0b4; }
 .ring-lbl { font-size: 12px; font-weight: 700; color: #7a8099; display: flex; align-items: center; gap: 3px; }
 .quick-water { display: flex; gap: 8px; margin-bottom: 12px; }
@@ -163,7 +163,130 @@ html,body { height:100%; }
 <body>
 <div id="root"><div class="root"><p class="loading">Cargando AxoloFit…</p></div></div>
 <script type="text/babel" data-presets="react">
-const { useState, useMemo, useCallback } = React;
+const { useState, useMemo, useCallback, useEffect } = React;
+
+/* ---------- SUPABASE ---------- */
+const SUPABASE_URL = "https://lxenslqgcmkonkhbvfhl.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4ZW5zbHFnY21rb25raGJ2ZmhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MDcyMjQsImV4cCI6MjA5Njk4MzIyNH0.w062y4j9GPUdAGAIh8x8vXX6EYBTKknY0c5_MhyP5OI";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+/* ---------- AUTH SCREEN ---------- */
+function AuthScreen({ onAuth }) {
+  const [modo, setModo] = useState("login"); // "login" | "registro" | "reset"
+  const [email, setEmail] = useState("");
+  const [pass, setPass] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState(null);
+  const [confirmado, setConfirmado] = useState(false);
+  const [resetEnviado, setResetEnviado] = useState(false);
+
+  const inputStyle = {
+    width: "100%", padding: "13px 14px", border: "2px solid #eceff7",
+    borderRadius: 14, fontFamily: "Nunito", fontSize: 15, outline: "none",
+    marginBottom: 10, color: "#2A2D43", background: "#fafbfd"
+  };
+
+  const handleSubmit = async () => {
+    setError(null);
+    if (modo === "reset") {
+      if (!email) { setError("Escribe tu email."); return; }
+      setCargando(true);
+      try {
+        const { error: e } = await sb.auth.resetPasswordForEmail(email);
+        if (e) throw e;
+        setResetEnviado(true);
+      } catch (e) { setError(e.message); }
+      setCargando(false);
+      return;
+    }
+    if (!email || !pass) { setError("Completa email y contraseña."); return; }
+    if (modo === "registro" && !nombre) { setError("¿Cómo te llamamos?"); return; }
+    setCargando(true);
+    try {
+      if (modo === "login") {
+        const { data, error: e } = await sb.auth.signInWithPassword({ email, password: pass });
+        if (e) throw e;
+        onAuth(data.user, null);
+      } else {
+        const { data, error: e } = await sb.auth.signUp({ email, password: pass });
+        if (e) throw e;
+        if (data.user && !data.session) {
+          setConfirmado(true);
+        } else {
+          onAuth(data.user, nombre);
+        }
+      }
+    } catch (e) {
+      const msgs = {
+        "Invalid login credentials": "Email o contraseña incorrectos.",
+        "User already registered": "Este email ya tiene cuenta. Inicia sesión.",
+        "Password should be at least 6 characters": "La contraseña debe tener al menos 6 caracteres.",
+        "Unable to validate email address: invalid format": "El email no es válido.",
+      };
+      setError(msgs[e.message] || e.message);
+    }
+    setCargando(false);
+  };
+
+  if (resetEnviado) return (
+    <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 12 }}>
+      <Axo paletteKey="durazno" size={160} mood="amor" />
+      <h2 className="display" style={{ fontSize: 24 }}>¡Revisa tu email! 💌</h2>
+      <p className="muted" style={{ maxWidth: 280, textAlign: "center" }}>
+        Te mandamos un link para restablecer tu contraseña a <b>{email}</b>.
+      </p>
+      <button className="btn primary big" onClick={() => { setModo("login"); setResetEnviado(false); }}>Volver a iniciar sesión</button>
+    </div>
+  );
+
+  if (confirmado) return (
+    <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 12 }}>
+      <Axo paletteKey="durazno" size={160} mood="amor" />
+      <h2 className="display" style={{ fontSize: 24 }}>¡Revisa tu email! 💌</h2>
+      <p className="muted" style={{ maxWidth: 280, textAlign: "center" }}>
+        Te mandamos un link de confirmación a <b>{email}</b>. Ábrelo y luego regresa aquí a iniciar sesión.
+      </p>
+      <button className="btn primary big" onClick={() => { setModo("login"); setConfirmado(false); }}>Ir a iniciar sesión</button>
+    </div>
+  );
+
+  return (
+    <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 0 }}>
+      <Axo paletteKey="durazno" size={150} />
+      <h1 className="display" style={{ fontSize: 30, margin: "6px 0 2px" }}>AxoloFit</h1>
+      <p className="muted" style={{ marginBottom: 20, fontSize: 14 }}>
+        {modo === "login" ? "Bienvenida de vuelta 💗" : modo === "registro" ? "Crea tu cuenta gratis" : "Restablecer contraseña"}
+      </p>
+      <div style={{ width: "100%", maxWidth: 320 }}>
+        {modo === "registro" && (
+          <input style={inputStyle} placeholder="¿Cómo te llamas?" value={nombre}
+            onChange={e => setNombre(e.target.value)} maxLength={30} />
+        )}
+        <input style={inputStyle} placeholder="Email" type="email" value={email}
+          onChange={e => setEmail(e.target.value)} autoCapitalize="none" />
+        {modo !== "reset" && (
+          <input style={inputStyle} placeholder="Contraseña (mín. 6 caracteres)" type="password" value={pass}
+            onChange={e => setPass(e.target.value)} />
+        )}
+        {error && <p style={{ color: "#c0392b", fontSize: 13, fontWeight: 700, marginBottom: 10, textAlign: "center" }}>{error}</p>}
+        <button className="btn primary big" onClick={handleSubmit} disabled={cargando}>
+          {cargando ? "Cargando…" : modo === "login" ? "Entrar" : modo === "registro" ? "Crear cuenta" : "Enviar link"}
+        </button>
+        {modo === "login" && (
+          <button className="btn ghost" style={{ width: "100%", marginTop: 4, fontSize: 13 }}
+            onClick={() => { setModo("reset"); setError(null); }}>
+            Olvidé mi contraseña
+          </button>
+        )}
+        <button className="btn ghost" style={{ width: "100%", marginTop: 4 }}
+          onClick={() => { setModo(modo === "registro" ? "login" : modo === "reset" ? "login" : "registro"); setError(null); }}>
+          {modo === "login" ? "¿No tienes cuenta? Regístrate" : "Volver a iniciar sesión"}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 /* ---------- ICONOS (SVG propios) ---------- */
 function Icon({ name, size = 24, color = "currentColor", fill = "none", className, style }) {
@@ -245,7 +368,7 @@ const PALETTES = {
   cobre: { body: "#C98E63", gill: "#A8693F", blush: "#BE8055", label: "Cobre", premium: true },
   arcoiris: { body: "#C9A7F0", gill: "#8E5BD0", blush: "#FFB3D9", label: "Arcoíris", premium: true },
 };
-const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, conejo: { label: "Orejas conejo", premium: true }, gato: { label: "Orejas gato", premium: true }, mariposa: { label: "Alas mariposa", premium: true }, corona: { label: "Corona", premium: true } };
+const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, corona: { label: "Corona", premium: true } };
 const ESTILOS = { clasico: { label: "Clásico", premium: false }, galan: { label: "Galán", premium: false } };
 const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false } };
 const BACKGROUNDS = { agua: { label: "Agua", from: "#E7F7F4", to: "#CDEFE9", premium: false }, lavanda: { label: "Lavanda", from: "#F0EBFF", to: "#E2D8FF", premium: false }, atardecer: { label: "Atardecer", from: "#FFE9D6", to: "#FFD3C0", premium: false }, noche: { label: "Noche", from: "#4E5180", to: "#3A3D63", premium: true } };
@@ -261,13 +384,6 @@ const RECETAS = [
   { n: "Bowl de frijol y aguacate", kcal: 380, p: 16, c: 46, g: 16, ing: ["1 taza de frijoles de la olla", "1/2 taza de arroz integral", "1/2 aguacate", "Pico de gallo", "Queso fresco al gusto"], prep: "Sirve arroz y frijoles, agrega aguacate en cubos, pico de gallo y un poco de queso fresco." },
   { n: "Huevos a la mexicana con nopal", kcal: 300, p: 20, c: 14, g: 18, ing: ["2 huevos", "1 nopal asado", "Jitomate, cebolla y chile", "1 tortilla de maíz"], prep: "Sofríe jitomate, cebolla y chile, agrega los huevos batidos y el nopal en tiras. Acompaña con una tortilla." },
   { n: "Pescado a la veracruzana ligero", kcal: 350, p: 34, c: 18, g: 12, ing: ["150 g filete de pescado blanco", "Jitomate, aceituna y alcaparra", "Cebolla y ajo", "1/2 taza de arroz"], prep: "Cuece el pescado en salsa de jitomate con cebolla, ajo, aceitunas y alcaparras. Sirve con poco arroz." },
-];
-
-const CAPSULAS = [
-  { emoji: "🛡️", titulo: "¿Por qué el músculo es tu mejor aliado al bajar de peso?", parrafos: ["¡Tu músculo es un escudo protector! 🛡️✨", "Cuando decides perder peso, tu cuerpo puede cometer el error de \"quemar\" músculo en lugar de grasa si no tienes cuidado. El músculo no es solo para verte bien; es un órgano vivo que mantiene tu metabolismo acelerado. Si pierdes músculo, tu cuerpo gastará menos energía en reposo, haciendo más fácil volver a subir de peso (el famoso efecto rebote).", "🎯 Tu motor metabólico: a más masa muscular, más calorías quema tu cuerpo, ¡incluso mientras duermes o estás sentado!", "La clave: para bajar de peso de forma inteligente, come suficiente proteína, entrena fuerza y cuida tus músculos. ¡Así le demuestras a tu cuerpo que el músculo se queda y la grasa se va!"], fuentes: ["Asociación Americana del Corazón (AHA) y Colegio Americano de Medicina Deportiva (ACSM): el entrenamiento de fuerza previene la pérdida de masa libre de grasa durante la restricción calórica.", "Harvard T.H. Chan School of Public Health: el tejido muscular consume mucha más energía que el graso, pilar de la longevidad y la salud metabólica."] },
-  { emoji: "🧠", titulo: "El músculo y tu longevidad (tu \"Afore\" de salud)", parrafos: ["¡Músculo para toda la vida! 🧠💪", "¿Sabías que el músculo es considerado el órgano de la longevidad? A partir de los 30 años, el cuerpo empieza a perder masa muscular de forma natural (un proceso llamado sarcopenia).", "Mantener y construir músculo hoy es como meterle dinero a tu fondo de retiro: te asegura autonomía, fuerza para moverte libremente cuando seas mayor, previene caídas y protege tus huesos contra la osteoporosis.", "¡Cuidar tu músculo es el secreto de la eterna juventud!"], fuentes: ["Journal of Cachexia, Sarcopenia and Muscle (2020): relación directa entre masa muscular, fuerza de agarre y una vida más larga y libre de enfermedades crónicas.", "Clínica Mayo: el fortalecimiento muscular es vital para la densidad ósea y la salud articular al envejecer."] },
-  { emoji: "🥞", titulo: "Desayuno balanceado: ¡dile adiós a los picos de hambre!", parrafos: ["¿Por qué un desayuno con carbohidratos buenos te salva el día? 🥞🥚", "Imagina que tu cuerpo es un coche. Si en la mañana le das un carbohidrato \"rápido\" y solo (como pan dulce con café), tu glucosa sube como montaña rusa. Para bajar ese pico, tu cuerpo libera mucha insulina. ¿El resultado? El azúcar baja de golpe, te da un \"bajón\" a media mañana y tu cerebro te ruega por más azúcar. ¡Ahí nace el hambre feroz!", "El secreto del balance: la clave no es quitar los carbohidratos, sino acompañarlos bien. Si combinas tus carbohidratos (tortillas de maíz nixtamalizado o avena) con proteína (huevos o requesón) y grasa saludable (aguacate), la digestión se vuelve lenta y amigable.", "Glucosa estable: el azúcar entra suave y constante. No hay picos de insulina, tu energía se mantiene al 100% y te sientes satisfecha por horas. ¡Cero antojos de ansiedad!"], fuentes: ["OMS y FAO: guías sobre el índice glucémico y la combinación de macronutrientes para el control del apetito.", "The American Journal of Clinical Nutrition: desayunos altos en proteína con carbohidratos complejos mejoran la saciedad y regulan las hormonas del hambre (ghrelina)."] },
-  { emoji: "🏃", titulo: "¡Moverte es celebrar tu cuerpo!", parrafos: ["El ejercicio no es un castigo, ¡es un premio! 🏃🎉", "Hacer actividad física es la forma más bonita de decirte: \"Me importo y me estoy cuidando\". Olvídate de que entrenar es para \"pagar\" por lo que comiste ayer. Moverte es una celebración de lo que tu cuerpo puede hacer hoy.", "Tu motor al 100%: al entrenar, quemas calorías y aceleras tu metabolismo. Felicidad instantánea: tu cerebro libera endorfinas, las hormonas de la felicidad que te quitan el estrés.", "¿No sabes por dónde empezar? Prueba fuerza (pesas o botellas de agua), calistenia (lagartijas, sentadillas) o entrenamiento funcional. Busca una actividad que disfrutes. ¡Dale a tu cuerpo el premio de moverse libremente! 🌟"], fuentes: ["OMS: al menos 150 a 300 minutos de actividad aeróbica y ejercicios de fuerza a la semana para una salud metabólica y mental óptima.", "Asociación Americana de Psicología (APA): el ejercicio regular produce endorfinas que reducen la ansiedad, mejoran el ánimo y potencian el amor propio."] }
 ];
 
 const GAME_ITEMS = [
@@ -325,7 +441,7 @@ const MEAL_SPLIT = [["desayuno", "Desayuno", 0.25], ["comida", "Comida", 0.35], 
 
 /* ---------- HELPERS ---------- */
 function computeProfile(p) {
-  const { sexo, edad, pesoKg, estaturaCm, actividad, cuelloCm, cinturaCm, caderaCm, muñecaCm, objetivo } = p;
+  const { sexo, edad, pesoKg, estaturaCm, actividad, cuelloCm, cinturaCm, caderaCm, objetivo } = p;
   const h = estaturaCm / 100;
   const imc = pesoKg / (h * h);
   const base = 10 * pesoKg + 6.25 * estaturaCm - 5 * edad;
@@ -344,16 +460,14 @@ function computeProfile(p) {
   const obj = p.objetivo || "perder";
   const kcalMult = obj === "ganar" ? 1.15 : obj === "mantener" ? 1.0 : 0.8;
   const objetivoDeficit = Math.max(Math.round(tdee * kcalMult), floor);
-  const proteFactor = actividad === "sedentario" ? 1.6 : actividad === "ligero" ? 1.8 : actividad === "moderado" ? 2.0 : 2.2;
-  const baseProte = masaMagra ? masaMagra * (proteFactor + 0.2) : pesoKg * proteFactor;
-  const prote = Math.round(baseProte);
+  const prote = Math.round(masaMagra ? masaMagra * 2.2 : pesoKg * 1.8);
   const grasa = Math.round(pesoKg * 0.9);
   const kcalRest = objetivoDeficit - (prote * 4 + grasa * 9);
   const carbs = Math.max(0, Math.round(kcalRest / 4));
   const aguaMl = Math.round(pesoKg * 35);
   return { imc: +imc.toFixed(1), bmr: Math.round(bmr), tdee: Math.round(tdee), bf: bf != null ? +bf.toFixed(1) : null, masaMagra: masaMagra ? +masaMagra.toFixed(1) : null, objetivoDeficit, prote, grasa, carbs, aguaMl, vasos: Math.max(6, Math.round(aguaMl / 250)) };
 }
-const DEMO = { sexo: "F", edad: 30, pesoKg: 68, estaturaCm: 165, actividad: "moderado", cuelloCm: 32, cinturaCm: 78, caderaCm: 98, muñecaCm: 16, objetivo: "perder" };
+const DEMO = { sexo: "F", edad: 30, pesoKg: 68, estaturaCm: 165, actividad: "moderado", cuelloCm: 32, cinturaCm: 78, caderaCm: 98, objetivo: "perder" };
 
 /* ---------- AJOLOTE (estilo acuarela, pose nadando) ---------- */
 function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno", mood = "feliz", estilo = "clasico", chub = 0.7, size = 200, evo = "joven", rubbing = false }) {
@@ -395,25 +509,6 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
       {(evo === "adulto" || evo === "mistico") && <circle cx="100" cy="118" r="80" fill={evo === "mistico" ? "#9B7BFF" : "#FFE08A"} opacity={evo === "mistico" ? 0.22 : 0.16} />}
       {evo === "mistico" && [[40,66,5],[160,78,6],[48,162,5],[156,150,5],[100,34,7],[28,118,4],[172,116,4]].map((st,i)=><path key={"ev"+i} d={"M"+st[0]+" "+(st[1]-st[2])+" L "+(st[0]+st[2]*0.3)+" "+(st[1]-st[2]*0.3)+" L "+(st[0]+st[2])+" "+st[1]+" L "+(st[0]+st[2]*0.3)+" "+(st[1]+st[2]*0.3)+" L "+st[0]+" "+(st[1]+st[2])+" L "+(st[0]-st[2]*0.3)+" "+(st[1]+st[2]*0.3)+" L "+(st[0]-st[2])+" "+st[1]+" L "+(st[0]-st[2]*0.3)+" "+(st[1]-st[2]*0.3)+" Z"} fill="#FFF6C8" opacity="0.95" />)}
       <g className="axo-bob">
-        {accessory === "mariposa" && (
-          <g opacity="0.92">
-            <defs>
-              <linearGradient id="wingGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#FFC4E1" /><stop offset="0.5" stopColor="#C9A7F5" /><stop offset="1" stopColor="#9FD8FF" /></linearGradient>
-            </defs>
-            {/* ala izquierda */}
-            <g transform="translate(58,140)">
-              <path d="M0 0 C -42 -40 -60 -30 -56 -6 C -52 12 -30 14 0 6 Z" fill="url(#wingGrad)" stroke="#E79FAE" strokeWidth="2" />
-              <path d="M0 8 C -40 6 -52 22 -44 40 C -34 54 -12 40 0 18 Z" fill="url(#wingGrad)" stroke="#E79FAE" strokeWidth="2" />
-              <circle cx="-38" cy="-12" r="5" fill="#ffffff" opacity="0.7" /><circle cx="-30" cy="30" r="4" fill="#ffffff" opacity="0.7" />
-            </g>
-            {/* ala derecha */}
-            <g transform="translate(142,140)">
-              <path d="M0 0 C 42 -40 60 -30 56 -6 C 52 12 30 14 0 6 Z" fill="url(#wingGrad)" stroke="#E79FAE" strokeWidth="2" />
-              <path d="M0 8 C 40 6 52 22 44 40 C 34 54 12 40 0 18 Z" fill="url(#wingGrad)" stroke="#E79FAE" strokeWidth="2" />
-              <circle cx="38" cy="-12" r="5" fill="#ffffff" opacity="0.7" /><circle cx="30" cy="30" r="4" fill="#ffffff" opacity="0.7" />
-            </g>
-          </g>
-        )}
         {/* colita larga que fluye */}
         <path d="M104 152 C 130 168 160 168 162 196 C 164 222 134 232 120 215 C 135 215 149 206 145 189 C 139 171 116 161 100 156 Z" fill={bodyFill} />
         <path d="M112 160 C 132 173 152 175 152 195 C 152 208 137 213 129 205 C 140 201 144 192 140 184 C 134 172 119 166 107 163 Z" fill="#ffffff" opacity="0.28" />
@@ -499,29 +594,6 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
         )}
         {accessory === "gorra" && (
           <g transform="translate(100,46)"><path d="M-34 6 Q -34 -22 0 -22 Q 34 -22 34 6 Z" fill="#3E7BD6" /><path d="M2 6 Q 38 6 46 16 Q 24 13 2 13 Z" fill="#2F66BC" /><circle cx="0" cy="-20" r="3.5" fill="#2F66BC" /></g>
-        )}
-        {accessory === "conejo" && (
-          <g>
-            <path d="M100 36 C 58 36 46 66 46 96 C 46 120 60 134 78 138 C 70 128 66 114 66 100 C 66 80 80 68 100 68 C 120 68 134 80 134 100 C 134 114 130 128 122 138 C 140 134 154 120 154 96 C 154 66 142 36 100 36 Z" fill="#FBF7F2" stroke="#EDE4DA" strokeWidth="2" />
-            <path d="M58 78 Q100 56 142 78" fill="none" stroke="#ffffff" strokeWidth="3" opacity="0.6" />
-            <g transform="translate(72,40) rotate(-14)"><ellipse cx="0" cy="0" rx="14" ry="32" fill="#FBF7F2" stroke="#EDE4DA" strokeWidth="2" /><ellipse cx="0" cy="2" rx="7" ry="21" fill="#F6BBC8" /></g>
-            <g transform="translate(128,40) rotate(14)"><ellipse cx="0" cy="0" rx="14" ry="32" fill="#FBF7F2" stroke="#EDE4DA" strokeWidth="2" /><ellipse cx="0" cy="2" rx="7" ry="21" fill="#F6BBC8" /></g>
-          </g>
-        )}
-        {accessory === "gato" && (
-          <g>
-            <path d="M52 96 Q44 128 56 150 Q64 140 64 116 Z" fill="#CFC2AE" stroke="#BCAE97" strokeWidth="2" />
-            <path d="M148 96 Q156 128 144 150 Q136 140 136 116 Z" fill="#CFC2AE" stroke="#BCAE97" strokeWidth="2" />
-            <path d="M55 148 Q48 170 54 186 Q60 178 58 162" fill="none" stroke="#C2B49C" strokeWidth="5" strokeLinecap="round" />
-            <circle cx="55" cy="190" r="9" fill="#D8CDBA" />
-            <path d="M145 148 Q152 170 146 186 Q140 178 142 162" fill="none" stroke="#C2B49C" strokeWidth="5" strokeLinecap="round" />
-            <circle cx="145" cy="190" r="9" fill="#D8CDBA" />
-            <path d="M100 34 C 56 34 46 64 48 98 Q 50 116 60 124 Q 56 104 60 90 Q 66 72 100 72 Q 134 72 140 90 Q 144 104 140 124 Q 150 116 152 98 C 154 64 144 34 100 34 Z" fill="#D6C9B4" stroke="#C2B49C" strokeWidth="2" />
-            <path d="M50 70 Q44 38 52 32 Q72 44 80 66 Q64 60 50 70 Z" fill="#D6C9B4" stroke="#C2B49C" strokeWidth="2" />
-            <path d="M150 70 Q156 38 148 32 Q128 44 120 66 Q136 60 150 70 Z" fill="#D6C9B4" stroke="#C2B49C" strokeWidth="2" />
-            <g stroke="#B3A48B" strokeWidth="3" strokeLinecap="round"><line x1="88" y1="44" x2="88" y2="58" /><line x1="100" y1="42" x2="100" y2="57" /><line x1="112" y1="44" x2="112" y2="58" /></g>
-            <path d="M58 86 Q100 74 142 86" fill="none" stroke="#ffffff" strokeWidth="2" opacity="0.4" />
-          </g>
         )}
         {accessory === "monito" && (
           <g transform="translate(100,120)"><path d="M0 0 L -20 -11 L -20 11 Z" fill="#E0556E" /><path d="M0 0 L 20 -11 L 20 11 Z" fill="#E0556E" /><rect x="-6" y="-8" width="12" height="16" rx="4" fill="#C24459" /></g>
@@ -731,19 +803,15 @@ function Onboarding({ onDone }) {
       <div className="screen">
         <Header title="Medidas corporales" back={() => setStep("datos")} />
         <div className="scroll">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <p className="muted" style={{ marginTop: 4, flex: 1 }}>Con esto estimamos tu % de grasa por circunferencias (US Navy). Es opcional, pero hace tus metas más precisas.</p>
-            <button className="btn ghost" style={{ padding: "4px 8px", fontSize: 14, minWidth: "auto", marginLeft: 8 }} onClick={() => setOverlay("medidas-info")}>ℹ️</button>
-          </div>
+          <p className="muted" style={{ marginTop: 4 }}>Con esto estimamos tu % de grasa por circunferencias (US Navy). Es opcional, pero hace tus metas más precisas.</p>
           <p className="hint" style={{ marginBottom: 4 }}>¿No tienes cinta métrica a la mano? No pasa nada: empieza sin medidas y agrégalas cuando quieras.</p>
           <NumField label="Cuello" value={d.cuelloCm} onChange={(v) => set("cuelloCm", v)} suffix="cm" min={25} max={60} />
           <NumField label="Cintura" value={d.cinturaCm} onChange={(v) => set("cinturaCm", v)} suffix="cm" min={50} max={180} />
-          <NumField label="Muñeca" value={d.muñecaCm} onChange={(v) => set("muñecaCm", v)} suffix="cm" min={12} max={25} />
           {d.sexo === "F" && <NumField label="Cadera" value={d.caderaCm} onChange={(v) => set("caderaCm", v)} suffix="cm" min={60} max={180} />}
         </div>
         <div className="footer-cta">
           <button className="btn primary big" onClick={() => setStep("resultados")}>Calcular mi plan</button>
-          <button className="btn ghost" style={{ width: "100%", marginTop: 4 }} onClick={() => { setD((p) => ({ ...p, cuelloCm: null, cinturaCm: null, caderaCm: null, muñecaCm: null })); setStep("resultados"); }}>No tengo cinta — lo hago más tarde</button>
+          <button className="btn ghost" style={{ width: "100%", marginTop: 4 }} onClick={() => { setD((p) => ({ ...p, cuelloCm: null, cinturaCm: null, caderaCm: null })); setStep("resultados"); }}>No tengo cinta — lo hago más tarde</button>
         </div>
       </div>
     );
@@ -759,8 +827,7 @@ function Onboarding({ onDone }) {
           <div className="card hero-card">
             <span className="muted">Tu meta diaria · {d.objetivo === "ganar" ? "⬆️ Ganar peso" : d.objetivo === "mantener" ? "⚖️ Mantener" : "⬇️ Perder peso"}</span>
             <div className="big-num">{r.objetivoDeficit}<small> kcal</small></div>
-            <div className="macro-row"><span style={{ color: "#fff", background: "#7C5CFF", fontWeight: 800 }}>💪 Proteína {r.prote} g</span><span style={{ color: "#F2B705" }}>Grasa {r.grasa} g</span><span style={{ color: "#34BC97" }}>Carbos {r.carbs} g</span></div>
-            <p className="muted sm" style={{ textAlign: "center", marginTop: 6, color: "#7C5CFF", fontWeight: 700 }}>Tu prioridad #1 es la proteína: construye y cuida tu músculo 💪</p>
+            <div className="macro-row"><span style={{ color: "#7C5CFF" }}>Proteína {r.prote} g</span><span style={{ color: "#F2B705" }}>Grasa {r.grasa} g</span><span style={{ color: "#34BC97" }}>Carbos {r.carbs} g</span></div>
           </div>
           <div className="grid2">
             <Stat k="IMC" v={r.imc} s="" /><Stat k="% Grasa" v={r.bf != null ? r.bf : "—"} s={r.bf ? "%" : ""} /><Stat k="Masa magra" v={r.masaMagra != null ? r.masaMagra : "—"} s={r.masaMagra ? " kg" : ""} />
@@ -802,25 +869,24 @@ const KCAL_PAIRS = [
 ];
 
 function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, recordBest }) {
-  const [items] = useState(() => [...GAME_ITEMS].sort(() => Math.random() - 0.5));
   const [i, setI] = useState(0);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
-  const answer = (sano) => { const ns = sano === items[i].sano ? score + 1 : score; setScore(ns); if (i + 1 >= items.length) { setDone(true); recordBest("quiz", ns); } else setI((x) => x + 1); };
+  const answer = (sano) => { const ns = sano === GAME_ITEMS[i].sano ? score + 1 : score; setScore(ns); if (i + 1 >= GAME_ITEMS.length) { setDone(true); recordBest("quiz", ns); } else setI((x) => x + 1); };
   return (
     <div className="screen" style={{background:"linear-gradient(180deg,#FFF4EC,#E7F7F4)"}}>
       <Header title="🥗 ¿Saludable o antojo?" back={()=>setScreen("arcade")} />
       <div className="scroll" style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",paddingTop:20}}>
         {done ? (<div className="center" style={{padding:"20px 0"}}>
           <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="amor" size={150} />
-          <h2 className="display" style={{fontSize:26,margin:"8px 0 4px"}}>¡{score}/{items.length} correctas!</h2>
+          <h2 className="display" style={{fontSize:26,margin:"8px 0 4px"}}>¡{score}/{GAME_ITEMS.length} correctas!</h2>
           {score>=best && score>0 && <p className="display" style={{color:"#F2B705",fontSize:15}}>🏆 ¡Nuevo récord!</p>}
           <p className="muted" style={{marginBottom:16}}>Ganaste +{score * 10} XP · 🏆 {Math.max(best,score)}</p>
           <button className="btn primary big" onClick={() => { setXp((x) => Math.min(99, x + score * 10)); showToast("+" + score * 10 + " XP 🥗"); setScreen("arcade"); }}>Reclamar y volver</button>
         </div>) : (<div className="center" style={{padding:"20px 16px",width:"100%"}}>
-          <p className="muted sm" style={{marginBottom:6}}>{i + 1} de {items.length}</p>
-          <div style={{width:"100%",height:6,background:"#eef0f6",borderRadius:4,marginBottom:24}}><div style={{width:((i+1)/items.length*100)+"%",height:"100%",background:"#FF6F9C",borderRadius:4}}/></div>
-          <h2 className="display" style={{fontSize:28,margin:"0 0 32px"}}>{items[i].n}</h2>
+          <p className="muted sm" style={{marginBottom:6}}>{i + 1} de {GAME_ITEMS.length}</p>
+          <div style={{width:"100%",height:6,background:"#eef0f6",borderRadius:4,marginBottom:24}}><div style={{width:((i+1)/GAME_ITEMS.length*100)+"%",height:"100%",background:"#FF6F9C",borderRadius:4}}/></div>
+          <h2 className="display" style={{fontSize:28,margin:"0 0 32px"}}>{GAME_ITEMS[i].n}</h2>
           <div style={{display:"flex",gap:12,width:"100%"}}>
             <button className="btn primary big" style={{background:"linear-gradient(180deg,#5FD0AE,#34BC97)",boxShadow:"none"}} onClick={()=>answer(true)}>🥗 Saludable</button>
             <button className="btn primary big" style={{background:"linear-gradient(180deg,#FFB36B,#FF9036)",boxShadow:"none"}} onClick={()=>answer(false)}>🍩 Antojo</button>
@@ -834,9 +900,8 @@ function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, rec
 function MemoScreen({ pet, chub, petName, setScreen, setXp, showToast, best, recordBest }) {
   const POOL=["🥑","🌮","🥗","🍳","🐟","🫘","🍓","🥦","🍅","🥕","🌽","🍇"];
   function build(n){ const es=POOL.slice(0,n); return [...es,...es].map((e,i)=>({id:i,e})).sort(()=>Math.random()-.5); }
-  const startPairs=Math.min(POOL.length, 6 + (Math.max(1, Math.min(4, best || 1)) - 1) * 2);
-  const [pairs,setPairs]=useState(startPairs);
-  const [cards,setCards]=useState(()=>build(startPairs));
+  const [pairs,setPairs]=useState(6);
+  const [cards,setCards]=useState(()=>build(6));
   const [flip,setFlip]=useState([]);
   const [matched,setMatched]=useState([]);
   const [moves,setMoves]=useState(0);
@@ -936,11 +1001,10 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
   const [items,setItems]=useState([]);
   const [bx,setBx]=useState(0.5);
   const bxRef=React.useRef(0.5);
-  const startLevel = Math.max(1, Math.min(5, Math.floor((best || 0) / 14) + 1));
   const [score,setScore]=useState(0);
   const scoreRef=React.useRef(0);
-  const [level,setLevel]=useState(startLevel);
-  const levelRef=React.useRef(startLevel);
+  const [level,setLevel]=useState(1);
+  const levelRef=React.useRef(1);
   const [time,setTime]=useState(20);
   const [over,setOver]=useState(false);
   const [levelUp,setLevelUp]=useState(false);
@@ -1008,18 +1072,17 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
 }
 
 function CalScreen({ pet, chub, petName, setScreen, setXp, showToast, best, recordBest }) {
-  const [pairs] = useState(() => [...KCAL_PAIRS].sort(() => Math.random() - 0.5));
   const [i,setI]=useState(0);
   const [score,setScore]=useState(0);
   const [sel,setSel]=useState(null);
   const [done,setDone]=useState(false);
-  const pair=pairs[i];
+  const pair=KCAL_PAIRS[i];
   const answer=(pick)=>{
     if(sel) return;
     setSel(pick);
     const correct=pair.ak>pair.bk?"a":"b";
     if(pick===correct)setScore(sc=>sc+1);
-    const fin = pick===correct ? score+1 : score; setTimeout(()=>{ setSel(null); if(i+1>=pairs.length){ setDone(true); recordBest("cal", fin); } else setI(x=>x+1); },1000);
+    const fin = pick===correct ? score+1 : score; setTimeout(()=>{ setSel(null); if(i+1>=KCAL_PAIRS.length){ setDone(true); recordBest("cal", fin); } else setI(x=>x+1); },1000);
   };
   const correctIs=pair&&(pair.ak>pair.bk?"a":"b");
   return (
@@ -1028,12 +1091,12 @@ function CalScreen({ pet, chub, petName, setScreen, setXp, showToast, best, reco
       <div className="scroll" style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
         {done?(<div className="center" style={{paddingTop:20}}>
           <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="amor" size={150}/>
-          <h2 className="display" style={{fontSize:26,margin:"8px 0 4px"}}>¡{score}/{pairs.length} correctas!</h2>
+          <h2 className="display" style={{fontSize:26,margin:"8px 0 4px"}}>¡{score}/{KCAL_PAIRS.length} correctas!</h2>
           {score>=best && score>0 && <p className="display" style={{color:"#F2B705",fontSize:15}}>🏆 ¡Nuevo récord!</p>}
           <p className="muted" style={{marginBottom:16}}>Ganaste +{score*12} XP · 🏆 {Math.max(best,score)}</p>
           <button className="btn primary big" onClick={()=>{ setXp(x=>Math.min(99,x+score*12)); showToast("+"+score*12+" XP 🔥"); setScreen("arcade"); }}>Reclamar y volver</button>
         </div>):(<div style={{width:"100%",padding:"8px 0"}}>
-          <p style={{textAlign:"center",fontFamily:"Fredoka",fontWeight:600,color:"#9aa0b4",marginBottom:8}}>{i+1} de {pairs.length} · ¿cuál tiene MÁS calorías?</p>
+          <p style={{textAlign:"center",fontFamily:"Fredoka",fontWeight:600,color:"#9aa0b4",marginBottom:8}}>{i+1} de {KCAL_PAIRS.length} · ¿cuál tiene MÁS calorías?</p>
           <p style={{textAlign:"center",fontFamily:"Fredoka",fontWeight:700,color:"#34BC97",marginBottom:18}}>Aciertos: {score}</p>
           <div style={{display:"flex",gap:12}}>
             {[["a",pair.a,pair.ak],["b",pair.b,pair.bk]].map(([k,name,kcal])=>{
@@ -1062,51 +1125,87 @@ function InfoDot({ text }) {
   );
 }
 
-
-function CapsulaDetalle({ cap, onBack }) {
+/* ---------- BLOQUES DE COLORES (estilo block blast) ---------- */
+var BJ_ROWS = 9, BJ_COLS = 7;
+var BJ_COLORS = [{ bg: "#FF6B6B", em: "🍎" }, { bg: "#34BC97", em: "🥦" }, { bg: "#5B8DEF", em: "🫐" }, { bg: "#F2B705", em: "🍌" }];
+function bjMake() { var g = []; for (var r = 0; r < BJ_ROWS; r++) { var row = []; for (var c = 0; c < BJ_COLS; c++) row.push(Math.floor(Math.random() * BJ_COLORS.length)); g.push(row); } return g; }
+function bjGroup(g, r, c) {
+  var color = g[r][c]; if (color == null) return [];
+  var stack = [[r, c]], seen = {}, out = []; seen[r + "," + c] = true;
+  while (stack.length) {
+    var cur = stack.pop(), y = cur[0], x = cur[1]; out.push([y, x]);
+    var nb = [[y - 1, x], [y + 1, x], [y, x - 1], [y, x + 1]];
+    for (var k = 0; k < nb.length; k++) { var ny = nb[k][0], nx = nb[k][1];
+      if (ny >= 0 && ny < BJ_ROWS && nx >= 0 && nx < BJ_COLS && !seen[ny + "," + nx] && g[ny][nx] === color) { seen[ny + "," + nx] = true; stack.push([ny, nx]); } }
+  }
+  return out;
+}
+function bjCollapse(g) {
+  var cols = [];
+  for (var c = 0; c < BJ_COLS; c++) { var col = []; for (var r = BJ_ROWS - 1; r >= 0; r--) if (g[r][c] != null) col.push(g[r][c]); cols.push(col); }
+  cols = cols.filter(function (col) { return col.length > 0; });
+  while (cols.length < BJ_COLS) cols.push([]);
+  var ng = []; for (var r2 = 0; r2 < BJ_ROWS; r2++) { var row = []; for (var c2 = 0; c2 < BJ_COLS; c2++) row.push(null); ng.push(row); }
+  for (var c3 = 0; c3 < BJ_COLS; c3++) { var col2 = cols[c3]; for (var k2 = 0; k2 < col2.length; k2++) ng[BJ_ROWS - 1 - k2][c3] = col2[k2]; }
+  return ng;
+}
+function bjHasMoves(g) {
+  for (var r = 0; r < BJ_ROWS; r++) for (var c = 0; c < BJ_COLS; c++) { var v = g[r][c]; if (v == null) continue;
+    if ((r + 1 < BJ_ROWS && g[r + 1][c] === v) || (c + 1 < BJ_COLS && g[r][c + 1] === v)) return true; }
+  return false;
+}
+function BlockJamScreen({ pet, chub, petName, setScreen, setXp, showToast, best, recordBest }) {
+  const [grid, setGrid] = useState(bjMake);
+  const [score, setScore] = useState(0);
+  const [over, setOver] = useState(false);
+  const reward = Math.min(30, Math.max(3, Math.floor(score / 15)));
+  const tap = (r, c) => {
+    if (over) return;
+    const grp = bjGroup(grid, r, c);
+    if (grp.length < 2) return;
+    const ng = grid.map(function (row) { return row.slice(); });
+    grp.forEach(function (p) { ng[p[0]][p[1]] = null; });
+    const collapsed = bjCollapse(ng);
+    const ns = score + grp.length * (grp.length + 1);
+    setScore(ns); setGrid(collapsed);
+    if (!bjHasMoves(collapsed)) { setOver(true); recordBest("blockjam", ns); }
+  };
+  const restart = () => { setGrid(bjMake()); setScore(0); setOver(false); };
+  const claim = () => { recordBest("blockjam", score); setXp(function (x) { return Math.min(99, x + reward); }); showToast("+" + reward + " XP 🧩"); setScreen("arcade"); };
   return (
-    <div>
-      <button onClick={onBack} style={{ display: "flex", alignItems: "center", gap: 6, background: "transparent", border: "none", cursor: "pointer", color: "#E79FAE", fontFamily: "Fredoka", fontWeight: 600, fontSize: 15, padding: "0 0 16px" }}>‹ Todas las cápsulas</button>
-      <div style={{ background: "linear-gradient(135deg,#FFF6E0,#FFF0F3)", borderRadius: 18, padding: "20px 18px", marginBottom: 16 }}>
-        <span style={{ fontSize: 36 }}>{cap.emoji}</span>
-        <h3 style={{ fontFamily: "Fredoka", fontWeight: 700, fontSize: 20, color: "#3d3d4a", lineHeight: 1.3, margin: "10px 0 0" }}>{cap.titulo}</h3>
-      </div>
-      {cap.parrafos.map((p, pi) => {
-        const esDestacada = pi === 0;
-        const tieneViñetas = p.includes("🎯") || p.includes("Tu motor") || p.includes("Felicidad") || p.includes("Glucosa");
-        if (esDestacada) {
-          return <p key={pi} style={{ fontFamily: "Fredoka", fontWeight: 700, fontSize: 18, color: "#E79FAE", lineHeight: 1.4, margin: "0 0 16px", textAlign: "center" }}>{p}</p>;
-        }
-        if (tieneViñetas) {
-          return (
-            <div key={pi} style={{ margin: "0 0 16px" }}>
-              {p.split(". ").filter(Boolean).map((parte, pj) => (
-                <div key={pj} style={{ display: "flex", gap: 10, marginBottom: 8 }}>
-                  <span style={{ color: "#E79FAE", fontWeight: 700, flexShrink: 0, fontSize: 16 }}>•</span>
-                  <p style={{ fontSize: 15, lineHeight: 1.6, color: "#2D3748", margin: 0 }}>{parte.trim().replace(/^🎯\s*/, "")}</p>
-                </div>
-              ))}
-            </div>
-          );
-        }
-        return <p key={pi} style={{ fontSize: 15, lineHeight: 1.6, color: "#2D3748", margin: "0 0 16px" }}>{p}</p>;
-      })}
-      <div style={{ background: "#F2EEFF", borderRadius: 14, padding: "14px 16px", marginTop: 8 }}>
-        <p style={{ fontFamily: "Fredoka", fontWeight: 700, fontSize: 14, color: "#7C5CFF", margin: "0 0 10px" }}>🔬 Fuentes científicas</p>
-        {cap.fuentes.map((f, fi) => (
-          <div key={fi} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-            <span style={{ color: "#7C5CFF", flexShrink: 0 }}>•</span>
-            <p style={{ fontSize: 13, lineHeight: 1.6, color: "#5a5a78", margin: 0 }}>{f}</p>
+    <div className="screen" style={{ background: "linear-gradient(180deg,#EFF4FF,#E3ECFF)" }}>
+      <Header title="🧩 Bloques de colores" back={() => setScreen("arcade")} />
+      <div className="scroll" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        {over ? (
+          <div className="center" style={{ paddingTop: 20 }}>
+            <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="amor" size={150} />
+            <h2 className="display" style={{ fontSize: 26, margin: "8px 0 4px" }}>¡{score} puntos!</h2>
+            {score >= best && score > 0 && <p className="display" style={{ color: "#F2B705", fontSize: 15 }}>🏆 ¡Nuevo récord!</p>}
+            <p className="muted" style={{ marginBottom: 16 }}>Ya no quedan jugadas · 🏆 {Math.max(best, score)}</p>
+            <button className="btn primary big" onClick={claim}>Reclamar +{reward} XP y volver</button>
+            <button className="btn ghost" style={{ marginTop: 10 }} onClick={restart}>🔄 Jugar otra vez</button>
           </div>
-        ))}
+        ) : (
+          <div style={{ width: "100%", padding: "8px 0", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <p style={{ textAlign: "center", fontFamily: "Fredoka", fontWeight: 600, color: "#7a8093", marginBottom: 4, fontSize: 13.5, maxWidth: 300 }}>Toca grupos de 2 o más del mismo color. ¡Entre más grandes, más puntos!</p>
+            <p style={{ textAlign: "center", fontFamily: "Fredoka", fontWeight: 700, color: "#5B8DEF", marginBottom: 10 }}>Puntos: {score} · 🏆 {best}</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 4, width: "100%", maxWidth: 318, background: "#ffffff80", padding: 6, borderRadius: 14 }}>
+              {grid.map(function (row, r) { return row.map(function (v, c) {
+                return <button key={r + "-" + c} onClick={() => tap(r, c)} style={{ height: 38, borderRadius: 9, border: "none", background: v == null ? "#00000008" : BJ_COLORS[v].bg, boxShadow: v == null ? "none" : "inset 0 -3px 0 #0000002a", fontSize: 17, cursor: v == null ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>{v == null ? "" : BJ_COLORS[v].em}</button>;
+              }); })}
+            </div>
+            <button className="btn ghost" style={{ marginTop: 14 }} onClick={claim}>Reclamar +{reward} XP y salir</button>
+            <button className="btn ghost" style={{ marginTop: 8 }} onClick={restart}>🔄 Reiniciar</button>
+          </div>
+        )}
       </div>
-      <div style={{ height: 16 }} />
     </div>
   );
 }
 
 function App() {
-  const [phase, setPhase] = useState("onboarding");
+  const [userId, setUserId] = useState(null);
+  const [phase, setPhase] = useState("auth"); // "auth" | "onboarding" | "app"
   const [screen, setScreen] = useState("home");
   const scrollPositions = React.useRef({});
   const sRef = (k) => (el) => { if (el) el.scrollTop = scrollPositions.current[k] || 0; };
@@ -1117,13 +1216,108 @@ function App() {
   const [petName, setPetName] = useState("Axo");
   const targets = useMemo(() => { try { return computeProfile(profile); } catch(e) { return computeProfile({...DEMO}); } }, [profile]);
   const [pet, setPet] = useState({ palette: "durazno", accessory: "ninguno", bg: "lavanda", estilo: "clasico", outfit: "ninguno", evo: "joven" });
+  const [level, setLevel] = useState(4);
+  const [xp, setXp] = useState(60);
+  const [streak, setStreak] = useState(7);
+  const updatePet = (newPet) => {
+    setPet(newPet);
+    if (userId) guardarAxo(userId, { variedad: newPet.palette, accesorio: newPet.accessory, outfit: newPet.outfit, nivel: level, xp, racha: streak });
+  };
+
+  /* --- Revisar sesión activa al cargar --- */
+  useEffect(() => {
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) { setUserId(session.user.id); cargarDatos(session.user.id); }
+      else setPhase("auth");
+    });
+    const { data: listener } = sb.auth.onAuthStateChange((_event, session) => {
+      if (!session) { setUserId(null); setPhase("auth"); }
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  /* --- Cargar datos del usuario desde Supabase --- */
+  const cargarDatos = async (uid) => {
+    try {
+      const [{ data: perfil }, { data: axo }, { data: comidas }] = await Promise.all([
+        sb.from("profiles").select("*").eq("id", uid).single(),
+        sb.from("axo_state").select("*").eq("id", uid).single(),
+        sb.from("food_log").select("*").eq("user_id", uid).eq("fecha", new Date().toISOString().slice(0, 10)).order("created_at"),
+      ]);
+      if (perfil && perfil.nombre) {
+        setPetName(perfil.nombre || "Axo");
+        setProfile(p => ({
+          ...p,
+          objetivo: perfil.objetivo || p.objetivo,
+          edad: perfil.edad || p.edad,
+          pesoKg: perfil.peso || p.pesoKg,
+          estaturaCm: perfil.altura || p.estaturaCm,
+        }));
+        if (axo) {
+          setPet(p => ({
+            ...p,
+            palette: axo.variedad || p.palette,
+            accessory: axo.accesorio || p.accessory,
+            outfit: axo.outfit || p.outfit,
+          }));
+          setLevel(axo.nivel || 4);
+          setXp(axo.xp || 60);
+          setStreak(axo.racha || 0);
+        }
+        if (comidas && comidas.length > 0) {
+          setLog(comidas.map((c, i) => ({ id: c.id, n: c.nombre, kcal: c.kcal, p: c.proteina, c: c.carbos, g: c.grasa, qty: 1, uid: i + 1 })));
+        }
+        setPhase("app");
+      } else {
+        setPhase("onboarding");
+      }
+    } catch (e) { setPhase("onboarding"); }
+  };
+
+  /* --- Guardar perfil en Supabase --- */
+  const guardarPerfil = async (uid, p, name) => {
+    await sb.from("profiles").upsert({
+      id: uid, nombre: name,
+      objetivo: p.objetivo, edad: p.edad,
+      peso: p.pesoKg, altura: p.estaturaCm,
+    });
+  };
+
+  /* --- Guardar estado de Axo --- */
+  const guardarAxo = async (uid, axoData) => {
+    await sb.from("axo_state").upsert({ id: uid, ...axoData });
+  };
+
+  /* --- Guardar comida en Supabase --- */
+  const guardarComida = async (uid, food) => {
+    await sb.from("food_log").insert({
+      user_id: uid, nombre: food.n,
+      kcal: food.kcal, proteina: food.p,
+      carbos: food.c, grasa: food.g,
+      comida: "libre",
+    });
+  };
+
+  /* --- Borrar comida de Supabase --- */
+  const borrarComida = async (foodId) => {
+    if (typeof foodId === "string") await sb.from("food_log").delete().eq("id", foodId);
+  };
+
+  /* --- Callback de login exitoso --- */
+  const handleAuth = async (user, nombreNuevo) => {
+    setUserId(user.id);
+    if (nombreNuevo) {
+      // Usuario nuevo: va a onboarding
+      setPhase("onboarding");
+    } else {
+      await cargarDatos(user.id);
+    }
+  };
   const [pesoActual, setPesoActual] = useState(null);
   const DIAS = ["L","M","X","J","V","S","D"];
   const DIAS_FULL = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
-  const [prefs, setPrefs] = useState({ veg: false, evitar: [], lowcarb: false, bloqueados: [] });
-  const [blockInput, setBlockInput] = useState("");
-  const [capAbierta, setCapAbierta] = useState(null);
-  const allowedIdx = (k) => { const bloq = (prefs.bloqueados || []).map((b) => b.toLowerCase()); const arr = MENU_DB[k].map((it, idx) => ({ it, idx })).filter(({ it }) => (!prefs.veg || it.veg) && (prefs.lowcarb ? it.c <= 16 : !it.lc) && !it.con.some((c) => prefs.evitar.includes(c)) && !bloq.some((b) => b && ((it.n + " " + (it.d || "")).toLowerCase().includes(b)))).map((o) => o.idx); return arr.length ? arr : MENU_DB[k].map((_, i) => i); };
+  const [prefs, setPrefs] = useState({ veg: false, evitar: [], lowcarb: false });
+  const allowedIdx = (k) => { const arr = MENU_DB[k].map((it, idx) => ({ it, idx })).filter(({ it }) => (!prefs.veg || it.veg) && (prefs.lowcarb ? it.c <= 16 : !it.lc) && !it.con.some((c) => prefs.evitar.includes(c))).map((o) => o.idx); return arr.length ? arr : MENU_DB[k].map((_, i) => i); };
   const pickIdx = (k) => { const al = allowedIdx(k); return al[Math.floor(Math.random() * al.length)]; };
   const genDay = () => { const d={}; MEAL_SPLIT.forEach(([k])=>{ d[k]=pickIdx(k); }); return d; };
   const [weekPlan, setWeekPlan] = React.useState(() => { const w={}; DIAS.forEach(d=>{ w[d]=genDay(); }); return w; });
@@ -1133,9 +1327,6 @@ function App() {
   const regenDay = (day) => setWeekPlan(w=>({...w,[day]:genDay()}));
   const regenWeek = () => { const w={}; DIAS.forEach(d=>{ w[d]=genDay(); }); setWeekPlan(w); };
   const toggleEvitar = (key) => setPrefs(p => ({ ...p, evitar: p.evitar.includes(key) ? p.evitar.filter(x=>x!==key) : [...p.evitar, key] }));
-  const [level, setLevel] = useState(4);
-  const [xp, setXp] = useState(60);
-  const [streak, setStreak] = useState(7);
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest((b) => ({ ...b, [g]: Math.max(b[g] || 0, v) }));
   const [log, setLog] = useState([{ ...FOODS.find((f) => f.id === "chila"), qty: 1, uid: 1 }, { ...FOODS.find((f) => f.id === "cafe"), qty: 1, uid: 2 }]);
@@ -1154,14 +1345,18 @@ function App() {
   const showToast = useCallback((t) => { setToast(t); setTimeout(() => setToast(null), 2200); }, []);
   const checkGoals = useCallback((nl, nv) => {
     const t = nl.reduce((a, f) => ({ kcal: a.kcal + f.kcal * f.qty, p: a.p + f.p * f.qty }), { kcal: 0, p: 0 });
-    // La proteína es el requisito clave: sin ella el ajolote no puede reparar/construir tejido (síntesis proteica).
-    if (t.p >= targets.prote * 0.9 && !celebrated) { setCelebrated(true); setTimeout(() => setOverlay("celebrate"), 350); }
+    if (t.kcal >= targets.objetivoDeficit * 0.8 && t.p >= targets.prote * 0.85 && nv >= targets.vasos * 0.8 && !celebrated) { setCelebrated(true); setTimeout(() => setOverlay("celebrate"), 350); }
   }, [targets, celebrated]);
   const addFood = useCallback((food, qty = 1) => {
     const item = { ...food, qty, uid: uidSeq }; setUidSeq((s) => s + 1);
     setLog((l) => { const nl = [...l, item]; checkGoals(nl, vasos); return nl; }); setEating(true); setTimeout(() => setEating(false), 2600);
-  }, [uidSeq, vasos, checkGoals, showToast, petName]);
-  const removeFood = (uid) => setLog((l) => l.filter((f) => f.uid !== uid));
+    if (userId) guardarComida(userId, food);
+  }, [uidSeq, vasos, checkGoals, showToast, petName, userId]);
+  const removeFood = (uid) => {
+    const item = log.find(f => f.uid === uid);
+    setLog((l) => l.filter((f) => f.uid !== uid));
+    if (userId && item && item.id) borrarComida(item.id);
+  };
   const addAgua = () => setVasos((v) => { const nv = Math.min(targets.vasos, v + 1); checkGoals(log, nv); return nv; });
   const setWater = (i) => { const nv = (i + 1 === vasos ? i : i + 1); setVasos(nv); checkGoals(log, nv); };
   const phrase = useMemo(() => PHRASES[Math.floor(Math.random() * PHRASES.length)], [overlay]);
@@ -1174,8 +1369,14 @@ function App() {
   const chub = Math.max(0.18, 1 - progresoPeso);
   const hungry = log.length === 0;
 
+  if (phase === "auth")
+    return <div className="root"><div className="phone"><AuthScreen onAuth={handleAuth} /></div></div>;
+
   if (phase === "onboarding")
-    return <div className="root"><div className="phone"><Onboarding onDone={(p, name) => { setProfile(p); setPetName(name); setPhase("app"); setScreen("home"); }} /></div></div>;
+    return <div className="root"><div className="phone"><Onboarding onDone={async (p, name) => {
+      setProfile(p); setPetName(name); setPhase("app"); setScreen("home");
+      if (userId) await guardarPerfil(userId, p, name);
+    }} /></div></div>;
 
   const HomeScreen = () => (
     <div className="screen" style={{ background: "linear-gradient(180deg," + bg.from + "," + bg.to + ")", color: darkBg ? "#fff" : "#2A2D43" }}>
@@ -1191,18 +1392,10 @@ function App() {
         </div>
         <div style={{ textAlign: "center", marginTop: 2, marginBottom: 10 }}><button className="btn" style={{ background: "linear-gradient(135deg,#F7CCD4,#E79FAE)", color: "#5E4334", padding: "10px 22px", fontSize: 15, fontFamily: "Fredoka", fontWeight: 600, borderRadius: 16, boxShadow: "0 6px 18px #e79fae44", border: "none" }} onClick={() => setScreen("pet")}>✨ Vestir a {petName}</button></div>
         <div className="rings">
-          <div className="ring-item ring-main"><Ring progress={pProt} color="#7C5CFF" size={92}><div className="ring-c"><b>{Math.round(totals.p)}</b><span>/{targets.prote}g</span></div></Ring><span className="ring-lbl" style={{ color: "#7C5CFF", fontWeight: 700 }}>💪 Proteína</span></div>
           <div className="ring-item"><Ring progress={pKcal} color="#E79FAE"><div className="ring-c"><b>{Math.round(totals.kcal)}</b><span>/{targets.objetivoDeficit}</span></div></Ring><span className="ring-lbl"><Flame size={13} /> Kcal</span></div>
+          <div className="ring-item"><Ring progress={pProt} color="#7C5CFF"><div className="ring-c"><b>{Math.round(totals.p)}</b><span>/{targets.prote}g</span></div></Ring><span className="ring-lbl">Proteína</span></div>
           <div className="ring-item"><Ring progress={pAgua} color="#3FA9F5"><div className="ring-c"><b>{vasos}</b><span>/{targets.vasos}</span></div></Ring><span className="ring-lbl"><Droplet size={13} /> Agua</span></div>
         </div>
-        <button onClick={() => { setCapAbierta(new Date().getDate() % CAPSULAS.length); setOverlay("capsulas"); }} style={{ width: "100%", display: "flex", alignItems: "center", gap: 11, background: "linear-gradient(135deg,#FFF6E0,#FFEFD0)", border: "1.5px solid #FFE3B0", borderRadius: 16, padding: "12px 14px", margin: "0 0 12px", cursor: "pointer", textAlign: "left" }}>
-          <span style={{ fontSize: 26, filter: "drop-shadow(0 0 6px #FFD56688)" }}>💡</span>
-          <span style={{ flex: 1 }}>
-            <span style={{ display: "block", fontFamily: "Fredoka", fontWeight: 700, fontSize: 11, color: "#C99A2E", letterSpacing: 0.4, marginBottom: 1 }}>CÁPSULA DEL DÍA</span>
-            <span style={{ display: "block", fontFamily: "Fredoka", fontWeight: 600, fontSize: 13.5, color: "#7a5a1e", lineHeight: 1.25 }}>{CAPSULAS[new Date().getDate() % CAPSULAS.length].emoji} {CAPSULAS[new Date().getDate() % CAPSULAS.length].titulo}</span>
-          </span>
-          <span style={{ fontSize: 18, color: "#D9A93E" }}>›</span>
-        </button>
         <div className="card">
           <div className="card-h"><Droplet size={16} color="#3FA9F5" /> Agua de hoy · {vasos}/{targets.vasos} vasos</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 4 }}>
@@ -1288,19 +1481,19 @@ function App() {
         <div className="scroll" ref={sRef("pet")} onScroll={sSave("pet")}>
           <div className="center"><Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={pet.evo} size={{ huevo: 120, cria: 145, joven: 168, adulto: 188, mistico: 196 }[pet.evo] || 168} /></div>
           <p className="muted sm" style={{ textAlign: "center", marginBottom: 6, fontFamily: "Fredoka", fontWeight: 600, fontSize: 13, color: "#9aa0b4", letterSpacing: 0.3 }}>🌱 EVOLUCIONES — toca para ver</p>
-          <div className="evo-row">{[["huevo", "🥚", "Huevo"], ["cria", "🐣", "Cría"], ["joven", "🦎", "Joven"], ["adulto", "⭐", "Adulto"], ["mistico", "✨", "Místico"]].map(([k, em, e]) => { const on = pet.evo === k; return <button key={k} className={"evo " + (on ? "done" : "")} style={{ cursor: "pointer", border: on ? "2px solid #7C5CFF" : "2px solid #e8eaf2", background: on ? "#F2EEFF" : "#fff", borderRadius: 14, padding: "6px 4px", flex: 1, margin: "0 3px" }} onClick={() => { setPet({ ...pet, evo: k }); showToast("Evolución: " + e + " " + em); }}><span style={{ fontSize: 18 }}>{em}</span><small style={{ display: "block", fontFamily: "Fredoka", fontSize: 11, color: on ? "#7C5CFF" : "#9aa0b4", marginTop: 2 }}>{e}</small></button>; })}</div>
+          <div className="evo-row">{[["huevo", "🥚", "Huevo"], ["cria", "🐣", "Cría"], ["joven", "🦎", "Joven"], ["adulto", "⭐", "Adulto"], ["mistico", "✨", "Místico"]].map(([k, em, e]) => { const on = pet.evo === k; return <button key={k} className={"evo " + (on ? "done" : "")} style={{ cursor: "pointer", border: on ? "2px solid #7C5CFF" : "2px solid #e8eaf2", background: on ? "#F2EEFF" : "#fff", borderRadius: 14, padding: "6px 4px", flex: 1, margin: "0 3px" }} onClick={() => { updatePet({ ...pet, evo: k }); showToast("Evolución: " + e + " " + em); }}><span style={{ fontSize: 18 }}>{em}</span><small style={{ display: "block", fontFamily: "Fredoka", fontSize: 11, color: on ? "#7C5CFF" : "#9aa0b4", marginTop: 2 }}>{e}</small></button>; })}</div>
           <p className="muted sm" style={{ textAlign: "center", marginBottom: 8 }}>{{ huevo: "Apenas empieza 🥚 ¡cuídalo para que crezca!", cria: "Pequeñín y juguetón.", joven: "En plena forma.", adulto: "Fuerte y maduro, con su aura dorada.", mistico: "¡Forma legendaria! Brilla con estrellas a su alrededor." }[pet.evo]}</p>
           <p className="muted sm" style={{marginBottom:8}}>🎨 <b>Color</b> es el skin de {petName}. <b>Estilo</b>, <b>Accesorio</b> (cabeza) y <b>Outfit</b> (cuerpo) se combinan entre sí. Los que tienen 👑 son premium (desbloqueados en este demo).</p>
           <div className="sect-t">Color / Skin</div>
-          <Swatches sk="pal" map={PALETTES} sel={pet.palette} onPick={(k) => setPet({ ...pet, palette: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={k} estilo={pet.estilo} size={42} /></span>} />
+          <Swatches sk="pal" map={PALETTES} sel={pet.palette} onPick={(k) => updatePet({ ...pet, palette: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={k} estilo={pet.estilo} size={42} /></span>} />
           <div className="sect-t">Estilo</div>
-          <Swatches sk="est" map={ESTILOS} sel={pet.estilo} onPick={(k) => setPet({ ...pet, estilo: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} estilo={k} size={42} /></span>} />
+          <Swatches sk="est" map={ESTILOS} sel={pet.estilo} onPick={(k) => updatePet({ ...pet, estilo: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} estilo={k} size={42} /></span>} />
           <div className="sect-t">Accesorio</div>
-          <Swatches sk="acc" map={ACCESSORIES} sel={pet.accessory} onPick={(k) => setPet({ ...pet, accessory: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} accessory={k} estilo={pet.estilo} size={42} /></span>} />
+          <Swatches sk="acc" map={ACCESSORIES} sel={pet.accessory} onPick={(k) => updatePet({ ...pet, accessory: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} accessory={k} estilo={pet.estilo} size={42} /></span>} />
           <div className="sect-t">Outfit</div>
-          <Swatches sk="out" map={OUTFITS} sel={pet.outfit} onPick={(k) => setPet({ ...pet, outfit: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} outfit={k} size={42} /></span>} />
+          <Swatches sk="out" map={OUTFITS} sel={pet.outfit} onPick={(k) => updatePet({ ...pet, outfit: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} outfit={k} size={42} /></span>} />
           <div className="sect-t">Fondo</div>
-          <Swatches sk="bg" map={BACKGROUNDS} sel={pet.bg} onPick={(k) => setPet({ ...pet, bg: k })} render={(k, v) => <span className="dot" style={{ background: "linear-gradient(135deg," + v.from + "," + v.to + ")" }} />} />
+          <Swatches sk="bg" map={BACKGROUNDS} sel={pet.bg} onPick={(k) => updatePet({ ...pet, bg: k })} render={(k, v) => <span className="dot" style={{ background: "linear-gradient(135deg," + v.from + "," + v.to + ")" }} />} />
           <button className="btn premium-btn" onClick={() => showToast("✨ Premium activo en este demo — todo desbloqueado")}><Crown size={16} /> Premium activo (demo) · todo desbloqueado</button>
           <div style={{ height: 80 }} />
         </div>
@@ -1360,7 +1553,6 @@ function App() {
       <Header title="Más" back={() => setScreen("home")} />
       <div className="scroll" ref={sRef("more")} onScroll={sSave("more")}>
         <div className="card upsell"><div className="card-h"><Crown size={18} color="#F2B705" /> AxoloFit Premium</div><p className="muted sm">IA por foto ilimitada · recetas infinitas · skins y especies raras · informes avanzados · minijuegos exclusivos.</p><button className="btn primary" onClick={() => setOverlay("paywall")}>Ver planes</button></div>
-        <button className="list-row" onClick={() => setOverlay("capsulas")}>💡 Cápsulas del Ajolote</button>
         <button className="list-row" onClick={() => setOverlay("prefs")}>🥗 Preferencias y alergias</button>
         <button className="list-row" onClick={() => setOverlay("privacy")}><ShieldCheck size={18} /> Aviso de privacidad</button>
         <button className="list-row" onClick={() => showToast("Línea de la Vida (SSA): 800 911 2000 · 24/7")}><Heart size={18} /> Apoyo y bienestar</button>
@@ -1434,7 +1626,7 @@ function App() {
 
 
   const JuegosScreen = () => {
-    const games=[["game_catch","🍬","Atrapa la comida sana","catch"],["game_memo","🧠","Memorama de comida","memo"],["game_quiz","🥗","¿Saludable o antojo?","quiz"],["game_cal","🔥","¿Más calorías?","cal"],["game_simon","🎵","Axo Dice","simon"]];
+    const games=[["game_catch","🍬","Atrapa la comida sana","catch"],["game_blockjam","🧩","Bloques de colores","blockjam"],["game_memo","🧠","Memorama de comida","memo"],["game_quiz","🥗","¿Saludable o antojo?","quiz"],["game_cal","🔥","¿Más calorías?","cal"],["game_simon","🎵","Axo Dice","simon"]];
     return (<div className="screen"><Header title="🎮 Juegos" back={()=>setScreen("home")} /><div className="scroll" ref={sRef("arcade")} onScroll={sSave("arcade")}>{games.map(([k,e,t,bk])=>{const rec=best[bk]||0;return <button key={k} className="list-row" onClick={()=>setScreen(k)}><span style={{fontSize:26}}>{e}</span><span style={{flex:1}}><b style={{display:"block",fontFamily:"Fredoka",fontSize:16}}>{t}</b><span className="muted sm">{rec>0?("🏆 Récord: "+rec):"¡Sin récord aún!"}</span></span></button>;})}<p className="muted sm" style={{textAlign:"center",marginTop:6}}>Gana XP y supera tu récord para vestir a {petName}.</p><div style={{height:80}}/></div></div>);
   };
 
@@ -1599,7 +1791,7 @@ function App() {
         {screen === "semana" && <SemanaScreen />}
         {screen === "arcade" && <JuegosScreen />}
         {screen === "game_quiz" && <QuizScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.quiz||0} recordBest={recordBest} />}
-        
+        {screen === "game_blockjam" && <BlockJamScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.blockjam||0} recordBest={recordBest} />}
         {screen === "game_memo" && <MemoScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.memo||0} recordBest={recordBest} />}
         {screen === "game_catch" && <CatchScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.catch||0} recordBest={recordBest} />}
         {screen === "game_cal" && <CalScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.cal||0} recordBest={recordBest} />}
@@ -1614,9 +1806,9 @@ function App() {
             <div className="papel">{Array.from({ length: 14 }).map((_, i) => <span key={i} style={{ left: ((i * 7) % 100) + "%", animationDelay: ((i % 5) * 0.2) + "s", background: ["#FF6F9C", "#7C5CFF", "#34BC97", "#FFD15C"][i % 4] }} />)}</div>
             <div className="celebrate-card" onClick={(e) => e.stopPropagation()}>
               <div className="kiss-stage"><Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="amor" size={170} /><Heart className="flying-heart" size={30} color="#FF4D7D" fill="#FF6F9C" /></div>
-              <h2 className="display" style={{ fontSize: 24, margin: "2px 0 0" }}>¡Proteína del día lograda! 💪</h2>
-              <p className="muted" style={{ margin: "4px 0 4px" }}>{petName} ya puede construir músculo nuevo. {phrase}</p>
-              <div className="reward-row"><span className="reward">💪 +1 Punto de Músculo</span><span className="reward">+50 XP</span><span className="reward">🔥 Racha {streak + 1}</span></div>
+              <h2 className="display" style={{ fontSize: 24, margin: "2px 0 0" }}>¡Meta del día cumplida!</h2>
+              <p className="muted" style={{ margin: "4px 0 10px" }}>{phrase}</p>
+              <div className="reward-row"><span className="reward">+50 XP</span><span className="reward">🎁 Skin nueva</span><span className="reward">🔥 Racha {streak + 1}</span></div>
               <button className="btn primary big" onClick={closeCelebrate}>¡Gracias, {petName}!</button>
             </div>
           </div>
@@ -1673,14 +1865,6 @@ function App() {
                   <p className="muted sm" style={{ marginTop: 6 }}>Lo guardamos como recordatorio. Aún no filtra solo, así que revisa los ingredientes de cada platillo.</p>
                 </div>
               )}
-              <p style={{ fontFamily: "Fredoka", fontWeight: 600, fontSize: 15, marginBottom: 4 }}>🚫 Ingredientes que detestas</p>
-              <p className="muted sm" style={{ marginBottom: 8 }}>Escribe lo que no soportas (cilantro, hígado, romeritos…). {petName} nunca te sugerirá platillos que lo contengan.</p>
-              <input value={blockInput} onChange={(e) => setBlockInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && blockInput.trim()) { const v = blockInput.trim(); setPrefs((p) => ({ ...p, bloqueados: [...(p.bloqueados || []), v] })); setBlockInput(""); } }} placeholder="Escribe un ingrediente y presiona Enter" style={{ width: "100%", boxSizing: "border-box", padding: "11px 13px", borderRadius: 12, border: "1.5px solid #e6e9f2", fontFamily: "Nunito", fontSize: 14, outline: "none", marginBottom: 8 }} />
-              {(prefs.bloqueados || []).length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-                  {(prefs.bloqueados || []).map((b, i) => <button key={i} onClick={() => setPrefs((p) => ({ ...p, bloqueados: p.bloqueados.filter((_, j) => j !== i) }))} style={{ padding: "8px 14px", borderRadius: 20, border: "2px solid #E0556E", background: "#FDECEA", color: "#C2415A", fontFamily: "Fredoka", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>✕ {b}</button>)}
-                </div>
-              )}
               <button className="btn primary big" onClick={() => { regenWeek(); showToast("Plan actualizado a tus preferencias ✅"); setOverlay(null); }}>Aplicar y regenerar plan</button>
             </div>
           </div>
@@ -1704,48 +1888,6 @@ function App() {
                 <p className="muted sm">Ligera: proteína + verduras. Si te da hambre, un snack con proteína (yogur griego, huevo cocido).</p>
               </div>
               <p className="muted sm" style={{ marginTop: 4 }}>La idea no es contar todo al gramo, sino la proporción del plato. Es una guía general, no un plan médico: si tienes una condición (diabetes, riñón, embarazo), confírmalo con tu nutriólogo.</p>
-            </div>
-          </div>
-        )}
-        {overlay === "capsulas" && (
-          <div className="overlay" onClick={() => setOverlay(null)}>
-            <div className="sheet tall" onClick={(e) => e.stopPropagation()} style={{ padding: "20px 0 0", display: "flex", flexDirection: "column", height: "92vh" }}>
-              <div style={{ padding: "0 20px 16px" }}>
-                <button className="sheet-x" onClick={() => setOverlay(null)}><X size={20} /></button>
-                <h2 className="display" style={{ fontSize: 22, margin: "0 0 4px" }}>💡 Cápsulas del Ajolote</h2>
-                <p style={{ fontSize: 14, color: "#8089a0", margin: 0 }}>Toca una para leerla completa.</p>
-              </div>
-              <div style={{ flex: 1, overflowY: "auto", padding: "0 16px 24px" }}>
-                {capAbierta === null ? (
-                  CAPSULAS.map((cap, ci) => (
-                    <button key={ci} onClick={() => setCapAbierta(ci)} style={{ width: "100%", display: "flex", alignItems: "center", gap: 14, background: "#FFFBF9", border: "1.5px solid #F2E3DD", borderRadius: 18, padding: "16px", marginBottom: 12, cursor: "pointer", textAlign: "left" }}>
-                      <span style={{ fontSize: 32, flexShrink: 0 }}>💡</span>
-                      <span style={{ flex: 1 }}>
-                        <span style={{ display: "block", fontFamily: "Fredoka", fontWeight: 700, fontSize: 16, color: "#3d3d4a", lineHeight: 1.3, marginBottom: 3 }}>{cap.titulo}</span>
-                        <span style={{ display: "block", fontSize: 13, color: "#8089a0", lineHeight: 1.4 }}>{cap.emoji} Toca para leer</span>
-                      </span>
-                      <span style={{ fontSize: 20, color: "#E79FAE", flexShrink: 0 }}>›</span>
-                    </button>
-                  ))
-                ) : (
-                  <CapsulaDetalle cap={CAPSULAS[capAbierta]} onBack={() => setCapAbierta(null)} />
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-        {overlay === "medidas-info" && (
-          <div className="overlay" onClick={() => setOverlay(null)}>
-            <div className="sheet tall" onClick={(e) => e.stopPropagation()}>
-              <button className="sheet-x" onClick={() => setOverlay(null)}><X size={20} /></button>
-              <h2 className="display" style={{ fontSize: 18, margin: "0 0 12px" }}>¿Por qué estas medidas?</h2>
-              <div style={{ fontSize: 14, lineHeight: 1.6, color: "#5a6578" }}>
-                <p><b>🎯 Precisión personalizada</b> — Estas tres medidas (cuello, cintura, muñeca) nos permiten estimar tu composición corporal de forma más exacta que solo con peso y altura. Así creamos un plan hecho a tu medida, no genérico.</p>
-                <p><b>💪 Muñeca (estructura ósea)</b> — El perímetro de tu muñeca nos dice cuánta masa ósea tienes. Esto es importante porque dos personas del mismo peso pueden tener composiciones muy distintas: una con más hueso, otra con más músculo o grasa. Tu muñeca no cambia, así que es una referencia estable.</p>
-                <p><b>⭕ Cuello y cintura (grasa corporal)</b> — Estas circunferencias reflejan dónde acumulas grasa. Con ellas usamos la fórmula US Navy para calcular tu porcentaje de grasa corporal de forma no invasiva. Más preciso que cualquier adivinanza.</p>
-                <p><b>✅ Resultado</b> — Con tus medidas reales, AxoloFit calcula tus calorías y macros según TÚ, no según un promedio. Así tu plan es preciso y sostenible.</p>
-                <p style={{ marginTop: 16, fontSize: 12, color: "#8a91a8" }}>💡 Si no tienes cinta métrica ahora, no importa. Puedes agregar tus medidas después y tu plan se ajustará automáticamente.</p>
-              </div>
             </div>
           </div>
         )}
