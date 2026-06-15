@@ -490,13 +490,15 @@ const MEAL_SPLIT = [["desayuno", "Desayuno", 0.25], ["comida", "Comida", 0.35], 
 
 /* ---------- HELPERS ---------- */
 function computeProfile(p) {
-  const { sexo, edad, pesoKg, estaturaCm, actividad, cuelloCm, cinturaCm, caderaCm, objetivo } = p;
+  const { sexo, edad, pesoKg, estaturaCm, actividad, cuelloCm, cinturaCm, caderaCm, muñecaCm, objetivo } = p;
   const h = estaturaCm / 100;
   const imc = pesoKg / (h * h);
   const base = 10 * pesoKg + 6.25 * estaturaCm - 5 * edad;
   const bmr = sexo === "M" ? base + 5 : sexo === "F" ? base - 161 : base - 78;
   const factores = { sedentario: 1.2, ligero: 1.375, moderado: 1.55, activo: 1.725, intenso: 1.9 };
   const tdee = bmr * (factores[actividad] || 1.375);
+
+  // % Grasa US Navy
   let bf = null;
   try {
     if (sexo === "M" && cinturaCm && cuelloCm && cinturaCm > cuelloCm) bf = 495 / (1.0324 - 0.19077 * Math.log10(cinturaCm - cuelloCm) + 0.15456 * Math.log10(estaturaCm)) - 450;
@@ -505,6 +507,31 @@ function computeProfile(p) {
   if (bf != null && !isFinite(bf)) bf = null;
   if (bf != null) bf = Math.max(3, Math.min(60, bf));
   const masaMagra = bf != null ? pesoKg * (1 - bf / 100) : null;
+
+  // Estructura ósea (frame size) — estatura / circunferencia muñeca
+  let frameSize = null, pesoIdeal = null;
+  if (muñecaCm && muñecaCm > 0) {
+    const r = estaturaCm / muñecaCm;
+    if (sexo === "F")      frameSize = r > 11   ? "pequeña" : r >= 10.1 ? "mediana" : "grande";
+    else if (sexo === "M") frameSize = r > 10.4 ? "pequeña" : r >= 9.6  ? "mediana" : "grande";
+    else                   frameSize = r > 10.7 ? "pequeña" : r >= 9.85 ? "mediana" : "grande";
+    // Peso ideal Hamwi ajustado por estructura
+    const inchesOver5ft = Math.max(0, (estaturaCm - 152.4) / 2.54);
+    let piw = sexo === "M" ? 48.1 + 2.7 * inchesOver5ft : 45.5 + 2.3 * inchesOver5ft;
+    if (frameSize === "pequeña") piw *= 0.9;
+    if (frameSize === "grande")  piw *= 1.1;
+    pesoIdeal = +piw.toFixed(1);
+  }
+
+  // ICM — Índice Cintura-Muñeca (distribución de grasa y riesgo cardiometabólico)
+  let icm = null, icmRiesgo = null;
+  if (cinturaCm && muñecaCm && muñecaCm > 0) {
+    icm = +(cinturaCm / muñecaCm).toFixed(2);
+    if (sexo === "F")      icmRiesgo = icm < 11   ? "bajo" : icm < 12   ? "moderado" : "alto";
+    else if (sexo === "M") icmRiesgo = icm < 10.4 ? "bajo" : icm < 11.3 ? "moderado" : "alto";
+    else                   icmRiesgo = icm < 10.7 ? "bajo" : icm < 11.6 ? "moderado" : "alto";
+  }
+
   const floor = sexo === "M" ? 1500 : 1200;
   const obj = p.objetivo || "perder";
   const kcalMult = obj === "ganar" ? 1.15 : obj === "mantener" ? 1.0 : 0.8;
@@ -514,9 +541,9 @@ function computeProfile(p) {
   const kcalRest = objetivoDeficit - (prote * 4 + grasa * 9);
   const carbs = Math.max(0, Math.round(kcalRest / 4));
   const aguaMl = Math.round(pesoKg * 35);
-  return { imc: +imc.toFixed(1), bmr: Math.round(bmr), tdee: Math.round(tdee), bf: bf != null ? +bf.toFixed(1) : null, masaMagra: masaMagra ? +masaMagra.toFixed(1) : null, objetivoDeficit, prote, grasa, carbs, aguaMl, vasos: Math.max(6, Math.round(aguaMl / 250)) };
+  return { imc: +imc.toFixed(1), bmr: Math.round(bmr), tdee: Math.round(tdee), bf: bf != null ? +bf.toFixed(1) : null, masaMagra: masaMagra ? +masaMagra.toFixed(1) : null, objetivoDeficit, prote, grasa, carbs, aguaMl, vasos: Math.max(6, Math.round(aguaMl / 250)), frameSize, pesoIdeal, icm, icmRiesgo };
 }
-const DEMO = { sexo: "F", edad: 30, pesoKg: 68, estaturaCm: 165, actividad: "moderado", cuelloCm: 32, cinturaCm: 78, caderaCm: 98, objetivo: "perder" };
+const DEMO = { sexo: "F", edad: 30, pesoKg: 68, estaturaCm: 165, actividad: "moderado", cuelloCm: 32, cinturaCm: 78, caderaCm: 98, muñecaCm: 15, objetivo: "perder" };
 
 /* ---------- AJOLOTE (estilo acuarela, pose nadando) ---------- */
 function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno", mood = "feliz", estilo = "clasico", chub = 0.7, size = 200, evo = "joven", rubbing = false }) {
@@ -782,6 +809,7 @@ function Onboarding({ onDone }) {
   const [step, setStep] = useState("welcome");
   const [d, setD] = useState({ ...DEMO });
   const [name, setName] = useState("Axo");
+  const [skipWarn, setSkipWarn] = useState(false);
   const set = (k, v) => setD((p) => ({ ...p, [k]: v }));
 
   if (step === "welcome")
@@ -852,16 +880,30 @@ function Onboarding({ onDone }) {
       <div className="screen">
         <Header title="Medidas corporales" back={() => setStep("datos")} />
         <div className="scroll">
-          <p className="muted" style={{ marginTop: 4 }}>Con esto estimamos tu % de grasa por circunferencias (US Navy). Es opcional, pero hace tus metas más precisas.</p>
-          <p className="hint" style={{ marginBottom: 4 }}>¿No tienes cinta métrica a la mano? No pasa nada: empieza sin medidas y agrégalas cuando quieras.</p>
+          <p className="muted" style={{ marginTop: 4 }}>Con esto calculamos tu % de grasa, estructura ósea, ICM y peso corporal ideal personalizado.</p>
+          <p className="hint" style={{ marginBottom: 4 }}>Necesitas una cinta métrica. Mide en cm sobre la piel, sin apretar.</p>
           <NumField label="Cuello" value={d.cuelloCm} onChange={(v) => set("cuelloCm", v)} suffix="cm" min={25} max={60} />
           <NumField label="Cintura" value={d.cinturaCm} onChange={(v) => set("cinturaCm", v)} suffix="cm" min={50} max={180} />
           {d.sexo === "F" && <NumField label="Cadera" value={d.caderaCm} onChange={(v) => set("caderaCm", v)} suffix="cm" min={60} max={180} />}
+          <NumField label="Muñeca" value={d.muñecaCm} onChange={(v) => set("muñecaCm", v)} suffix="cm" min={10} max={30} hint="Mide alrededor de la muñeca en su parte más delgada." />
         </div>
         <div className="footer-cta">
           <button className="btn primary big" onClick={() => setStep("resultados")}>Calcular mi plan</button>
-          <button className="btn ghost" style={{ width: "100%", marginTop: 4 }} onClick={() => { setD((p) => ({ ...p, cuelloCm: null, cinturaCm: null, caderaCm: null })); setStep("resultados"); }}>No tengo cinta — lo hago más tarde</button>
+          <button className="btn ghost" style={{ width: "100%", marginTop: 4 }} onClick={() => setSkipWarn(true)}>No tengo cinta — lo hago más tarde</button>
         </div>
+        {skipWarn && (
+          <div className="overlay" onClick={() => setSkipWarn(false)}>
+            <div className="sheet" onClick={e => e.stopPropagation()}>
+              <h2 className="display" style={{ fontSize: 20, marginBottom: 10 }}>📏 Esta información es vital</h2>
+              <p style={{ fontSize: 14, color: "#4a4f6a", lineHeight: 1.55, marginBottom: 16 }}>
+                Las medidas de cuello, cintura, cadera y muñeca nos permiten calcular tu <b>distribución de grasa corporal</b>, <b>riesgo cardiometabólico</b>, <b>estructura ósea</b> y <b>peso ideal personalizado</b>.<br /><br />
+                Sin ellas, tu programa nutricional será genérico y menos efectivo. Te recomendamos tomarlas antes de continuar.
+              </p>
+              <button className="btn primary big" style={{ marginBottom: 8 }} onClick={() => setSkipWarn(false)}>Voy a buscar mi cinta 📏</button>
+              <button className="btn ghost" style={{ width: "100%" }} onClick={() => { setSkipWarn(false); setD(p => ({ ...p, cuelloCm: null, cinturaCm: null, caderaCm: null, muñecaCm: null })); setStep("resultados"); }}>Continuar sin medidas</button>
+            </div>
+          </div>
+        )}
       </div>
     );
 
@@ -881,8 +923,16 @@ function Onboarding({ onDone }) {
           <div className="grid2">
             <Stat k="IMC" v={r.imc} s="" /><Stat k="% Grasa" v={r.bf != null ? r.bf : "—"} s={r.bf ? "%" : ""} /><Stat k="Masa magra" v={r.masaMagra != null ? r.masaMagra : "—"} s={r.masaMagra ? " kg" : ""} />
             <Stat k="Metab. basal" v={r.bmr} s="" /><Stat k="Gasto total" v={r.tdee} s="" /><Stat k="Agua" v={(r.aguaMl / 1000).toFixed(1)} s=" L" />
+            {r.frameSize && <Stat k="Estructura" v={r.frameSize} s="" />}
+            {r.pesoIdeal && <Stat k="Peso ideal" v={r.pesoIdeal} s=" kg" />}
+            {r.icm != null && (
+              <div className="stat-chip" style={{ borderTop: "3px solid " + (r.icmRiesgo === "alto" ? "#E0556E" : r.icmRiesgo === "moderado" ? "#F2B705" : "#34BC97") }}>
+                <b>{r.icm}<small> ICM</small></b>
+                <span style={{ color: r.icmRiesgo === "alto" ? "#E0556E" : r.icmRiesgo === "moderado" ? "#F2B705" : "#34BC97", fontWeight: 700 }}>{r.icmRiesgo}</span>
+              </div>
+            )}
           </div>
-          {!r.bf && <p className="muted sm" style={{ marginTop: -2, marginBottom: 10 }}>Calculamos tu plan por peso. Agrega cuello y cintura más tarde para conocer tu % de grasa.</p>}
+          {!r.bf && <p className="muted sm" style={{ marginTop: -2, marginBottom: 10 }}>Sin medidas solo calculamos por peso. Agrégalas en tu perfil para ver % grasa, ICM y peso ideal.</p>}
           <div className="safety"><ShieldCheck size={18} /><p>Estos cálculos son orientativos y no sustituyen a un profesional de la salud. Nunca te pediremos comer por debajo de un mínimo seguro. Si tu relación con la comida te preocupa, entra a <b>Más → Apoyo</b>.</p></div>
         </div>
         <div className="footer-cta"><button className="btn primary big" onClick={() => setStep("nombrar")}>¡Me encanta!</button></div>
