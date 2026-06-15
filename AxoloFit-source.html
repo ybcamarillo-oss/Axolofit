@@ -172,13 +172,15 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 /* ---------- AUTH SCREEN ---------- */
 function AuthScreen({ onAuth }) {
-  const [modo, setModo] = useState("login"); // "login" | "registro"
+  const [modo, setModo] = useState("login"); // "login" | "registro" | "reset"
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [nombre, setNombre] = useState("");
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
   const [confirmado, setConfirmado] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+  const [resetEnviado, setResetEnviado] = useState(false);
 
   const inputStyle = {
     width: "100%", padding: "13px 14px", border: "2px solid #eceff7",
@@ -195,12 +197,12 @@ function AuthScreen({ onAuth }) {
       if (modo === "login") {
         const { data, error: e } = await sb.auth.signInWithPassword({ email, password: pass });
         if (e) throw e;
-        onAuth(data.user, null); // perfil se carga en App
+        onAuth(data.user, null);
       } else {
         const { data, error: e } = await sb.auth.signUp({ email, password: pass });
         if (e) throw e;
         if (data.user && !data.session) {
-          setConfirmado(true); // necesita confirmar email
+          setConfirmado(true);
         } else {
           onAuth(data.user, nombre);
         }
@@ -217,6 +219,43 @@ function AuthScreen({ onAuth }) {
     setCargando(false);
   };
 
+  const handleReset = async () => {
+    setError(null);
+    if (!email) { setError("Escribe tu email primero."); return; }
+    setCargando(true);
+    try {
+      const { error: e } = await sb.auth.resetPasswordForEmail(email);
+      if (e) throw e;
+      setResetEnviado(true);
+    } catch (e) {
+      setError(e.message);
+    }
+    setCargando(false);
+  };
+
+  const PassInput = () => (
+    <div style={{ position: "relative", marginBottom: 10 }}>
+      <input
+        style={{ ...inputStyle, marginBottom: 0, paddingRight: 48 }}
+        placeholder="Contraseña (mín. 6 caracteres)"
+        type={showPass ? "text" : "password"}
+        value={pass}
+        onChange={e => setPass(e.target.value)}
+      />
+      <button
+        type="button"
+        onClick={() => setShowPass(s => !s)}
+        style={{
+          position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
+          background: "none", border: "none", cursor: "pointer", color: "#9aa0b4", padding: 4,
+          display: "flex", alignItems: "center"
+        }}
+      >
+        <Icon name={showPass ? "eyeOff" : "eye"} size={20} />
+      </button>
+    </div>
+  );
+
   if (confirmado) return (
     <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 12 }}>
       <Axo paletteKey="durazno" size={160} mood="amor" />
@@ -227,6 +266,40 @@ function AuthScreen({ onAuth }) {
       <button className="btn primary big" onClick={() => { setModo("login"); setConfirmado(false); }}>Ir a iniciar sesión</button>
     </div>
   );
+
+  if (modo === "reset") {
+    if (resetEnviado) return (
+      <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 12 }}>
+        <Axo paletteKey="durazno" size={160} mood="amor" />
+        <h2 className="display" style={{ fontSize: 24 }}>¡Revisa tu email! 💌</h2>
+        <p className="muted" style={{ maxWidth: 280, textAlign: "center" }}>
+          Te mandamos el link para crear nueva contraseña a <b>{email}</b>.
+        </p>
+        <button className="btn primary big" onClick={() => { setModo("login"); setResetEnviado(false); }}>Volver a iniciar sesión</button>
+      </div>
+    );
+    return (
+      <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 0 }}>
+        <Axo paletteKey="durazno" size={140} />
+        <h1 className="display" style={{ fontSize: 24, margin: "6px 0 4px" }}>¿Olvidaste tu contraseña?</h1>
+        <p className="muted" style={{ marginBottom: 20, fontSize: 14, maxWidth: 270 }}>
+          Escribe tu email y te mandamos un link para crear una nueva.
+        </p>
+        <div style={{ width: "100%", maxWidth: 320 }}>
+          <input style={inputStyle} placeholder="Email" type="email" value={email}
+            onChange={e => setEmail(e.target.value)} autoCapitalize="none" />
+          {error && <p style={{ color: "#c0392b", fontSize: 13, fontWeight: 700, marginBottom: 10, textAlign: "center" }}>{error}</p>}
+          <button className="btn primary big" onClick={handleReset} disabled={cargando}>
+            {cargando ? "Enviando…" : "Enviar link 📩"}
+          </button>
+          <button className="btn ghost" style={{ width: "100%", marginTop: 8 }}
+            onClick={() => { setModo("login"); setError(null); }}>
+            Volver
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 0 }}>
@@ -242,8 +315,7 @@ function AuthScreen({ onAuth }) {
         )}
         <input style={inputStyle} placeholder="Email" type="email" value={email}
           onChange={e => setEmail(e.target.value)} autoCapitalize="none" />
-        <input style={inputStyle} placeholder="Contraseña (mín. 6 caracteres)" type="password" value={pass}
-          onChange={e => setPass(e.target.value)} />
+        <PassInput />
         {error && <p style={{ color: "#c0392b", fontSize: 13, fontWeight: 700, marginBottom: 10, textAlign: "center" }}>{error}</p>}
         <button className="btn primary big" onClick={handleSubmit} disabled={cargando}>
           {cargando ? "Cargando…" : modo === "login" ? "Entrar" : "Crear cuenta"}
@@ -252,6 +324,12 @@ function AuthScreen({ onAuth }) {
           onClick={() => { setModo(modo === "login" ? "registro" : "login"); setError(null); }}>
           {modo === "login" ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión"}
         </button>
+        {modo === "login" && (
+          <button className="btn ghost" style={{ width: "100%", marginTop: 2, fontSize: 13, color: "#9aa0b4" }}
+            onClick={() => { setModo("reset"); setError(null); }}>
+            ¿Olvidaste tu contraseña?
+          </button>
+        )}
       </div>
     </div>
   );
@@ -280,6 +358,8 @@ function Icon({ name, size = 24, color = "currentColor", fill = "none", classNam
     lock: <g><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></g>,
     chevL: <path d="M15 6l-6 6 6 6" />,
     check: <path d="M5 12l5 5 9-11" />,
+    eye: <g><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></g>,
+    eyeOff: <g><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></g>,
   };
   return <svg {...c}>{P[name]}</svg>;
 }
@@ -820,6 +900,76 @@ function Onboarding({ onDone }) {
   );
 }
 
+/* ---------- NUEVA CONTRASEÑA (recovery flow) ---------- */
+function NewPassScreen({ onDone }) {
+  const [pass, setPass] = useState("");
+  const [pass2, setPass2] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState(null);
+  const [listo, setListo] = useState(false);
+
+  const inputStyle = {
+    width: "100%", padding: "13px 14px", border: "2px solid #eceff7",
+    borderRadius: 14, fontFamily: "Nunito", fontSize: 15, outline: "none",
+    marginBottom: 10, color: "#2A2D43", background: "#fafbfd"
+  };
+
+  const handleSubmit = async () => {
+    setError(null);
+    if (!pass || pass.length < 6) { setError("Mínimo 6 caracteres."); return; }
+    if (pass !== pass2) { setError("Las contraseñas no coinciden."); return; }
+    setCargando(true);
+    try {
+      const { error: e } = await sb.auth.updateUser({ password: pass });
+      if (e) throw e;
+      setListo(true);
+    } catch(e) {
+      setError(e.message);
+    }
+    setCargando(false);
+  };
+
+  if (listo) return (
+    <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 12 }}>
+      <Axo paletteKey="durazno" size={160} mood="amor" />
+      <h2 className="display" style={{ fontSize: 24 }}>¡Contraseña actualizada! 🎉</h2>
+      <p className="muted" style={{ maxWidth: 280, textAlign: "center" }}>Ya puedes entrar con tu nueva contraseña.</p>
+      <button className="btn primary big" onClick={onDone}>Entrar a AxoloFit</button>
+    </div>
+  );
+
+  return (
+    <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 0 }}>
+      <Axo paletteKey="durazno" size={140} />
+      <h1 className="display" style={{ fontSize: 24, margin: "6px 0 4px" }}>Nueva contraseña</h1>
+      <p className="muted" style={{ marginBottom: 20, fontSize: 14, maxWidth: 270 }}>Elige una contraseña nueva para tu cuenta.</p>
+      <div style={{ width: "100%", maxWidth: 320 }}>
+        <div style={{ position: "relative", marginBottom: 10 }}>
+          <input
+            style={{ ...inputStyle, marginBottom: 0, paddingRight: 48 }}
+            placeholder="Nueva contraseña (mín. 6 caracteres)"
+            type={showPass ? "text" : "password"}
+            value={pass}
+            onChange={e => setPass(e.target.value)}
+          />
+          <button type="button" onClick={() => setShowPass(s => !s)}
+            style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9aa0b4", padding: 4, display: "flex", alignItems: "center" }}>
+            <Icon name={showPass ? "eyeOff" : "eye"} size={20} />
+          </button>
+        </div>
+        <input style={inputStyle} placeholder="Repite la contraseña"
+          type={showPass ? "text" : "password"} value={pass2}
+          onChange={e => setPass2(e.target.value)} />
+        {error && <p style={{ color: "#c0392b", fontSize: 13, fontWeight: 700, marginBottom: 10, textAlign: "center" }}>{error}</p>}
+        <button className="btn primary big" onClick={handleSubmit} disabled={cargando}>
+          {cargando ? "Guardando…" : "Guardar contraseña"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- APP ---------- */
 
 const KCAL_PAIRS = [
@@ -1196,8 +1346,9 @@ function App() {
       if (session) { setUserId(session.user.id); cargarDatos(session.user.id); }
       else setPhase("auth");
     });
-    const { data: listener } = sb.auth.onAuthStateChange((_event, session) => {
-      if (!session) { setUserId(null); setPhase("auth"); }
+    const { data: listener } = sb.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") { setPhase("newpass"); }
+      else if (!session) { setUserId(null); setPhase("auth"); }
     });
     return () => listener.subscription.unsubscribe();
   }, []);
@@ -1340,6 +1491,9 @@ function App() {
 
   if (phase === "auth")
     return <div className="root"><div className="phone"><AuthScreen onAuth={handleAuth} /></div></div>;
+
+  if (phase === "newpass")
+    return <div className="root"><div className="phone"><NewPassScreen onDone={() => { sb.auth.getSession().then(({data:{session}}) => { if(session) { setUserId(session.user.id); cargarDatos(session.user.id); } else setPhase("auth"); }); }} /></div></div>;
 
   if (phase === "onboarding")
     return <div className="root"><div className="phone"><Onboarding onDone={async (p, name) => {
