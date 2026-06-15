@@ -245,7 +245,7 @@ const PALETTES = {
   cobre: { body: "#C98E63", gill: "#A8693F", blush: "#BE8055", label: "Cobre", premium: true },
   arcoiris: { body: "#C9A7F0", gill: "#8E5BD0", blush: "#FFB3D9", label: "Arcoíris", premium: true },
 };
-const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, corona: { label: "Corona", premium: true } };
+const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, conejo: { label: "Orejas conejo", premium: true }, gato: { label: "Orejas gato", premium: true }, mariposa: { label: "Alas mariposa", premium: true }, corona: { label: "Corona", premium: true } };
 const ESTILOS = { clasico: { label: "Clásico", premium: false }, galan: { label: "Galán", premium: false } };
 const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false } };
 const BACKGROUNDS = { agua: { label: "Agua", from: "#E7F7F4", to: "#CDEFE9", premium: false }, lavanda: { label: "Lavanda", from: "#F0EBFF", to: "#E2D8FF", premium: false }, atardecer: { label: "Atardecer", from: "#FFE9D6", to: "#FFD3C0", premium: false }, noche: { label: "Noche", from: "#4E5180", to: "#3A3D63", premium: true } };
@@ -395,6 +395,25 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
       {(evo === "adulto" || evo === "mistico") && <circle cx="100" cy="118" r="80" fill={evo === "mistico" ? "#9B7BFF" : "#FFE08A"} opacity={evo === "mistico" ? 0.22 : 0.16} />}
       {evo === "mistico" && [[40,66,5],[160,78,6],[48,162,5],[156,150,5],[100,34,7],[28,118,4],[172,116,4]].map((st,i)=><path key={"ev"+i} d={"M"+st[0]+" "+(st[1]-st[2])+" L "+(st[0]+st[2]*0.3)+" "+(st[1]-st[2]*0.3)+" L "+(st[0]+st[2])+" "+st[1]+" L "+(st[0]+st[2]*0.3)+" "+(st[1]+st[2]*0.3)+" L "+st[0]+" "+(st[1]+st[2])+" L "+(st[0]-st[2]*0.3)+" "+(st[1]+st[2]*0.3)+" L "+(st[0]-st[2])+" "+st[1]+" L "+(st[0]-st[2]*0.3)+" "+(st[1]-st[2]*0.3)+" Z"} fill="#FFF6C8" opacity="0.95" />)}
       <g className="axo-bob">
+        {accessory === "mariposa" && (
+          <g opacity="0.92">
+            <defs>
+              <linearGradient id="wingGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#FFC4E1" /><stop offset="0.5" stopColor="#C9A7F5" /><stop offset="1" stopColor="#9FD8FF" /></linearGradient>
+            </defs>
+            {/* ala izquierda */}
+            <g transform="translate(58,140)">
+              <path d="M0 0 C -42 -40 -60 -30 -56 -6 C -52 12 -30 14 0 6 Z" fill="url(#wingGrad)" stroke="#E79FAE" strokeWidth="2" />
+              <path d="M0 8 C -40 6 -52 22 -44 40 C -34 54 -12 40 0 18 Z" fill="url(#wingGrad)" stroke="#E79FAE" strokeWidth="2" />
+              <circle cx="-38" cy="-12" r="5" fill="#ffffff" opacity="0.7" /><circle cx="-30" cy="30" r="4" fill="#ffffff" opacity="0.7" />
+            </g>
+            {/* ala derecha */}
+            <g transform="translate(142,140)">
+              <path d="M0 0 C 42 -40 60 -30 56 -6 C 52 12 30 14 0 6 Z" fill="url(#wingGrad)" stroke="#E79FAE" strokeWidth="2" />
+              <path d="M0 8 C 40 6 52 22 44 40 C 34 54 12 40 0 18 Z" fill="url(#wingGrad)" stroke="#E79FAE" strokeWidth="2" />
+              <circle cx="38" cy="-12" r="5" fill="#ffffff" opacity="0.7" /><circle cx="30" cy="30" r="4" fill="#ffffff" opacity="0.7" />
+            </g>
+          </g>
+        )}
         {/* colita larga que fluye */}
         <path d="M104 152 C 130 168 160 168 162 196 C 164 222 134 232 120 215 C 135 215 149 206 145 189 C 139 171 116 161 100 156 Z" fill={bodyFill} />
         <path d="M112 160 C 132 173 152 175 152 195 C 152 208 137 213 129 205 C 140 201 144 192 140 184 C 134 172 119 166 107 163 Z" fill="#ffffff" opacity="0.28" />
@@ -480,6 +499,29 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
         )}
         {accessory === "gorra" && (
           <g transform="translate(100,46)"><path d="M-34 6 Q -34 -22 0 -22 Q 34 -22 34 6 Z" fill="#3E7BD6" /><path d="M2 6 Q 38 6 46 16 Q 24 13 2 13 Z" fill="#2F66BC" /><circle cx="0" cy="-20" r="3.5" fill="#2F66BC" /></g>
+        )}
+        {accessory === "conejo" && (
+          <g>
+            <path d="M100 36 C 58 36 46 66 46 96 C 46 120 60 134 78 138 C 70 128 66 114 66 100 C 66 80 80 68 100 68 C 120 68 134 80 134 100 C 134 114 130 128 122 138 C 140 134 154 120 154 96 C 154 66 142 36 100 36 Z" fill="#FBF7F2" stroke="#EDE4DA" strokeWidth="2" />
+            <path d="M58 78 Q100 56 142 78" fill="none" stroke="#ffffff" strokeWidth="3" opacity="0.6" />
+            <g transform="translate(72,40) rotate(-14)"><ellipse cx="0" cy="0" rx="14" ry="32" fill="#FBF7F2" stroke="#EDE4DA" strokeWidth="2" /><ellipse cx="0" cy="2" rx="7" ry="21" fill="#F6BBC8" /></g>
+            <g transform="translate(128,40) rotate(14)"><ellipse cx="0" cy="0" rx="14" ry="32" fill="#FBF7F2" stroke="#EDE4DA" strokeWidth="2" /><ellipse cx="0" cy="2" rx="7" ry="21" fill="#F6BBC8" /></g>
+          </g>
+        )}
+        {accessory === "gato" && (
+          <g>
+            <path d="M52 96 Q44 128 56 150 Q64 140 64 116 Z" fill="#CFC2AE" stroke="#BCAE97" strokeWidth="2" />
+            <path d="M148 96 Q156 128 144 150 Q136 140 136 116 Z" fill="#CFC2AE" stroke="#BCAE97" strokeWidth="2" />
+            <path d="M55 148 Q48 170 54 186 Q60 178 58 162" fill="none" stroke="#C2B49C" strokeWidth="5" strokeLinecap="round" />
+            <circle cx="55" cy="190" r="9" fill="#D8CDBA" />
+            <path d="M145 148 Q152 170 146 186 Q140 178 142 162" fill="none" stroke="#C2B49C" strokeWidth="5" strokeLinecap="round" />
+            <circle cx="145" cy="190" r="9" fill="#D8CDBA" />
+            <path d="M100 34 C 56 34 46 64 48 98 Q 50 116 60 124 Q 56 104 60 90 Q 66 72 100 72 Q 134 72 140 90 Q 144 104 140 124 Q 150 116 152 98 C 154 64 144 34 100 34 Z" fill="#D6C9B4" stroke="#C2B49C" strokeWidth="2" />
+            <path d="M50 70 Q44 38 52 32 Q72 44 80 66 Q64 60 50 70 Z" fill="#D6C9B4" stroke="#C2B49C" strokeWidth="2" />
+            <path d="M150 70 Q156 38 148 32 Q128 44 120 66 Q136 60 150 70 Z" fill="#D6C9B4" stroke="#C2B49C" strokeWidth="2" />
+            <g stroke="#B3A48B" strokeWidth="3" strokeLinecap="round"><line x1="88" y1="44" x2="88" y2="58" /><line x1="100" y1="42" x2="100" y2="57" /><line x1="112" y1="44" x2="112" y2="58" /></g>
+            <path d="M58 86 Q100 74 142 86" fill="none" stroke="#ffffff" strokeWidth="2" opacity="0.4" />
+          </g>
         )}
         {accessory === "monito" && (
           <g transform="translate(100,120)"><path d="M0 0 L -20 -11 L -20 11 Z" fill="#E0556E" /><path d="M0 0 L 20 -11 L 20 11 Z" fill="#E0556E" /><rect x="-6" y="-8" width="12" height="16" rx="4" fill="#C24459" /></g>
