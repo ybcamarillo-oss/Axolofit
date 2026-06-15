@@ -4823,26 +4823,18 @@ function App() {
     ...p,
     evitar: p.evitar.includes(key) ? p.evitar.filter(x => x !== key) : [...p.evitar, key]
   }));
-  const [level, setLevel] = useState(4);
-  const [xp, setXp] = useState(60);
-  const [streak, setStreak] = useState(7);
+  const [level, setLevel] = useState(1);
+  const [xp, setXp] = useState(0);
+  const [streak, setStreak] = useState(0);
   const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : streak >= 3 ? "cria" : "huevo";
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest(b => ({
     ...b,
     [g]: Math.max(b[g] || 0, v)
   }));
-  const [log, setLog] = useState([{
-    ...FOODS.find(f => f.id === "chila"),
-    qty: 1,
-    uid: 1
-  }, {
-    ...FOODS.find(f => f.id === "cafe"),
-    qty: 1,
-    uid: 2
-  }]);
-  const [vasos, setVasos] = useState(3);
-  const [uidSeq, setUidSeq] = useState(3);
+  const [log, setLog] = useState([]);
+  const [vasos, setVasos] = useState(0);
+  const [uidSeq, setUidSeq] = useState(1);
   const [celebrated, setCelebrated] = useState(false);
   const [kissing, setKissing] = useState(false);
   const [eating, setEating] = useState(false);
