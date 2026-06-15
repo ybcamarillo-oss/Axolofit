@@ -1656,6 +1656,7 @@ function computeProfile(p) {
     cuelloCm,
     cinturaCm,
     caderaCm,
+    muñecaCm,
     objetivo
   } = p;
   const h = estaturaCm / 100;
@@ -1670,6 +1671,8 @@ function computeProfile(p) {
     intenso: 1.9
   };
   const tdee = bmr * (factores[actividad] || 1.375);
+
+  // % Grasa US Navy
   let bf = null;
   try {
     if (sexo === "M" && cinturaCm && cuelloCm && cinturaCm > cuelloCm) bf = 495 / (1.0324 - 0.19077 * Math.log10(cinturaCm - cuelloCm) + 0.15456 * Math.log10(estaturaCm)) - 450;else if (sexo === "F" && cinturaCm && cuelloCm && caderaCm && cinturaCm + caderaCm > cuelloCm) bf = 495 / (1.29579 - 0.35004 * Math.log10(cinturaCm + caderaCm - cuelloCm) + 0.22100 * Math.log10(estaturaCm)) - 450;
@@ -1677,6 +1680,28 @@ function computeProfile(p) {
   if (bf != null && !isFinite(bf)) bf = null;
   if (bf != null) bf = Math.max(3, Math.min(60, bf));
   const masaMagra = bf != null ? pesoKg * (1 - bf / 100) : null;
+
+  // Estructura ósea (frame size) — estatura / circunferencia muñeca
+  let frameSize = null,
+    pesoIdeal = null;
+  if (muñecaCm && muñecaCm > 0) {
+    const r = estaturaCm / muñecaCm;
+    if (sexo === "F") frameSize = r > 11 ? "pequeña" : r >= 10.1 ? "mediana" : "grande";else if (sexo === "M") frameSize = r > 10.4 ? "pequeña" : r >= 9.6 ? "mediana" : "grande";else frameSize = r > 10.7 ? "pequeña" : r >= 9.85 ? "mediana" : "grande";
+    // Peso ideal Hamwi ajustado por estructura
+    const inchesOver5ft = Math.max(0, (estaturaCm - 152.4) / 2.54);
+    let piw = sexo === "M" ? 48.1 + 2.7 * inchesOver5ft : 45.5 + 2.3 * inchesOver5ft;
+    if (frameSize === "pequeña") piw *= 0.9;
+    if (frameSize === "grande") piw *= 1.1;
+    pesoIdeal = +piw.toFixed(1);
+  }
+
+  // ICM — Índice Cintura-Muñeca (distribución de grasa y riesgo cardiometabólico)
+  let icm = null,
+    icmRiesgo = null;
+  if (cinturaCm && muñecaCm && muñecaCm > 0) {
+    icm = +(cinturaCm / muñecaCm).toFixed(2);
+    if (sexo === "F") icmRiesgo = icm < 11 ? "bajo" : icm < 12 ? "moderado" : "alto";else if (sexo === "M") icmRiesgo = icm < 10.4 ? "bajo" : icm < 11.3 ? "moderado" : "alto";else icmRiesgo = icm < 10.7 ? "bajo" : icm < 11.6 ? "moderado" : "alto";
+  }
   const floor = sexo === "M" ? 1500 : 1200;
   const obj = p.objetivo || "perder";
   const kcalMult = obj === "ganar" ? 1.15 : obj === "mantener" ? 1.0 : 0.8;
@@ -1697,7 +1722,11 @@ function computeProfile(p) {
     grasa,
     carbs,
     aguaMl,
-    vasos: Math.max(6, Math.round(aguaMl / 250))
+    vasos: Math.max(6, Math.round(aguaMl / 250)),
+    frameSize,
+    pesoIdeal,
+    icm,
+    icmRiesgo
   };
 }
 const DEMO = {
@@ -1709,6 +1738,7 @@ const DEMO = {
   cuelloCm: 32,
   cinturaCm: 78,
   caderaCm: 98,
+  muñecaCm: 15,
   objetivo: "perder"
 };
 
@@ -2662,6 +2692,7 @@ function Onboarding({
     ...DEMO
   });
   const [name, setName] = useState("Axo");
+  const [skipWarn, setSkipWarn] = useState(false);
   const set = (k, v) => setD(p => ({
     ...p,
     [k]: v
@@ -2824,12 +2855,12 @@ function Onboarding({
     style: {
       marginTop: 4
     }
-  }, "Con esto estimamos tu % de grasa por circunferencias (US Navy). Es opcional, pero hace tus metas m\xE1s precisas."), /*#__PURE__*/React.createElement("p", {
+  }, "Con esto calculamos tu % de grasa, estructura \xF3sea, ICM y peso corporal ideal personalizado."), /*#__PURE__*/React.createElement("p", {
     className: "hint",
     style: {
       marginBottom: 4
     }
-  }, "\xBFNo tienes cinta m\xE9trica a la mano? No pasa nada: empieza sin medidas y agr\xE9galas cuando quieras."), /*#__PURE__*/React.createElement(NumField, {
+  }, "Necesitas una cinta m\xE9trica. Mide en cm sobre la piel, sin apretar."), /*#__PURE__*/React.createElement(NumField, {
     label: "Cuello",
     value: d.cuelloCm,
     onChange: v => set("cuelloCm", v),
@@ -2850,6 +2881,14 @@ function Onboarding({
     suffix: "cm",
     min: 60,
     max: 180
+  }), /*#__PURE__*/React.createElement(NumField, {
+    label: "Mu\xF1eca",
+    value: d.muñecaCm,
+    onChange: v => set("muñecaCm", v),
+    suffix: "cm",
+    min: 10,
+    max: 30,
+    hint: "Mide alrededor de la mu\xF1eca en su parte m\xE1s delgada."
   })), /*#__PURE__*/React.createElement("div", {
     className: "footer-cta"
   }, /*#__PURE__*/React.createElement("button", {
@@ -2861,16 +2900,49 @@ function Onboarding({
       width: "100%",
       marginTop: 4
     },
+    onClick: () => setSkipWarn(true)
+  }, "No tengo cinta \u2014 lo hago m\xE1s tarde")), skipWarn && /*#__PURE__*/React.createElement("div", {
+    className: "overlay",
+    onClick: () => setSkipWarn(false)
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sheet",
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "display",
+    style: {
+      fontSize: 20,
+      marginBottom: 10
+    }
+  }, "\uD83D\uDCCF Esta informaci\xF3n es vital"), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 14,
+      color: "#4a4f6a",
+      lineHeight: 1.55,
+      marginBottom: 16
+    }
+  }, "Las medidas de cuello, cintura, cadera y mu\xF1eca nos permiten calcular tu ", /*#__PURE__*/React.createElement("b", null, "distribuci\xF3n de grasa corporal"), ", ", /*#__PURE__*/React.createElement("b", null, "riesgo cardiometab\xF3lico"), ", ", /*#__PURE__*/React.createElement("b", null, "estructura \xF3sea"), " y ", /*#__PURE__*/React.createElement("b", null, "peso ideal personalizado"), ".", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), "Sin ellas, tu programa nutricional ser\xE1 gen\xE9rico y menos efectivo. Te recomendamos tomarlas antes de continuar."), /*#__PURE__*/React.createElement("button", {
+    className: "btn primary big",
+    style: {
+      marginBottom: 8
+    },
+    onClick: () => setSkipWarn(false)
+  }, "Voy a buscar mi cinta \uD83D\uDCCF"), /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost",
+    style: {
+      width: "100%"
+    },
     onClick: () => {
+      setSkipWarn(false);
       setD(p => ({
         ...p,
         cuelloCm: null,
         cinturaCm: null,
-        caderaCm: null
+        caderaCm: null,
+        muñecaCm: null
       }));
       setStep("resultados");
     }
-  }, "No tengo cinta \u2014 lo hago m\xE1s tarde")));
+  }, "Continuar sin medidas"))));
   if (step === "resultados") {
     const r = computeProfile(d);
     const Stat = ({
@@ -2941,13 +3013,31 @@ function Onboarding({
       k: "Agua",
       v: (r.aguaMl / 1000).toFixed(1),
       s: " L"
-    })), !r.bf && /*#__PURE__*/React.createElement("p", {
+    }), r.frameSize && /*#__PURE__*/React.createElement(Stat, {
+      k: "Estructura",
+      v: r.frameSize,
+      s: ""
+    }), r.pesoIdeal && /*#__PURE__*/React.createElement(Stat, {
+      k: "Peso ideal",
+      v: r.pesoIdeal,
+      s: " kg"
+    }), r.icm != null && /*#__PURE__*/React.createElement("div", {
+      className: "stat-chip",
+      style: {
+        borderTop: "3px solid " + (r.icmRiesgo === "alto" ? "#E0556E" : r.icmRiesgo === "moderado" ? "#F2B705" : "#34BC97")
+      }
+    }, /*#__PURE__*/React.createElement("b", null, r.icm, /*#__PURE__*/React.createElement("small", null, " ICM")), /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: r.icmRiesgo === "alto" ? "#E0556E" : r.icmRiesgo === "moderado" ? "#F2B705" : "#34BC97",
+        fontWeight: 700
+      }
+    }, r.icmRiesgo))), !r.bf && /*#__PURE__*/React.createElement("p", {
       className: "muted sm",
       style: {
         marginTop: -2,
         marginBottom: 10
       }
-    }, "Calculamos tu plan por peso. Agrega cuello y cintura m\xE1s tarde para conocer tu % de grasa."), /*#__PURE__*/React.createElement("div", {
+    }, "Sin medidas solo calculamos por peso. Agr\xE9galas en tu perfil para ver % grasa, ICM y peso ideal."), /*#__PURE__*/React.createElement("div", {
       className: "safety"
     }, /*#__PURE__*/React.createElement(ShieldCheck, {
       size: 18
