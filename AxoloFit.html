@@ -2146,18 +2146,59 @@ function Axo({
     strokeWidth: "4.2",
     fill: "none",
     strokeLinecap: "round"
-  })) : mood === "triste" ? /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
-    d: "M61 86 Q72 77 84 81",
+  })) : mood === "triste" ? evo === "cria" ? /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", {
+    cx: "72",
+    cy: "97",
+    r: "13",
+    fill: "#4a3b30"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "66",
+    cy: "91",
+    r: "4.5",
+    fill: "#fff"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "76",
+    cy: "102",
+    r: "2",
+    fill: "#fff",
+    opacity: "0.55"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "128",
+    cy: "97",
+    r: "13",
+    fill: "#4a3b30"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "122",
+    cy: "91",
+    r: "4.5",
+    fill: "#fff"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "132",
+    cy: "102",
+    r: "2",
+    fill: "#fff",
+    opacity: "0.55"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "62",
+    cy: "112",
+    rx: "2.8",
+    ry: "4.5",
+    fill: "#9BD4F5",
+    opacity: "0.8"
+  })) : /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+    d: "M65 88 Q73 83 82 85",
     stroke: "#8a7560",
-    strokeWidth: "2.8",
+    strokeWidth: "2",
     fill: "none",
-    strokeLinecap: "round"
+    strokeLinecap: "round",
+    opacity: "0.6"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M139 86 Q128 77 116 81",
+    d: "M118 85 Q127 83 135 88",
     stroke: "#8a7560",
-    strokeWidth: "2.8",
+    strokeWidth: "2",
     fill: "none",
-    strokeLinecap: "round"
+    strokeLinecap: "round",
+    opacity: "0.6"
   }), /*#__PURE__*/React.createElement("ellipse", {
     cx: "74",
     cy: "98",
@@ -2192,10 +2233,13 @@ function Axo({
     r: "1.3",
     fill: "#fff",
     opacity: "0.7"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M81 106 q3 7 0 12 q-3 -2 -3 -6 q0 -4 3 -6 Z",
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "65",
+    cy: "109",
+    rx: "2.5",
+    ry: "4",
     fill: "#9BD4F5",
-    opacity: "0.9"
+    opacity: "0.72"
   })) : evo === "cria" ? /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", {
     cx: "72",
     cy: "95",
@@ -2249,7 +2293,13 @@ function Axo({
     fill: "#D06A78",
     stroke: "#B85767",
     strokeWidth: "1.7"
-  }) : mood === "triste" ? /*#__PURE__*/React.createElement("path", {
+  }) : mood === "triste" ? evo === "cria" ? /*#__PURE__*/React.createElement("path", {
+    d: "M94 118 Q100 113 106 118",
+    stroke: "#5b4636",
+    strokeWidth: "2.6",
+    fill: "none",
+    strokeLinecap: "round"
+  }) : /*#__PURE__*/React.createElement("path", {
     d: "M91 116 Q100 110 109 116",
     stroke: "#5b4636",
     strokeWidth: "3.2",
@@ -5085,7 +5135,7 @@ function App() {
     evo: computedEvo,
     rubbing: eating,
     mood: celebrated || kissing || eating ? "amor" : hungry ? "triste" : "feliz",
-    size: 210
+    size: computedEvo === "cria" ? 162 : 210
   }), kissing && /*#__PURE__*/React.createElement(Heart, {
     className: "flying-heart",
     style: {
