@@ -1680,6 +1680,7 @@ function App() {
         <button className="list-row" onClick={() => setOverlay("privacy")}><ShieldCheck size={18} /> Aviso de privacidad</button>
         <button className="list-row" onClick={() => showToast("Línea de la Vida (SSA): 800 911 2000 · 24/7")}><Heart size={18} /> Apoyo y bienestar</button>
         <button className="list-row" onClick={() => { setPhase("onboarding"); setCelebrated(false); }}><Pencil size={18} /> Rehacer mi perfil</button>
+        <button className="list-row" style={{ color: "#c0392b" }} onClick={async () => { await sb.auth.signOut(); setUserId(null); setPhase("auth"); }}>🚪 Cerrar sesión</button>
         <div className="studio"><StudioLogo /><p className="muted sm" style={{ textAlign: "center" }}>AxoloFit es un producto de Ricky Rabbit Dev Studio.</p></div>
         <div style={{ height: 80 }} />
       </div>
