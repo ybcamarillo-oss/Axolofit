@@ -2693,43 +2693,111 @@ function Onboarding({
   });
   const [name, setName] = useState("Axo");
   const [skipWarn, setSkipWarn] = useState(false);
+  const [slide, setSlide] = useState(0);
+  const [showInfo, setShowInfo] = useState(false);
   const set = (k, v) => setD(p => ({
     ...p,
     [k]: v
   }));
+  const SLIDES = [{
+    emoji: "🦎",
+    title: "Tu ajolote crece contigo",
+    desc: "Mientras mejor comes, más feliz y fuerte se vuelve. Cuídalo y él te cuida."
+  }, {
+    emoji: "🌮",
+    title: "Comida mexicana de verdad",
+    desc: "Tacos, pozole, quesadillas y más. Sin dietas raras, sin alimentos imposibles."
+  }, {
+    emoji: "📊",
+    title: "Plan 100% personalizado",
+    desc: "Calorías, macros, grasa corporal y peso ideal calculados para tu cuerpo."
+  }, {
+    emoji: "🎮",
+    title: "Aprende jugando",
+    desc: "Minijuegos, retos y tips para desarrollar hábitos sin aburrirte."
+  }];
   if (step === "welcome") return /*#__PURE__*/React.createElement("div", {
     className: "screen center",
     style: {
-      background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)"
+      background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)",
+      padding: "16px 20px",
+      gap: 4
     }
   }, /*#__PURE__*/React.createElement(Axo, {
     paletteKey: "durazno",
-    size: 210
+    size: 150
   }), /*#__PURE__*/React.createElement("h1", {
     className: "display",
     style: {
-      fontSize: 34,
-      margin: "6px 0 2px"
+      fontSize: 30,
+      margin: "2px 0 10px"
     }
-  }, "AxoloFit"), /*#__PURE__*/React.createElement("p", {
+  }, "AxoloFit"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      maxWidth: 310
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#ffffff99",
+      borderRadius: 20,
+      padding: "18px 16px",
+      textAlign: "center",
+      minHeight: 118,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 42,
+      marginBottom: 7
+    }
+  }, SLIDES[slide].emoji), /*#__PURE__*/React.createElement("p", {
+    className: "display",
+    style: {
+      fontSize: 16,
+      marginBottom: 5,
+      color: "#2A2D43"
+    }
+  }, SLIDES[slide].title), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
-      maxWidth: 290,
-      margin: "0 auto 8px"
+      fontSize: 13,
+      lineHeight: 1.45,
+      maxWidth: 240
     }
-  }, "Cuida tu alimentaci\xF3n cuidando a tu ajolote. Mientras mejor comes, m\xE1s feliz y fuerte se vuelve."), /*#__PURE__*/React.createElement("button", {
+  }, SLIDES[slide].desc)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      gap: 7,
+      margin: "11px 0 14px"
+    }
+  }, SLIDES.map((_, i) => /*#__PURE__*/React.createElement("button", {
+    key: i,
+    onClick: () => setSlide(i),
+    style: {
+      width: i === slide ? 22 : 8,
+      height: 8,
+      borderRadius: 4,
+      border: "none",
+      background: i === slide ? "#E79FAE" : "#d7dbe6",
+      cursor: "pointer",
+      padding: 0,
+      transition: "width .2s"
+    }
+  })))), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     style: {
       background: "linear-gradient(180deg,#F7CCD4,#E79FAE)",
-      boxShadow: "0 8px 20px #e79fae55"
+      boxShadow: "0 8px 20px #e79fae55",
+      width: "100%",
+      maxWidth: 310
     },
     onClick: () => setStep("objetivo")
-  }, "Crear mi ajolote"), /*#__PURE__*/React.createElement("button", {
-    className: "btn ghost",
-    onClick: () => onDone({
-      ...DEMO
-    }, "Axo")
-  }, "Ver demo r\xE1pido"));
+  }, "Crear mi ajolote \uD83D\uDC97"));
   if (step === "objetivo") return /*#__PURE__*/React.createElement("div", {
     className: "screen"
   }, /*#__PURE__*/React.createElement(Header, {
@@ -2906,30 +2974,53 @@ function Onboarding({
     onClick: () => setSkipWarn(false)
   }, /*#__PURE__*/React.createElement("div", {
     className: "sheet",
-    onClick: e => e.stopPropagation()
-  }, /*#__PURE__*/React.createElement("h2", {
+    onClick: e => e.stopPropagation(),
+    style: {
+      background: "linear-gradient(180deg,#FFF6EA,#FFECD4)",
+      border: "1.5px solid #FFB347"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 40,
+      height: 40,
+      background: "#E0556E",
+      borderRadius: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 22,
+      flexShrink: 0
+    }
+  }, "\uD83D\uDCA1"), /*#__PURE__*/React.createElement("h2", {
     className: "display",
     style: {
-      fontSize: 20,
-      marginBottom: 10
+      fontSize: 19,
+      color: "#B06A12"
     }
-  }, "\uD83D\uDCCF Esta informaci\xF3n es vital"), /*#__PURE__*/React.createElement("p", {
+  }, "Aviso importante")), /*#__PURE__*/React.createElement("p", {
     style: {
       fontSize: 14,
-      color: "#4a4f6a",
-      lineHeight: 1.55,
+      color: "#7a5030",
+      lineHeight: 1.6,
       marginBottom: 16
     }
-  }, "Las medidas de cuello, cintura, cadera y mu\xF1eca nos permiten calcular tu ", /*#__PURE__*/React.createElement("b", null, "distribuci\xF3n de grasa corporal"), ", ", /*#__PURE__*/React.createElement("b", null, "riesgo cardiometab\xF3lico"), ", ", /*#__PURE__*/React.createElement("b", null, "estructura \xF3sea"), " y ", /*#__PURE__*/React.createElement("b", null, "peso ideal personalizado"), ".", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), "Sin ellas, tu programa nutricional ser\xE1 gen\xE9rico y menos efectivo. Te recomendamos tomarlas antes de continuar."), /*#__PURE__*/React.createElement("button", {
+  }, "Las medidas de cuello, cintura, cadera y mu\xF1eca nos permiten calcular tu distribuci\xF3n de grasa, riesgo cardiometab\xF3lico, estructura \xF3sea y peso ideal personalizado. Sin ellas, tu plan ser\xE1 menos preciso.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", {
+    style: {
+      color: "#B06A12"
+    }
+  }, "Recuerda ingresarlas en cuanto te sea posible.")), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     style: {
-      marginBottom: 8
-    },
-    onClick: () => setSkipWarn(false)
-  }, "Voy a buscar mi cinta \uD83D\uDCCF"), /*#__PURE__*/React.createElement("button", {
-    className: "btn ghost",
-    style: {
-      width: "100%"
+      background: "linear-gradient(180deg,#FFD19A,#FFA940)",
+      color: "#5E3A00",
+      boxShadow: "0 6px 18px #ffa94033"
     },
     onClick: () => {
       setSkipWarn(false);
@@ -2942,7 +3033,7 @@ function Onboarding({
       }));
       setStep("resultados");
     }
-  }, "Continuar sin medidas"))));
+  }, "Entendido, las agrego despu\xE9s"))));
   if (step === "resultados") {
     const r = computeProfile(d);
     const Stat = ({
@@ -3037,7 +3128,42 @@ function Onboarding({
         marginTop: -2,
         marginBottom: 10
       }
-    }, "Sin medidas solo calculamos por peso. Agr\xE9galas en tu perfil para ver % grasa, ICM y peso ideal."), /*#__PURE__*/React.createElement("div", {
+    }, "Sin medidas solo calculamos por peso. Agr\xE9galas en tu perfil para ver % grasa, ICM y peso ideal."), /*#__PURE__*/React.createElement("button", {
+      onClick: () => setShowInfo(s => !s),
+      style: {
+        width: "100%",
+        background: "#f4f6fb",
+        border: "none",
+        borderRadius: 14,
+        padding: "11px 14px",
+        fontFamily: "Nunito",
+        fontWeight: 700,
+        fontSize: 13,
+        color: "#7a8099",
+        cursor: "pointer",
+        marginBottom: 8,
+        textAlign: "left"
+      }
+    }, showInfo ? "▲ Ocultar explicaciones" : "ℹ️ ¿Qué significa cada dato?"), showInfo && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#f4f6fb",
+        borderRadius: 14,
+        padding: "12px 14px",
+        fontSize: 13,
+        lineHeight: 1.65,
+        color: "#4a4f6a",
+        marginBottom: 10
+      }
+    }, [["IMC", "Índice de Masa Corporal. Relación entre tu peso y estatura al cuadrado. Normal: 18.5–24.9."], ["% Grasa", "Porcentaje estimado de tejido graso usando el método US Navy (circunferencias)."], ["Masa magra", "Tu peso sin grasa: músculos, huesos, agua y órganos."], ["Metab. basal", "Calorías mínimas que tu cuerpo necesita aunque no te muevas nada (fórmula Mifflin-St Jeor)."], ["Gasto total", "Calorías que realmente gastas en el día según tu nivel de actividad."], ["Agua", "Litros diarios recomendados según tu peso (35 ml/kg)."], ["Estructura", "Tamaño de tu armazón ósea (pequeña/mediana/grande) calculado con estatura ÷ circunferencia de muñeca."], ["Peso ideal", "Peso saludable estimado para tu estatura y estructura usando la fórmula de Hamwi."], ["ICM", "Índice Cintura-Muñeca. Indica cómo se distribuye tu grasa corporal y tu riesgo cardiometabólico."]].map(([term, def]) => /*#__PURE__*/React.createElement("p", {
+      key: term,
+      style: {
+        marginBottom: 7
+      }
+    }, /*#__PURE__*/React.createElement("b", {
+      style: {
+        color: "#2A2D43"
+      }
+    }, term), " \u2014 ", def))), /*#__PURE__*/React.createElement("div", {
       className: "safety"
     }, /*#__PURE__*/React.createElement(ShieldCheck, {
       size: 18
