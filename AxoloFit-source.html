@@ -157,6 +157,10 @@ html,body { height:100%; }
 @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 #e79fae55 } 50% { box-shadow: 0 0 0 16px #e79fae00 } }
 @keyframes kiss { 0% { transform: translate(0,0) scale(.6); opacity: 0 } 30% { opacity: 1 } 100% { transform: translate(40px,-90px) scale(1.2); opacity: 0 } }
 @keyframes fall { 0% { transform: translateY(0) rotate(0); opacity: 1 } 100% { transform: translateY(900px) rotate(360deg); opacity: .3 } }
+@keyframes eggWiggle { 0%,100%{transform:rotate(0) scale(1)} 20%{transform:rotate(-13deg) scale(1.07)} 50%{transform:rotate(15deg) scale(1.11)} 80%{transform:rotate(-11deg) scale(1.08)} }
+@keyframes eggHatch { 0%{transform:scale(1) rotate(0);opacity:1} 25%{transform:scale(1.18) rotate(-14deg)} 50%{transform:scale(1.24) rotate(16deg)} 75%{transform:scale(1.2) rotate(-10deg)} 100%{transform:scale(0) rotate(22deg);opacity:0} }
+.egg-wiggle { animation: eggWiggle 0.35s ease-in-out infinite; transform-origin: center bottom; }
+.egg-hatch { animation: eggHatch 0.9s cubic-bezier(.4,0,.2,1) forwards; transform-origin: center bottom; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -546,7 +550,7 @@ function computeProfile(p) {
 const DEMO = { sexo: "F", edad: 30, pesoKg: 68, estaturaCm: 165, actividad: "moderado", cuelloCm: 32, cinturaCm: 78, caderaCm: 98, muñecaCm: 15, objetivo: "perder" };
 
 /* ---------- AJOLOTE (estilo acuarela, pose nadando) ---------- */
-function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno", mood = "feliz", estilo = "clasico", chub = 0.7, size = 200, evo = "joven", rubbing = false }) {
+function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno", mood = "feliz", estilo = "clasico", chub = 0.7, size = 200, evo = "joven", rubbing = false, hatching = false }) {
   const pal = PALETTES[paletteKey] || PALETTES.durazno;
   const bodyFill = paletteKey === "dorado" ? "url(#axoGold)" : paletteKey === "galaxia" ? "url(#axoGalaxy)" : paletteKey === "arcoiris" ? "url(#axoRainbow)" : pal.body;
   const gillFill = paletteKey === "dorado" ? "url(#axoGoldGill)" : paletteKey === "galaxia" ? "url(#axoGalaxyGill)" : paletteKey === "arcoiris" ? "url(#axoRainbowGill)" : pal.gill;
@@ -562,7 +566,7 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
   
   if (evo === "huevo") {
     return (
-      <svg viewBox="0 0 200 240" width={size} height={size * 1.2}>
+      <svg viewBox="0 0 200 240" width={size} height={size * 1.2} className={hatching ? "egg-hatch" : rubbing ? "egg-wiggle" : "axo-bob"}>
         <defs>
           <radialGradient id="eggShine" cx="0.35" cy="0.25" r="0.6"><stop offset="0" stopColor="#ffffff" stopOpacity="0.6" /><stop offset="1" stopColor="#ffffff" stopOpacity="0" /></radialGradient>
         </defs>
@@ -812,6 +816,7 @@ function Onboarding({ onDone }) {
   const [skipWarn, setSkipWarn] = useState(false);
   const [slide, setSlide] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
+  const [hatching, setHatching] = useState(false);
   const set = (k, v) => setD((p) => ({ ...p, [k]: v }));
   const SLIDES = [
     { emoji: "🦎", title: "Tu ajolote crece contigo", desc: "Mientras mejor comes, más feliz y fuerte se vuelve. Cuídalo y él te cuida." },
@@ -992,11 +997,19 @@ function Onboarding({ onDone }) {
 
   return (
     <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)" }}>
-      <Axo paletteKey="durazno" size={200} evo="huevo" />
-      <h2 className="display" style={{ fontSize: 24, margin: "4px 0 2px" }}>¡Está a punto de nacer!</h2>
-      <p className="muted" style={{ fontSize: 14, marginBottom: 10 }}>¿Cómo lo vas a llamar?</p>
-      <input className="name-input" value={name} maxLength={14} onChange={(e) => setName(e.target.value)} />
-      <button className="btn primary big" onClick={() => onDone({ ...d }, name || "Axo")}>¡Que nazca! 🥚💗</button>
+      <Axo paletteKey="durazno" size={200} evo="huevo" hatching={hatching} />
+      {!hatching
+        ? <>
+            <h2 className="display" style={{ fontSize: 24, margin: "4px 0 2px" }}>¡Está a punto de nacer!</h2>
+            <p className="muted" style={{ fontSize: 14, marginBottom: 10 }}>¿Cómo lo vas a llamar?</p>
+            <input className="name-input" value={name} maxLength={14} onChange={(e) => setName(e.target.value)} />
+            <button className="btn primary big" onClick={() => {
+              setHatching(true);
+              setTimeout(() => onDone({ ...d }, name || "Axo"), 950);
+            }}>¡Que nazca! 🥚💗</button>
+          </>
+        : <p className="display" style={{ fontSize: 22, color: "#E79FAE", marginTop: 8 }}>¡Naciendo… 🥚✨!</p>
+      }
     </div>
   );
 }
