@@ -233,7 +233,7 @@ function AuthScreen({ onAuth }) {
     setCargando(false);
   };
 
-  const PassInput = () => (
+  const passInputJSX = (
     <div style={{ position: "relative", marginBottom: 10 }}>
       <input
         style={{ ...inputStyle, marginBottom: 0, paddingRight: 48 }}
@@ -315,7 +315,7 @@ function AuthScreen({ onAuth }) {
         )}
         <input style={inputStyle} placeholder="Email" type="email" value={email}
           onChange={e => setEmail(e.target.value)} autoCapitalize="none" />
-        <PassInput />
+        {passInputJSX}
         {error && <p style={{ color: "#c0392b", fontSize: 13, fontWeight: 700, marginBottom: 10, textAlign: "center" }}>{error}</p>}
         <button className="btn primary big" onClick={handleSubmit} disabled={cargando}>
           {cargando ? "Cargando…" : modo === "login" ? "Entrar" : "Crear cuenta"}
