@@ -172,14 +172,13 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 /* ---------- AUTH SCREEN ---------- */
 function AuthScreen({ onAuth }) {
-  const [modo, setModo] = useState("login"); // "login" | "registro" | "reset"
+  const [modo, setModo] = useState("login"); // "login" | "registro"
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [nombre, setNombre] = useState("");
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
   const [confirmado, setConfirmado] = useState(false);
-  const [resetEnviado, setResetEnviado] = useState(false);
 
   const inputStyle = {
     width: "100%", padding: "13px 14px", border: "2px solid #eceff7",
@@ -189,17 +188,6 @@ function AuthScreen({ onAuth }) {
 
   const handleSubmit = async () => {
     setError(null);
-    if (modo === "reset") {
-      if (!email) { setError("Escribe tu email."); return; }
-      setCargando(true);
-      try {
-        const { error: e } = await sb.auth.resetPasswordForEmail(email);
-        if (e) throw e;
-        setResetEnviado(true);
-      } catch (e) { setError(e.message); }
-      setCargando(false);
-      return;
-    }
     if (!email || !pass) { setError("Completa email y contraseña."); return; }
     if (modo === "registro" && !nombre) { setError("¿Cómo te llamamos?"); return; }
     setCargando(true);
@@ -207,12 +195,12 @@ function AuthScreen({ onAuth }) {
       if (modo === "login") {
         const { data, error: e } = await sb.auth.signInWithPassword({ email, password: pass });
         if (e) throw e;
-        onAuth(data.user, null);
+        onAuth(data.user, null); // perfil se carga en App
       } else {
         const { data, error: e } = await sb.auth.signUp({ email, password: pass });
         if (e) throw e;
         if (data.user && !data.session) {
-          setConfirmado(true);
+          setConfirmado(true); // necesita confirmar email
         } else {
           onAuth(data.user, nombre);
         }
@@ -228,17 +216,6 @@ function AuthScreen({ onAuth }) {
     }
     setCargando(false);
   };
-
-  if (resetEnviado) return (
-    <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 12 }}>
-      <Axo paletteKey="durazno" size={160} mood="amor" />
-      <h2 className="display" style={{ fontSize: 24 }}>¡Revisa tu email! 💌</h2>
-      <p className="muted" style={{ maxWidth: 280, textAlign: "center" }}>
-        Te mandamos un link para restablecer tu contraseña a <b>{email}</b>.
-      </p>
-      <button className="btn primary big" onClick={() => { setModo("login"); setResetEnviado(false); }}>Volver a iniciar sesión</button>
-    </div>
-  );
 
   if (confirmado) return (
     <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 12 }}>
@@ -256,7 +233,7 @@ function AuthScreen({ onAuth }) {
       <Axo paletteKey="durazno" size={150} />
       <h1 className="display" style={{ fontSize: 30, margin: "6px 0 2px" }}>AxoloFit</h1>
       <p className="muted" style={{ marginBottom: 20, fontSize: 14 }}>
-        {modo === "login" ? "Bienvenida de vuelta 💗" : modo === "registro" ? "Crea tu cuenta gratis" : "Restablecer contraseña"}
+        {modo === "login" ? "Bienvenida de vuelta 💗" : "Crea tu cuenta gratis"}
       </p>
       <div style={{ width: "100%", maxWidth: 320 }}>
         {modo === "registro" && (
@@ -265,23 +242,15 @@ function AuthScreen({ onAuth }) {
         )}
         <input style={inputStyle} placeholder="Email" type="email" value={email}
           onChange={e => setEmail(e.target.value)} autoCapitalize="none" />
-        {modo !== "reset" && (
-          <input style={inputStyle} placeholder="Contraseña (mín. 6 caracteres)" type="password" value={pass}
-            onChange={e => setPass(e.target.value)} />
-        )}
+        <input style={inputStyle} placeholder="Contraseña (mín. 6 caracteres)" type="password" value={pass}
+          onChange={e => setPass(e.target.value)} />
         {error && <p style={{ color: "#c0392b", fontSize: 13, fontWeight: 700, marginBottom: 10, textAlign: "center" }}>{error}</p>}
         <button className="btn primary big" onClick={handleSubmit} disabled={cargando}>
-          {cargando ? "Cargando…" : modo === "login" ? "Entrar" : modo === "registro" ? "Crear cuenta" : "Enviar link"}
+          {cargando ? "Cargando…" : modo === "login" ? "Entrar" : "Crear cuenta"}
         </button>
-        {modo === "login" && (
-          <button className="btn ghost" style={{ width: "100%", marginTop: 4, fontSize: 13 }}
-            onClick={() => { setModo("reset"); setError(null); }}>
-            Olvidé mi contraseña
-          </button>
-        )}
-        <button className="btn ghost" style={{ width: "100%", marginTop: 4 }}
-          onClick={() => { setModo(modo === "registro" ? "login" : modo === "reset" ? "login" : "registro"); setError(null); }}>
-          {modo === "login" ? "¿No tienes cuenta? Regístrate" : "Volver a iniciar sesión"}
+        <button className="btn ghost" style={{ width: "100%", marginTop: 8 }}
+          onClick={() => { setModo(modo === "login" ? "registro" : "login"); setError(null); }}>
+          {modo === "login" ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión"}
         </button>
       </div>
     </div>
@@ -1216,9 +1185,6 @@ function App() {
   const [petName, setPetName] = useState("Axo");
   const targets = useMemo(() => { try { return computeProfile(profile); } catch(e) { return computeProfile({...DEMO}); } }, [profile]);
   const [pet, setPet] = useState({ palette: "durazno", accessory: "ninguno", bg: "lavanda", estilo: "clasico", outfit: "ninguno", evo: "joven" });
-  const [level, setLevel] = useState(4);
-  const [xp, setXp] = useState(60);
-  const [streak, setStreak] = useState(7);
   const updatePet = (newPet) => {
     setPet(newPet);
     if (userId) guardarAxo(userId, { variedad: newPet.palette, accesorio: newPet.accessory, outfit: newPet.outfit, nivel: level, xp, racha: streak });
@@ -1327,6 +1293,9 @@ function App() {
   const regenDay = (day) => setWeekPlan(w=>({...w,[day]:genDay()}));
   const regenWeek = () => { const w={}; DIAS.forEach(d=>{ w[d]=genDay(); }); setWeekPlan(w); };
   const toggleEvitar = (key) => setPrefs(p => ({ ...p, evitar: p.evitar.includes(key) ? p.evitar.filter(x=>x!==key) : [...p.evitar, key] }));
+  const [level, setLevel] = useState(4);
+  const [xp, setXp] = useState(60);
+  const [streak, setStreak] = useState(7);
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest((b) => ({ ...b, [g]: Math.max(b[g] || 0, v) }));
   const [log, setLog] = useState([{ ...FOODS.find((f) => f.id === "chila"), qty: 1, uid: 1 }, { ...FOODS.find((f) => f.id === "cafe"), qty: 1, uid: 2 }]);
