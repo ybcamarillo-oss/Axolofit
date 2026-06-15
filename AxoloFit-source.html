@@ -911,14 +911,21 @@ function Onboarding({ onDone }) {
         </div>
         {skipWarn && (
           <div className="overlay" onClick={() => setSkipWarn(false)}>
-            <div className="sheet" onClick={e => e.stopPropagation()}>
-              <h2 className="display" style={{ fontSize: 20, marginBottom: 10 }}>📏 Esta información es vital</h2>
-              <p style={{ fontSize: 14, color: "#4a4f6a", lineHeight: 1.55, marginBottom: 16 }}>
-                Las medidas de cuello, cintura, cadera y muñeca nos permiten calcular tu <b>distribución de grasa corporal</b>, <b>riesgo cardiometabólico</b>, <b>estructura ósea</b> y <b>peso ideal personalizado</b>.<br /><br />
-                Sin ellas, tu programa nutricional será genérico y menos efectivo. Te recomendamos tomarlas antes de continuar.
+            <div className="sheet" onClick={e => e.stopPropagation()}
+              style={{ background: "linear-gradient(180deg,#FFF6EA,#FFECD4)", border: "1.5px solid #FFB347" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                <div style={{ width: 40, height: 40, background: "#E0556E", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>💡</div>
+                <h2 className="display" style={{ fontSize: 19, color: "#B06A12" }}>Aviso importante</h2>
+              </div>
+              <p style={{ fontSize: 14, color: "#7a5030", lineHeight: 1.6, marginBottom: 16 }}>
+                Las medidas de cuello, cintura, cadera y muñeca nos permiten calcular tu distribución de grasa, riesgo cardiometabólico, estructura ósea y peso ideal personalizado. Sin ellas, tu plan será menos preciso.<br /><br />
+                <b style={{ color: "#B06A12" }}>Recuerda ingresarlas en cuanto te sea posible.</b>
               </p>
-              <button className="btn primary big" style={{ marginBottom: 8 }} onClick={() => setSkipWarn(false)}>Voy a buscar mi cinta 📏</button>
-              <button className="btn ghost" style={{ width: "100%" }} onClick={() => { setSkipWarn(false); setD(p => ({ ...p, cuelloCm: null, cinturaCm: null, caderaCm: null, muñecaCm: null })); setStep("resultados"); }}>Continuar sin medidas</button>
+              <button className="btn primary big"
+                style={{ background: "linear-gradient(180deg,#FFD19A,#FFA940)", color: "#5E3A00", boxShadow: "0 6px 18px #ffa94033" }}
+                onClick={() => { setSkipWarn(false); setD(p => ({ ...p, cuelloCm: null, cinturaCm: null, caderaCm: null, muñecaCm: null })); setStep("resultados"); }}>
+                Entendido, las agrego después
+              </button>
             </div>
           </div>
         )}
