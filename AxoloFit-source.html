@@ -1542,6 +1542,7 @@ function App() {
   const [level, setLevel] = useState(4);
   const [xp, setXp] = useState(60);
   const [streak, setStreak] = useState(7);
+  const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : streak >= 3 ? "cria" : "huevo";
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest((b) => ({ ...b, [g]: Math.max(b[g] || 0, v) }));
   const [log, setLog] = useState([{ ...FOODS.find((f) => f.id === "chila"), qty: 1, uid: 1 }, { ...FOODS.find((f) => f.id === "cafe"), qty: 1, uid: 2 }]);
@@ -1605,7 +1606,7 @@ function App() {
       <div className="scroll" ref={sRef("home")} onScroll={sSave("home")}>
         <div className="center axo-stage" onClick={blowKiss}>
           <p className="axo-line">{eating ? "¡Miam! 😋 (se soba la pancita)" : kissing ? "¡" + petName + " te manda un beso! 💗" : celebrated ? "¡" + petName + " está feliz! 💗" : hungry ? "Tengo hambre… ¿me das de comer? 🥺" : "Tócame para un besito 💗"}</p>
-          <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={pet.evo} rubbing={eating} mood={(celebrated || kissing || eating) ? "amor" : hungry ? "triste" : "feliz"} size={210} />
+          <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={computedEvo} rubbing={eating} mood={(celebrated || kissing || eating) ? "amor" : hungry ? "triste" : "feliz"} size={210} />
           {kissing && <Heart className="flying-heart" style={{ left: "56%", top: "44%" }} size={28} color="#FF4D7D" fill="#FF6F9C" />}
         </div>
         <div style={{ textAlign: "center", marginTop: 2, marginBottom: 10 }}><button className="btn" style={{ background: "linear-gradient(135deg,#F7CCD4,#E79FAE)", color: "#5E4334", padding: "10px 22px", fontSize: 15, fontFamily: "Fredoka", fontWeight: 600, borderRadius: 16, boxShadow: "0 6px 18px #e79fae44", border: "none" }} onClick={() => setScreen("pet")}>✨ Vestir a {petName}</button></div>
@@ -1697,10 +1698,10 @@ function App() {
       <div className="screen" style={{ background: "linear-gradient(180deg," + bg.from + "," + bg.to + ")", color: darkBg ? "#fff" : "#2A2D43" }}>
         <Header title={petName} back={() => setScreen("home")} />
         <div className="scroll" ref={sRef("pet")} onScroll={sSave("pet")}>
-          <div className="center"><Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={pet.evo} size={{ huevo: 120, cria: 145, joven: 168, adulto: 188, mistico: 196 }[pet.evo] || 168} /></div>
-          <p className="muted sm" style={{ textAlign: "center", marginBottom: 6, fontFamily: "Fredoka", fontWeight: 600, fontSize: 13, color: "#9aa0b4", letterSpacing: 0.3 }}>🌱 EVOLUCIONES — toca para ver</p>
-          <div className="evo-row">{[["huevo", "🥚", "Huevo"], ["cria", "🐣", "Cría"], ["joven", "🦎", "Joven"], ["adulto", "⭐", "Adulto"], ["mistico", "✨", "Místico"]].map(([k, em, e]) => { const on = pet.evo === k; return <button key={k} className={"evo " + (on ? "done" : "")} style={{ cursor: "pointer", border: on ? "2px solid #7C5CFF" : "2px solid #e8eaf2", background: on ? "#F2EEFF" : "#fff", borderRadius: 14, padding: "6px 4px", flex: 1, margin: "0 3px" }} onClick={() => { updatePet({ ...pet, evo: k }); showToast("Evolución: " + e + " " + em); }}><span style={{ fontSize: 18 }}>{em}</span><small style={{ display: "block", fontFamily: "Fredoka", fontSize: 11, color: on ? "#7C5CFF" : "#9aa0b4", marginTop: 2 }}>{e}</small></button>; })}</div>
-          <p className="muted sm" style={{ textAlign: "center", marginBottom: 8 }}>{{ huevo: "Apenas empieza 🥚 ¡cuídalo para que crezca!", cria: "Pequeñín y juguetón.", joven: "En plena forma.", adulto: "Fuerte y maduro, con su aura dorada.", mistico: "¡Forma legendaria! Brilla con estrellas a su alrededor." }[pet.evo]}</p>
+          <div className="center"><Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={computedEvo} size={{ huevo: 120, cria: 145, joven: 168, adulto: 188, mistico: 196 }[computedEvo] || 168} /></div>
+          <p className="muted sm" style={{ textAlign: "center", marginBottom: 6, fontFamily: "Fredoka", fontWeight: 600, fontSize: 13, color: "#9aa0b4", letterSpacing: 0.3 }}>🌱 EVOLUCIÓN DE {petName.toUpperCase()}</p>
+          <div className="evo-row">{[["huevo","🥚","Huevo",0],["cria","🐣","Cría",3],["joven","🦎","Joven",7],["adulto","⭐","Adulto",21],["mistico","✨","Místico",60]].map(([k,em,e,dias],idx,arr) => { const evoOrder = arr.map(x=>x[0]); const curIdx = evoOrder.indexOf(computedEvo); const thisIdx = evoOrder.indexOf(k); const reached = thisIdx <= curIdx; const current = k === computedEvo; return <div key={k} style={{ display:"flex", flexDirection:"column", alignItems:"center", border: current ? "2px solid #7C5CFF" : reached ? "2px solid #34BC97" : "2px solid #e8eaf2", background: current ? "#F2EEFF" : reached ? "#EAF7F2" : "#fff", borderRadius: 14, padding: "6px 4px", flex: 1, margin: "0 3px" }}><span style={{fontSize:18}}>{em}</span><small style={{display:"block",fontFamily:"Fredoka",fontSize:11,color: current?"#7C5CFF":reached?"#34BC97":"#9aa0b4",marginTop:2}}>{e}</small>{!reached&&<small style={{fontSize:9,color:"#b0b6c8",marginTop:1}}>día {dias}</small>}{current&&<small style={{fontSize:9,color:"#7C5CFF",marginTop:1}}>actual</small>}</div>; })}</div>
+          <p className="muted sm" style={{ textAlign: "center", marginBottom: 8 }}>{{ huevo: "Apenas empieza 🥚 ¡cuídalo para que crezca!", cria: "Pequeñín y juguetón.", joven: "En plena forma.", adulto: "Fuerte y maduro, con su aura dorada.", mistico: "¡Forma legendaria! Brilla con estrellas a su alrededor." }[computedEvo]}</p>
           <p className="muted sm" style={{marginBottom:8}}>🎨 <b>Color</b> es el skin de {petName}. <b>Estilo</b>, <b>Accesorio</b> (cabeza) y <b>Outfit</b> (cuerpo) se combinan entre sí. Los que tienen 👑 son premium (desbloqueados en este demo).</p>
           <div className="sect-t">Color / Skin</div>
           <Swatches sk="pal" map={PALETTES} sel={pet.palette} onPick={(k) => updatePet({ ...pet, palette: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={k} estilo={pet.estilo} size={42} /></span>} />
@@ -2131,7 +2132,7 @@ function App() {
         {eating && (
           <div className="eat-pop">
             <div className="eat-bubble">
-              <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={pet.evo} mood="amor" rubbing={true} size={130} />
+              <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={computedEvo} mood="amor" rubbing={true} size={130} />
               <span style={{ position: "absolute", top: "8%", left: "22%", fontSize: 18, animation: "floaty 1.4s ease-in-out infinite" }}>✨</span>
               <span style={{ position: "absolute", top: "14%", right: "20%", fontSize: 16, animation: "floaty 1.6s ease-in-out infinite .3s" }}>😋</span>
             </div>
