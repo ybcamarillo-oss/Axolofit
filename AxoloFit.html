@@ -154,6 +154,10 @@ html,body { height:100%; }
 @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 #e79fae55 } 50% { box-shadow: 0 0 0 16px #e79fae00 } }
 @keyframes kiss { 0% { transform: translate(0,0) scale(.6); opacity: 0 } 30% { opacity: 1 } 100% { transform: translate(40px,-90px) scale(1.2); opacity: 0 } }
 @keyframes fall { 0% { transform: translateY(0) rotate(0); opacity: 1 } 100% { transform: translateY(900px) rotate(360deg); opacity: .3 } }
+@keyframes eggWiggle { 0%,100%{transform:rotate(0) scale(1)} 20%{transform:rotate(-13deg) scale(1.07)} 50%{transform:rotate(15deg) scale(1.11)} 80%{transform:rotate(-11deg) scale(1.08)} }
+@keyframes eggHatch { 0%{transform:scale(1) rotate(0);opacity:1} 25%{transform:scale(1.18) rotate(-14deg)} 50%{transform:scale(1.24) rotate(16deg)} 75%{transform:scale(1.2) rotate(-10deg)} 100%{transform:scale(0) rotate(22deg);opacity:0} }
+.egg-wiggle { animation: eggWiggle 0.35s ease-in-out infinite; transform-origin: center bottom; }
+.egg-hatch { animation: eggHatch 0.9s cubic-bezier(.4,0,.2,1) forwards; transform-origin: center bottom; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -1752,7 +1756,8 @@ function Axo({
   chub = 0.7,
   size = 200,
   evo = "joven",
-  rubbing = false
+  rubbing = false,
+  hatching = false
 }) {
   const pal = PALETTES[paletteKey] || PALETTES.durazno;
   const bodyFill = paletteKey === "dorado" ? "url(#axoGold)" : paletteKey === "galaxia" ? "url(#axoGalaxy)" : paletteKey === "arcoiris" ? "url(#axoRainbow)" : pal.body;
@@ -1773,7 +1778,8 @@ function Axo({
     return /*#__PURE__*/React.createElement("svg", {
       viewBox: "0 0 200 240",
       width: size,
-      height: size * 1.2
+      height: size * 1.2,
+      className: hatching ? "egg-hatch" : rubbing ? "egg-wiggle" : "axo-bob"
     }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("radialGradient", {
       id: "eggShine",
       cx: "0.35",
@@ -2695,6 +2701,7 @@ function Onboarding({
   const [skipWarn, setSkipWarn] = useState(false);
   const [slide, setSlide] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
+  const [hatching, setHatching] = useState(false);
   const set = (k, v) => setD(p => ({
     ...p,
     [k]: v
@@ -3190,8 +3197,9 @@ function Onboarding({
   }, /*#__PURE__*/React.createElement(Axo, {
     paletteKey: "durazno",
     size: 200,
-    evo: "huevo"
-  }), /*#__PURE__*/React.createElement("h2", {
+    evo: "huevo",
+    hatching: hatching
+  }), !hatching ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", {
     className: "display",
     style: {
       fontSize: 24,
@@ -3210,10 +3218,20 @@ function Onboarding({
     onChange: e => setName(e.target.value)
   }), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
-    onClick: () => onDone({
-      ...d
-    }, name || "Axo")
-  }, "\xA1Que nazca! \uD83E\uDD5A\uD83D\uDC97"));
+    onClick: () => {
+      setHatching(true);
+      setTimeout(() => onDone({
+        ...d
+      }, name || "Axo"), 950);
+    }
+  }, "\xA1Que nazca! \uD83E\uDD5A\uD83D\uDC97")) : /*#__PURE__*/React.createElement("p", {
+    className: "display",
+    style: {
+      fontSize: 22,
+      color: "#E79FAE",
+      marginTop: 8
+    }
+  }, "\xA1Naciendo\u2026 \uD83E\uDD5A\u2728!"));
 }
 
 /* ---------- NUEVA CONTRASEÑA (recovery flow) ---------- */
