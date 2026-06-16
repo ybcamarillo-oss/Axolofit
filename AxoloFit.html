@@ -4868,6 +4868,7 @@ function App() {
   };
   const [pesoActual, setPesoActual] = useState(null);
   const DIAS = ["L", "M", "X", "J", "V", "S", "D"];
+  const DIAS_LABEL = ["L", "Ma", "Mi", "J", "V", "S", "D"];
   const DIAS_FULL = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
   const [prefs, setPrefs] = useState({
     veg: false,
@@ -4965,6 +4966,8 @@ function App() {
   }, []);
   const [overlay, setOverlay] = useState(null);
   const [toast, setToast] = useState(null);
+  const [reflexionPicked, setReflexionPicked] = useState(null);
+  const [selDay, setSelDay] = useState("L");
   const totals = useMemo(() => log.reduce((a, f) => ({
     kcal: a.kcal + f.kcal * f.qty,
     p: a.p + f.p * f.qty,
@@ -6223,7 +6226,8 @@ function App() {
     })));
   };
   const Reflexion = () => {
-    const [picked, setPicked] = useState(null);
+    const picked = reflexionPicked;
+    const setPicked = setReflexionPicked;
     const wins = [];
     if (pKcal >= 0.8) wins.push("cuidaste lo que comiste");
     if (pProt >= 0.85) wins.push("llegaste a tu proteína");
@@ -6246,13 +6250,19 @@ function App() {
     }];
     return /*#__PURE__*/React.createElement("div", {
       className: "overlay",
-      onClick: () => setOverlay(null)
+      onClick: () => {
+        setReflexionPicked(null);
+        setOverlay(null);
+      }
     }, /*#__PURE__*/React.createElement("div", {
       className: "sheet",
       onClick: e => e.stopPropagation()
     }, /*#__PURE__*/React.createElement("button", {
       className: "sheet-x",
-      onClick: () => setOverlay(null)
+      onClick: () => {
+        setReflexionPicked(null);
+        setOverlay(null);
+      }
     }, /*#__PURE__*/React.createElement(X, {
       size: 20
     })), !picked ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -6347,12 +6357,12 @@ function App() {
       onClick: () => {
         setXp(x => Math.min(99, x + 20));
         showToast("Buenas noches 🌙 Mañana seguimos 💗");
+        setReflexionPicked(null);
         setOverlay(null);
       }
     }, "Buenas noches \uD83C\uDF19"))));
   };
   const SemanaScreen = () => {
-    const [selDay, setSelDay] = React.useState("L");
     const plan = weekPlan[selDay];
     const dayTot = MEAL_SPLIT.reduce((a, [k]) => a + MENU_DB[k][plan[k]].kcal, 0);
     const mealIcons = {
@@ -6430,7 +6440,7 @@ function App() {
           fontSize: 15,
           color: selDay === d ? "#E79FAE" : "#4a4f6a"
         }
-      }, d), /*#__PURE__*/React.createElement("span", {
+      }, DIAS_LABEL[i]), /*#__PURE__*/React.createElement("span", {
         style: {
           fontSize: 10,
           color: "#9aa0b4"
@@ -6597,7 +6607,7 @@ function App() {
           fontSize: 13,
           display: "block"
         }
-      }, d), /*#__PURE__*/React.createElement("span", {
+      }, DIAS_LABEL[DIAS.indexOf(d)]), /*#__PURE__*/React.createElement("span", {
         style: {
           fontSize: 11,
           color: "#9aa0b4"
