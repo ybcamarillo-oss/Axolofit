@@ -469,7 +469,7 @@ const MENU_DB = {
     { n: "Fajitas de res", d: "130 g de res · pimientos y cebolla · 2 tortillas de maíz", kcal: 450, p: 36, c: 32, g: 20, veg: false, con: [] },
     { n: "Tinga de pollo en tostadas (3)", d: "130 g de pollo en tinga · 3 tostadas horneadas · lechuga · ½ aguacate", kcal: 460, p: 34, c: 36, g: 20, veg: false, con: [] },
     { n: "Bowl de quinoa, frijol y aguacate", d: "¾ taza de quinoa · ½ taza de frijol · ½ aguacate · verduras (vegano)", kcal: 470, p: 18, c: 58, g: 18, veg: true, con: [] },
-    { n: "Mole de pollo con arroz", d: "120 g de pollo en mole · ½ taza de arroz · 1 tortilla", kcal: 510, p: 32, c: 42, g: 24, veg: false, con: ["nuez"] },
+    { n: "Pollo con mole y arroz", d: "120 g de pollo bañado en mole rojo · ½ taza de arroz integral · 1 tortilla", kcal: 510, p: 32, c: 42, g: 24, veg: false, con: ["nuez"] },
     { n: "Pollo con ensalada y aguacate", d: "150 g de pechuga · ensalada grande · ½ aguacate · limón (sin tostadas, bajo en carbos)", kcal: 390, p: 42, c: 10, g: 20, veg: false, con: [], lc: true },
   ],
   cena: [
@@ -1603,6 +1603,8 @@ function App() {
 
   const totals = useMemo(() => log.reduce((a, f) => ({ kcal: a.kcal + f.kcal * f.qty, p: a.p + f.p * f.qty, c: a.c + f.c * f.qty, g: a.g + f.g * f.qty }), { kcal: 0, p: 0, c: 0, g: 0 }), [log]);
   const pKcal = totals.kcal / targets.objetivoDeficit, pProt = totals.p / targets.prote, pAgua = vasos / targets.vasos;
+  const pCarbs = targets.carbs > 0 ? totals.c / targets.carbs : 0;
+  const pGrasa = targets.grasa > 0 ? totals.g / targets.grasa : 0;
   const showToast = useCallback((t) => { setToast(t); setTimeout(() => setToast(null), 2200); }, []);
   const checkGoals = useCallback((nl, nv) => {
     const t = nl.reduce((a, f) => ({ kcal: a.kcal + f.kcal * f.qty, p: a.p + f.p * f.qty }), { kcal: 0, p: 0 });
@@ -1610,7 +1612,7 @@ function App() {
   }, [targets, celebrated]);
   const addFood = useCallback((food, qty = 1) => {
     const item = { ...food, qty, uid: uidSeq }; setUidSeq((s) => s + 1);
-    setLog((l) => { const nl = [...l, item]; checkGoals(nl, vasos); return nl; }); setEating(true); setTimeout(() => setEating(false), 2600);
+    setLog((l) => { const nl = [...l, item]; checkGoals(nl, vasos); return nl; }); setEating(true); setScreen("home"); setTimeout(() => setEating(false), 2600);
     if (userId) guardarComida(userId, food);
   }, [uidSeq, vasos, checkGoals, showToast, petName, userId]);
   const removeFood = (uid) => {
@@ -1662,6 +1664,10 @@ function App() {
           <div className="ring-item"><Ring progress={pProt} color="#7C5CFF"><div className="ring-c"><b>{Math.round(totals.p)}</b><span>/{targets.prote}g</span></div></Ring><span className="ring-lbl">Proteína</span></div>
           <div className="ring-item"><Ring progress={pAgua} color="#3FA9F5"><div className="ring-c"><b>{vasos}</b><span>/{targets.vasos}</span></div></Ring><span className="ring-lbl"><Droplet size={13} /> Agua</span></div>
         </div>
+        <div className="rings" style={{ marginTop: 6 }}>
+          <div className="ring-item"><Ring progress={pCarbs} color="#F2B705"><div className="ring-c"><b>{Math.round(totals.c)}</b><span>/{targets.carbs}g</span></div></Ring><span className="ring-lbl">Carbos</span></div>
+          <div className="ring-item"><Ring progress={pGrasa} color="#34BC97"><div className="ring-c"><b>{Math.round(totals.g)}</b><span>/{targets.grasa}g</span></div></Ring><span className="ring-lbl">Grasas</span></div>
+        </div>
         <div className="card">
           <div className="card-h"><Droplet size={16} color="#3FA9F5" /> Agua de hoy · {vasos}/{targets.vasos} vasos</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 4 }}>
@@ -1692,7 +1698,7 @@ function App() {
           <div className="card-h">Hoy comiste</div>
           {log.length === 0 && <p className="muted sm">Aún nada. Toca el botón rosa para registrar.</p>}
           {log.map((f) => <div key={f.uid} className="log-row"><div><b>{f.n}</b><span className="muted sm"> · {f.qty > 1 ? f.qty + "× " : ""}{f.kcal * f.qty} kcal</span></div><button className="x-btn" onClick={() => removeFood(f.uid)}><X size={16} /></button></div>)}
-          {log.length > 0 && <button className="btn ghost" style={{ width: "100%", marginTop: 8, color: "#b06a12" }} onClick={() => { setLog([]); showToast("Día vaciado (demo) — " + petName + " tiene hambre 🥺"); }}>🧹 Vaciar el día (demo)</button>}
+          
         </div>
         <div className="card" style={{background:"linear-gradient(135deg,#E8F7EE,#EEF7F3)",marginBottom:8}}>
           <div className="card-h">📅 Plan semanal</div>
@@ -1731,7 +1737,7 @@ function App() {
           <div className="searchbar"><Search size={18} color="#9aa0b4" /><input placeholder="Busca: tacos, pozole, concha…" value={q} onChange={(e) => setQ(e.target.value)} /></div>
           {results.map((f) => <div key={f.id} className="sug-row"><div><b>{f.n}</b><span className="muted sm"> · {f.u} · {f.kcal} kcal · P{f.p} C{f.c} G{f.g}</span></div><button className="add-btn" onClick={() => addFood(f)}><Plus size={18} /></button></div>)}
           <button className="btn ghost" style={{ marginTop: 8 }} onClick={() => addFood({ id: "manual", n: "Alimento personalizado", u: "porción", kcal: 250, p: 10, c: 30, g: 8 })}><Pencil size={15} /> Registro manual</button>
-          {log.length > 0 && <button className="btn ghost" style={{ width: "100%", marginTop: 6, color: "#b06a12" }} onClick={() => { setLog([]); showToast("Día vaciado (demo) — mira a " + petName + " con hambre 🥺"); }}>🧹 Vaciar el día (demo)</button>}
+        
         </div>
       </div>
     );
@@ -1969,6 +1975,7 @@ function App() {
             <div className="macro-row">
               {MEAL_SPLIT.map(([k])=>{const d=MENU_DB[k][plan[k]];return <span key={k} style={{color:"#7C5CFF"}}>P{d.p}g</span>;})}
             </div>
+            <p className="muted sm" style={{marginTop:6,lineHeight:1.4}}>💡 Las calorías varían por día porque cada platillo tiene diferente aporte. Todos los menús están diseñados dentro de tu rango objetivo personalizado.</p>
           </div>
           {MEAL_SPLIT.map(([k,label])=>{
             const dish=MENU_DB[k][plan[k]];
