@@ -144,7 +144,7 @@ html,body { height:100%; }
 @keyframes bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
 .rub { position: absolute; transform: translateX(-50%); font-size: 26px; pointer-events: none; animation: rub .5s ease-in-out infinite; }
 .axo-rub2 { animation: rub2 .55s ease-in-out infinite; }
-@keyframes rub2 { 0%,100% { transform: translateX(-4px) } 50% { transform: translateX(4px) } }
+@keyframes rub2 { 0%,100% { transform: translateX(-9px) rotate(-8deg) } 50% { transform: translateX(9px) rotate(8deg) } }
 .think { position: absolute; transform: translateX(-50%); font-size: 24px; pointer-events: none; animation: floaty 1.8s ease-in-out infinite; }
 @keyframes rub { 0%,100% { transform: translateX(-50%) rotate(-16deg) } 50% { transform: translateX(-50%) rotate(16deg) } }
 @keyframes floaty { 0%,100% { transform: translateX(-50%) translateY(0) } 50% { transform: translateX(-50%) translateY(-6px) } }
@@ -2027,29 +2027,7 @@ function Axo({
     ry: "13",
     fill: bodyFill,
     transform: "rotate(28 122 158)"
-  }), rubbing && /*#__PURE__*/React.createElement("g", {
-    className: "axo-rub2"
-  }, /*#__PURE__*/React.createElement("ellipse", {
-    cx: "118",
-    cy: "150",
-    rx: "15",
-    ry: "8",
-    fill: bodyFill,
-    transform: "rotate(12 118 150)"
-  }), /*#__PURE__*/React.createElement("ellipse", {
-    cx: "100",
-    cy: "150",
-    rx: "11",
-    ry: "9",
-    fill: bodyFill
-  }), /*#__PURE__*/React.createElement("ellipse", {
-    cx: "100",
-    cy: "150",
-    rx: "6",
-    ry: "5",
-    fill: "#ffffff",
-    opacity: "0.25"
-  })), paletteKey === "dorado" && /*#__PURE__*/React.createElement("ellipse", {
+  }), paletteKey === "dorado" && /*#__PURE__*/React.createElement("ellipse", {
     cx: "82",
     cy: "64",
     rx: "22",
@@ -2517,7 +2495,35 @@ function Axo({
       rx: "2",
       fill: col
     })));
-  })()));
+  })(), rubbing && /*#__PURE__*/React.createElement("g", {
+    className: "axo-rub2"
+  }, /*#__PURE__*/React.createElement("ellipse", {
+    cx: "118",
+    cy: "150",
+    rx: "16",
+    ry: "9",
+    fill: pal.gill,
+    opacity: "0.85",
+    stroke: bodyFill,
+    strokeWidth: "1.2",
+    transform: "rotate(12 118 150)"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "100",
+    cy: "148",
+    rx: "13",
+    ry: "11",
+    fill: pal.gill,
+    opacity: "0.75",
+    stroke: bodyFill,
+    strokeWidth: "1.2"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "100",
+    cy: "148",
+    rx: "7",
+    ry: "6",
+    fill: "#ffffff",
+    opacity: "0.5"
+  }))));
 }
 
 /* ---------- RING ---------- */
@@ -5205,9 +5211,15 @@ function App() {
   }, /*#__PURE__*/React.createElement(Droplet, {
     size: 13
   }), " Agua"))), /*#__PURE__*/React.createElement("div", {
-    className: "rings",
     style: {
-      marginTop: 6
+      display: "flex",
+      justifyContent: "center",
+      gap: 24,
+      background: "#fff",
+      borderRadius: 22,
+      padding: "10px 6px 14px",
+      boxShadow: "0 6px 20px #0000000c",
+      marginBottom: 12
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "ring-item"
