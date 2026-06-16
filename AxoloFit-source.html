@@ -735,7 +735,7 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
             {cols.map((col, idx) => <rect key={idx} x={100 - jw * 0.72} y={142 + idx * 12} width={jw * 1.44} height="9" rx="2" fill={col} />)}
           </g>
         ); })()}
-        {rubbing && <g className="axo-rub2"><ellipse cx="118" cy="150" rx="16" ry="9" fill={pal.gill} opacity="0.85" stroke={bodyFill} strokeWidth="1.2" transform="rotate(12 118 150)" /><ellipse cx="100" cy="148" rx="13" ry="11" fill={pal.gill} opacity="0.75" stroke={bodyFill} strokeWidth="1.2" /><ellipse cx="100" cy="148" rx="7" ry="6" fill="#ffffff" opacity="0.5" /></g>}
+        {rubbing && <g className="axo-rub2"><ellipse cx="118" cy="150" rx="16" ry="9" fill={pal.gill} stroke={bodyFill} strokeWidth="1.8" transform="rotate(12 118 150)" /><ellipse cx="100" cy="148" rx="13" ry="11" fill={pal.gill} stroke={bodyFill} strokeWidth="1.8" /><ellipse cx="100" cy="148" rx="7" ry="6" fill="#ffffff" opacity="0.55" /></g>}
       </g>
     </svg>
   );
