@@ -1569,6 +1569,7 @@ function App() {
   };
   const [pesoActual, setPesoActual] = useState(null);
   const DIAS = ["L","M","X","J","V","S","D"];
+  const DIAS_LABEL = ["L","Ma","Mi","J","V","S","D"];
   const DIAS_FULL = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
   const [prefs, setPrefs] = useState({ veg: false, evitar: [], lowcarb: false });
   const allowedIdx = (k) => { const arr = MENU_DB[k].map((it, idx) => ({ it, idx })).filter(({ it }) => (!prefs.veg || it.veg) && (prefs.lowcarb ? it.c <= 16 : !it.lc) && !it.con.some((c) => prefs.evitar.includes(c))).map((o) => o.idx); return arr.length ? arr : MENU_DB[k].map((_, i) => i); };
@@ -1597,6 +1598,8 @@ function App() {
   React.useEffect(() => { const iv = setInterval(() => { setKissing(true); setTimeout(() => setKissing(false), 1500); }, 13000); return () => clearInterval(iv); }, []);
   const [overlay, setOverlay] = useState(null);
   const [toast, setToast] = useState(null);
+  const [reflexionPicked, setReflexionPicked] = useState(null);
+  const [selDay, setSelDay] = useState("L");
 
   const totals = useMemo(() => log.reduce((a, f) => ({ kcal: a.kcal + f.kcal * f.qty, p: a.p + f.p * f.qty, c: a.c + f.c * f.qty, g: a.g + f.g * f.qty }), { kcal: 0, p: 0, c: 0, g: 0 }), [log]);
   const pKcal = totals.kcal / targets.objetivoDeficit, pProt = totals.p / targets.prote, pAgua = vasos / targets.vasos;
@@ -1895,7 +1898,8 @@ function App() {
   };
 
   const Reflexion = () => {
-    const [picked, setPicked] = useState(null);
+    const picked = reflexionPicked;
+    const setPicked = setReflexionPicked;
     const wins = [];
     if (pKcal >= 0.8) wins.push("cuidaste lo que comiste");
     if (pProt >= 0.85) wins.push("llegaste a tu proteína");
@@ -1908,9 +1912,9 @@ function App() {
       { t: "Hoy hice lo que pude", m: "Lo que pudiste es más que suficiente. Mañana seguimos juntos, sin prisa. Te quiero 💗" },
     ];
     return (
-      <div className="overlay" onClick={() => setOverlay(null)}>
+      <div className="overlay" onClick={() => { setReflexionPicked(null); setOverlay(null); }}>
         <div className="sheet" onClick={(e) => e.stopPropagation()}>
-          <button className="sheet-x" onClick={() => setOverlay(null)}><X size={20} /></button>
+          <button className="sheet-x" onClick={() => { setReflexionPicked(null); setOverlay(null); }}><X size={20} /></button>
           {!picked ? (
             <div>
               <div className="center"><Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} size={120} /></div>
@@ -1929,7 +1933,7 @@ function App() {
               <p className="display" style={{ fontSize: 18, margin: "6px 0 2px", color: "#E79FAE" }}>{petName} te manda un beso</p>
               <p className="muted" style={{ margin: "2px 14px 12px" }}>{picked.m}</p>
               <div className="reward-row"><span className="reward">+20 XP</span><span className="reward">🔥 Racha {streak}</span><span className="reward">💗 Beso</span></div>
-              <button className="btn primary big" onClick={() => { setXp((x) => Math.min(99, x + 20)); showToast("Buenas noches 🌙 Mañana seguimos 💗"); setOverlay(null); }}>Buenas noches 🌙</button>
+              <button className="btn primary big" onClick={() => { setXp((x) => Math.min(99, x + 20)); showToast("Buenas noches 🌙 Mañana seguimos 💗"); setReflexionPicked(null); setOverlay(null); }}>Buenas noches 🌙</button>
             </div>
           )}
         </div>
@@ -1938,7 +1942,6 @@ function App() {
   };
 
   const SemanaScreen = () => {
-    const [selDay, setSelDay] = React.useState("L");
     const plan = weekPlan[selDay];
     const dayTot = MEAL_SPLIT.reduce((a,[k])=>a+MENU_DB[k][plan[k]].kcal,0);
     const mealIcons = { desayuno:"☀️", comida:"🍽️", cena:"🌙", snack:"🍎" };
@@ -1955,7 +1958,7 @@ function App() {
             {DIAS.map((d,i)=>{
               const dt=weekPlan[d]; const eaten=MEAL_SPLIT.filter(([k])=>weekEaten[d+"_"+k]).length;
               return <button key={d} onClick={()=>setSelDay(d)} style={{minWidth:46,padding:"8px 6px",borderRadius:14,border:"2px solid",borderColor:selDay===d?"#E79FAE":"#eceff7",background:selDay===d?"#FCEFF1":"#fff",cursor:"pointer",textAlign:"center"}}>
-                <b style={{display:"block",fontFamily:"Fredoka",fontSize:15,color:selDay===d?"#E79FAE":"#4a4f6a"}}>{d}</b>
+                <b style={{display:"block",fontFamily:"Fredoka",fontSize:15,color:selDay===d?"#E79FAE":"#4a4f6a"}}>{DIAS_LABEL[i]}</b>
                 <span style={{fontSize:10,color:"#9aa0b4"}}>{eaten}/4</span>
               </button>;
             })}
@@ -1989,7 +1992,7 @@ function App() {
             <p style={{fontFamily:"Fredoka",fontWeight:600,fontSize:14,marginBottom:6}}>Resumen semanal</p>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
               {DIAS.map(d=>{const tot=MEAL_SPLIT.reduce((a,[k])=>a+MENU_DB[k][weekPlan[d][k]].kcal,0);const eaten=MEAL_SPLIT.filter(([k])=>weekEaten[d+"_"+k]).length;return <div key={d} style={{flex:"1 1 40px",textAlign:"center",background:"#fff",borderRadius:10,padding:"6px 4px"}}>
-                <b style={{fontFamily:"Fredoka",fontSize:13,display:"block"}}>{d}</b>
+                <b style={{fontFamily:"Fredoka",fontSize:13,display:"block"}}>{DIAS_LABEL[DIAS.indexOf(d)]}</b>
                 <span style={{fontSize:11,color:"#9aa0b4"}}>{tot}</span>
                 <div style={{marginTop:2,display:"flex",justifyContent:"center",gap:1}}>{[0,1,2,3].map(i=><span key={i} style={{width:6,height:6,borderRadius:"50%",background:i<eaten?"#34BC97":"#eef0f6",display:"block"}} />)}</div>
               </div>;})}
