@@ -1606,6 +1606,7 @@ function App() {
   const [toast, setToast] = useState(null);
   const [reflexionPicked, setReflexionPicked] = useState(null);
   const [selDay, setSelDay] = useState("L");
+  const [searchQ, setSearchQ] = useState("");
 
   const totals = useMemo(() => log.reduce((a, f) => ({ kcal: a.kcal + f.kcal * f.qty, p: a.p + f.p * f.qty, c: a.c + f.c * f.qty, g: a.g + f.g * f.qty }), { kcal: 0, p: 0, c: 0, g: 0 }), [log]);
   const pKcal = totals.kcal / targets.objetivoDeficit, pProt = totals.p / targets.prote, pAgua = vasos / targets.vasos;
@@ -1725,7 +1726,7 @@ function App() {
   );
 
   const LogScreen = () => {
-    const [q, setQ] = useState("");
+    const q = searchQ; const setQ = setSearchQ;
     const results = q.trim() ? FOODS.filter((f) => f.n.toLowerCase().includes(q.toLowerCase())) : FOODS.slice(0, 6);
     const Method = ({ icon, t, dsc, onClick }) => <button className="method" onClick={onClick}><span className="m-ic">{icon}</span><span><b>{t}</b><small>{dsc}</small></span></button>;
     return (
@@ -2067,19 +2068,19 @@ function App() {
   return (
     <div className="root">
       <div className="phone">
-        {screen === "home" && <HomeScreen />}
-        {screen === "semana" && <SemanaScreen />}
-        {screen === "arcade" && <JuegosScreen />}
+        {screen === "home" && HomeScreen()}
+        {screen === "semana" && SemanaScreen()}
+        {screen === "arcade" && JuegosScreen()}
         {screen === "game_quiz" && <QuizScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.quiz||0} recordBest={recordBest} />}
         {screen === "game_blockjam" && <BlockJamScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.blockjam||0} recordBest={recordBest} />}
         {screen === "game_memo" && <MemoScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.memo||0} recordBest={recordBest} />}
         {screen === "game_catch" && <CatchScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.catch||0} recordBest={recordBest} />}
         {screen === "game_cal" && <CalScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.cal||0} recordBest={recordBest} />}
         {screen === "game_simon" && <SimonScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.simon||0} recordBest={recordBest} />}
-        {screen === "log" && <LogScreen />}
-        {screen === "pet" && <PetScreen />}
-        {screen === "stats" && <StatsScreen />}
-        {screen === "more" && <MoreScreen />}
+        {screen === "log" && LogScreen()}
+        {screen === "pet" && PetScreen()}
+        {screen === "stats" && StatsScreen()}
+        {screen === "more" && MoreScreen()}
         <Nav />
         {overlay === "celebrate" && (
           <div className="overlay celebrate" onClick={closeCelebrate}>
@@ -2119,7 +2120,7 @@ function App() {
         {overlay === "voice" && <Voice />}
         {overlay === "photo" && <Photo />}
         {overlay === "recipe" && <Recipe />}
-        {overlay === "reflexion" && <Reflexion />}
+        {overlay === "reflexion" && Reflexion()}
         {overlay === "menu" && <Menu />}
         {overlay === "prefs" && (
           <div className="overlay" onClick={() => setOverlay(null)}>
