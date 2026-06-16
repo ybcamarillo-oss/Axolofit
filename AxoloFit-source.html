@@ -147,7 +147,7 @@ html,body { height:100%; }
 @keyframes bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
 .rub { position: absolute; transform: translateX(-50%); font-size: 26px; pointer-events: none; animation: rub .5s ease-in-out infinite; }
 .axo-rub2 { animation: rub2 .55s ease-in-out infinite; }
-@keyframes rub2 { 0%,100% { transform: translateX(-9px) rotate(-8deg) } 50% { transform: translateX(9px) rotate(8deg) } }
+@keyframes rub2 { 0%,100% { transform: translate(-6px, 0px) rotate(-10deg) } 25% { transform: translate(0px, -5px) rotate(0deg) } 50% { transform: translate(6px, 0px) rotate(10deg) } 75% { transform: translate(0px, 5px) rotate(0deg) } }
 .think { position: absolute; transform: translateX(-50%); font-size: 24px; pointer-events: none; animation: floaty 1.8s ease-in-out infinite; }
 @keyframes rub { 0%,100% { transform: translateX(-50%) rotate(-16deg) } 50% { transform: translateX(-50%) rotate(16deg) } }
 @keyframes floaty { 0%,100% { transform: translateX(-50%) translateY(0) } 50% { transform: translateX(-50%) translateY(-6px) } }
@@ -735,7 +735,13 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
             {cols.map((col, idx) => <rect key={idx} x={100 - jw * 0.72} y={142 + idx * 12} width={jw * 1.44} height="9" rx="2" fill={col} />)}
           </g>
         ); })()}
-        {rubbing && <g className="axo-rub2"><ellipse cx="118" cy="150" rx="16" ry="9" fill={pal.gill} stroke={bodyFill} strokeWidth="1.8" transform="rotate(12 118 150)" /><ellipse cx="100" cy="148" rx="13" ry="11" fill={pal.gill} stroke={bodyFill} strokeWidth="1.8" /><ellipse cx="100" cy="148" rx="7" ry="6" fill="#ffffff" opacity="0.55" /></g>}
+        {rubbing && <g className="axo-rub2">
+          {/* bracito curvo del hombro a la pancita */}
+          <path d="M126 136 C 122 141, 116 148, 108 154 C 104 157, 99 159, 99 155 C 99 151, 105 150, 110 146 C 116 141, 122 136, 126 136 Z" fill={bodyFill} stroke={pal.gill} strokeWidth="1.8" strokeLinejoin="round" />
+          {/* manita/pata al final del bracito */}
+          <circle cx="101" cy="156" r="9" fill={bodyFill} stroke={pal.gill} strokeWidth="1.8" />
+          <circle cx="98" cy="153" r="4" fill="#ffffff" opacity="0.5" />
+        </g>}
       </g>
     </svg>
   );
