@@ -1516,8 +1516,8 @@ const MENU_DB = {
     veg: true,
     con: []
   }, {
-    n: "Mole de pollo con arroz",
-    d: "120 g de pollo en mole · ½ taza de arroz · 1 tortilla",
+    n: "Pollo con mole y arroz",
+    d: "120 g de pollo bañado en mole rojo · ½ taza de arroz integral · 1 tortilla",
     kcal: 510,
     p: 32,
     c: 42,
@@ -4982,6 +4982,8 @@ function App() {
   const pKcal = totals.kcal / targets.objetivoDeficit,
     pProt = totals.p / targets.prote,
     pAgua = vasos / targets.vasos;
+  const pCarbs = targets.carbs > 0 ? totals.c / targets.carbs : 0;
+  const pGrasa = targets.grasa > 0 ? totals.g / targets.grasa : 0;
   const showToast = useCallback(t => {
     setToast(t);
     setTimeout(() => setToast(null), 2200);
@@ -5012,6 +5014,7 @@ function App() {
       return nl;
     });
     setEating(true);
+    setScreen("home");
     setTimeout(() => setEating(false), 2600);
     if (userId) guardarComida(userId, food);
   }, [uidSeq, vasos, checkGoals, showToast, petName, userId]);
@@ -5202,6 +5205,29 @@ function App() {
   }, /*#__PURE__*/React.createElement(Droplet, {
     size: 13
   }), " Agua"))), /*#__PURE__*/React.createElement("div", {
+    className: "rings",
+    style: {
+      marginTop: 6
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ring-item"
+  }, /*#__PURE__*/React.createElement(Ring, {
+    progress: pCarbs,
+    color: "#F2B705"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ring-c"
+  }, /*#__PURE__*/React.createElement("b", null, Math.round(totals.c)), /*#__PURE__*/React.createElement("span", null, "/", targets.carbs, "g"))), /*#__PURE__*/React.createElement("span", {
+    className: "ring-lbl"
+  }, "Carbos")), /*#__PURE__*/React.createElement("div", {
+    className: "ring-item"
+  }, /*#__PURE__*/React.createElement(Ring, {
+    progress: pGrasa,
+    color: "#34BC97"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ring-c"
+  }, /*#__PURE__*/React.createElement("b", null, Math.round(totals.g)), /*#__PURE__*/React.createElement("span", null, "/", targets.grasa, "g"))), /*#__PURE__*/React.createElement("span", {
+    className: "ring-lbl"
+  }, "Grasas"))), /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
@@ -5308,18 +5334,7 @@ function App() {
     onClick: () => removeFood(f.uid)
   }, /*#__PURE__*/React.createElement(X, {
     size: 16
-  })))), log.length > 0 && /*#__PURE__*/React.createElement("button", {
-    className: "btn ghost",
-    style: {
-      width: "100%",
-      marginTop: 8,
-      color: "#b06a12"
-    },
-    onClick: () => {
-      setLog([]);
-      showToast("Día vaciado (demo) — " + petName + " tiene hambre 🥺");
-    }
-  }, "\uD83E\uDDF9 Vaciar el d\xEDa (demo)")), /*#__PURE__*/React.createElement("div", {
+  }))))), /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
       background: "linear-gradient(135deg,#E8F7EE,#EEF7F3)",
@@ -5491,18 +5506,7 @@ function App() {
       })
     }, /*#__PURE__*/React.createElement(Pencil, {
       size: 15
-    }), " Registro manual"), log.length > 0 && /*#__PURE__*/React.createElement("button", {
-      className: "btn ghost",
-      style: {
-        width: "100%",
-        marginTop: 6,
-        color: "#b06a12"
-      },
-      onClick: () => {
-        setLog([]);
-        showToast("Día vaciado (demo) — mira a " + petName + " con hambre 🥺");
-      }
-    }, "\uD83E\uDDF9 Vaciar el d\xEDa (demo)")));
+    }), " Registro manual")));
   };
   const PetScreen = () => {
     const Swatches = ({
@@ -6465,7 +6469,13 @@ function App() {
           color: "#7C5CFF"
         }
       }, "P", d.p, "g");
-    }))), MEAL_SPLIT.map(([k, label]) => {
+    })), /*#__PURE__*/React.createElement("p", {
+      className: "muted sm",
+      style: {
+        marginTop: 6,
+        lineHeight: 1.4
+      }
+    }, "\uD83D\uDCA1 Las calor\xEDas var\xEDan por d\xEDa porque cada platillo tiene diferente aporte. Todos los men\xFAs est\xE1n dise\xF1ados dentro de tu rango objetivo personalizado.")), MEAL_SPLIT.map(([k, label]) => {
       const dish = MENU_DB[k][plan[k]];
       const ek = selDay + "_" + k;
       const done = weekEaten[ek];
