@@ -147,7 +147,7 @@ html,body { height:100%; }
 @keyframes bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
 .rub { position: absolute; transform: translateX(-50%); font-size: 26px; pointer-events: none; animation: rub .5s ease-in-out infinite; }
 .axo-rub2 { animation: rub2 .55s ease-in-out infinite; }
-@keyframes rub2 { 0%,100% { transform: translateX(-4px) } 50% { transform: translateX(4px) } }
+@keyframes rub2 { 0%,100% { transform: translateX(-9px) rotate(-8deg) } 50% { transform: translateX(9px) rotate(8deg) } }
 .think { position: absolute; transform: translateX(-50%); font-size: 24px; pointer-events: none; animation: floaty 1.8s ease-in-out infinite; }
 @keyframes rub { 0%,100% { transform: translateX(-50%) rotate(-16deg) } 50% { transform: translateX(-50%) rotate(16deg) } }
 @keyframes floaty { 0%,100% { transform: translateX(-50%) translateY(0) } 50% { transform: translateX(-50%) translateY(-6px) } }
@@ -604,7 +604,6 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
         {/* bracitos */}
         <ellipse cx="80" cy="128" rx="9" ry="13" fill={bodyFill} transform="rotate(-34 80 128)" />
         {!rubbing && <ellipse cx="122" cy="158" rx="9" ry="13" fill={bodyFill} transform="rotate(28 122 158)" />}
-        {rubbing && <g className="axo-rub2"><ellipse cx="118" cy="150" rx="15" ry="8" fill={bodyFill} transform="rotate(12 118 150)" /><ellipse cx="100" cy="150" rx="11" ry="9" fill={bodyFill} /><ellipse cx="100" cy="150" rx="6" ry="5" fill="#ffffff" opacity="0.25" /></g>}
         {paletteKey === "dorado" && <ellipse cx="82" cy="64" rx="22" ry="11" fill="#FFFDF0" opacity="0.5" transform="rotate(-22 82 64)" />}
         {(paletteKey === "salvaje" || paletteKey === "cobre") && <g fill={pal.gill} opacity={paletteKey === "salvaje" ? 0.5 : 0.4}>
           {[[72,72,3],[88,62,2.4],[112,64,3.2],[126,80,2.6],[80,102,3],[118,106,2.8],[100,90,2.4],[90,122,3],[112,130,2.6],[100,150,2.8],[78,140,2.4],[122,146,2.4],[64,86,2.2],[134,96,2.2]].map((s,i)=><circle key={"mk"+i} cx={s[0]} cy={s[1]} r={s[2]} />)}
@@ -736,6 +735,7 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
             {cols.map((col, idx) => <rect key={idx} x={100 - jw * 0.72} y={142 + idx * 12} width={jw * 1.44} height="9" rx="2" fill={col} />)}
           </g>
         ); })()}
+        {rubbing && <g className="axo-rub2"><ellipse cx="118" cy="150" rx="16" ry="9" fill={pal.gill} opacity="0.85" stroke={bodyFill} strokeWidth="1.2" transform="rotate(12 118 150)" /><ellipse cx="100" cy="148" rx="13" ry="11" fill={pal.gill} opacity="0.75" stroke={bodyFill} strokeWidth="1.2" /><ellipse cx="100" cy="148" rx="7" ry="6" fill="#ffffff" opacity="0.5" /></g>}
       </g>
     </svg>
   );
@@ -1664,7 +1664,7 @@ function App() {
           <div className="ring-item"><Ring progress={pProt} color="#7C5CFF"><div className="ring-c"><b>{Math.round(totals.p)}</b><span>/{targets.prote}g</span></div></Ring><span className="ring-lbl">Proteína</span></div>
           <div className="ring-item"><Ring progress={pAgua} color="#3FA9F5"><div className="ring-c"><b>{vasos}</b><span>/{targets.vasos}</span></div></Ring><span className="ring-lbl"><Droplet size={13} /> Agua</span></div>
         </div>
-        <div className="rings" style={{ marginTop: 6 }}>
+        <div style={{ display:"flex", justifyContent:"center", gap:24, background:"#fff", borderRadius:22, padding:"10px 6px 14px", boxShadow:"0 6px 20px #0000000c", marginBottom:12 }}>
           <div className="ring-item"><Ring progress={pCarbs} color="#F2B705"><div className="ring-c"><b>{Math.round(totals.c)}</b><span>/{targets.carbs}g</span></div></Ring><span className="ring-lbl">Carbos</span></div>
           <div className="ring-item"><Ring progress={pGrasa} color="#34BC97"><div className="ring-c"><b>{Math.round(totals.g)}</b><span>/{targets.grasa}g</span></div></Ring><span className="ring-lbl">Grasas</span></div>
         </div>
