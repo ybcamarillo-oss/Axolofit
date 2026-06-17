@@ -140,11 +140,15 @@ html,body { height:100%; }
 .papel span { position: absolute; top: -20px; width: 11px; height: 14px; border-radius: 2px; animation: fall 2.6s linear infinite; opacity: .9; }
 .toast { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); background: #2A2D43; color: #fff; padding: 11px 16px; border-radius: 14px; font-size: 13px; font-weight: 700; z-index: 60; animation: up .25s; box-shadow: 0 8px 24px #0004; max-width: 90%; text-align: center; }
 .axo-bob { animation: bob 4s ease-in-out infinite; transform-origin: center; }
+.axo-rub-l { animation: rubL 0.5s ease-in-out infinite; }
+.axo-rub-r { animation: rubR 0.5s ease-in-out infinite; }
+@keyframes rubL { 0%,100% { transform: rotate(-8deg) } 50% { transform: rotate(6deg) } }
+@keyframes rubR { 0%,100% { transform: rotate(8deg) } 50% { transform: rotate(-6deg) } }
 .loading { color:#7a8099; font-family:'Nunito'; font-weight:700; }
 @keyframes bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
 .rub { position: absolute; transform: translateX(-50%); font-size: 26px; pointer-events: none; animation: rub .5s ease-in-out infinite; }
 .axo-rub2 { animation: rub2 .55s ease-in-out infinite; }
-@keyframes rub2 { 0%,100% { transform: translate(-6px, 0px) rotate(-10deg) } 25% { transform: translate(0px, -5px) rotate(0deg) } 50% { transform: translate(6px, 0px) rotate(10deg) } 75% { transform: translate(0px, 5px) rotate(0deg) } }
+@keyframes rub2 { 0%,100% { transform: rotate(-7deg) } 50% { transform: rotate(9deg) } }
 .think { position: absolute; transform: translateX(-50%); font-size: 24px; pointer-events: none; animation: floaty 1.8s ease-in-out infinite; }
 @keyframes rub { 0%,100% { transform: translateX(-50%) rotate(-16deg) } 50% { transform: translateX(-50%) rotate(16deg) } }
 @keyframes floaty { 0%,100% { transform: translateX(-50%) translateY(0) } 50% { transform: translateX(-50%) translateY(-6px) } }
@@ -738,7 +742,7 @@ function AuthScreen({
       marginBottom: 20,
       fontSize: 14
     }
-  }, modo === "login" ? "Bienvenida de vuelta 💗" : "Crea tu cuenta gratis"), /*#__PURE__*/React.createElement("div", {
+  }, modo === "login" ? "¡Hola de nuevo! 💗" : "Crea tu cuenta gratis"), /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       maxWidth: 320
@@ -1055,7 +1059,7 @@ const FOODS = [{
   g: 1
 }, {
   id: "mole",
-  n: "Mole con pollo",
+  n: "Pollo con mole",
   u: "1 plato",
   kcal: 480,
   p: 30,
@@ -1398,234 +1402,301 @@ const GAME_ITEMS = [{
 const MENU_DB = {
   desayuno: [{
     n: "Huevos a la mexicana",
-    d: "3 huevos · 2 tortillas de maíz · jitomate, cebolla y chile",
-    kcal: 390,
-    p: 27,
-    c: 28,
+    d: "3 huevos · 1 tortilla de maíz · jitomate, cebolla y chile",
+    kcal: 340,
+    p: 26,
+    c: 18,
     g: 18,
     veg: true,
-    con: ["huevo"]
+    con: ["huevo"],
+    main: "huevo"
   }, {
     n: "Omelette de claras y panela",
-    d: "4 claras + 1 huevo · 40 g de panela · espinaca · 2 tortillas de maíz",
-    kcal: 340,
-    p: 30,
-    c: 28,
+    d: "5 claras + 1 huevo · 50 g de panela · espinaca · 1 tortilla de maíz",
+    kcal: 320,
+    p: 34,
+    c: 18,
     g: 12,
     veg: true,
-    con: ["huevo", "lacteo"]
+    con: ["huevo", "lacteo"],
+    main: "huevo"
   }, {
-    n: "Yogur griego alto en proteína con fresas",
-    d: "200 g de yogur griego · 1 taza de fresas · 20 g de granola",
-    kcal: 300,
-    p: 24,
-    c: 34,
-    g: 7,
-    veg: true,
-    con: ["lacteo", "gluten"]
-  }, {
-    n: "Molletes de frijol con huevo",
-    d: "1 bolillo integral · ½ taza de frijol · 1 huevo · pico de gallo",
-    kcal: 410,
-    p: 20,
-    c: 50,
-    g: 14,
-    veg: true,
-    con: ["gluten", "huevo"]
-  }, {
-    n: "Chilaquiles verdes con huevo y panela",
-    d: "Totopos horneados · salsa verde · 1 huevo · 40 g de panela",
-    kcal: 430,
-    p: 26,
-    c: 40,
-    g: 18,
-    veg: true,
-    con: ["huevo", "lacteo"]
-  }, {
-    n: "Hot cakes de avena con huevo",
-    d: "40 g de avena · 1 huevo · ½ plátano · canela",
-    kcal: 360,
-    p: 16,
-    c: 52,
-    g: 9,
-    veg: true,
-    con: ["huevo"]
-  }, {
-    n: "Tacos de nopal con frijol y aguacate",
-    d: "2 tortillas de maíz · nopal asado · ½ taza de frijol · ¼ de aguacate (vegano)",
-    kcal: 340,
-    p: 13,
-    c: 46,
+    n: "Queso cottage con fresas y nuez",
+    d: "200 g de queso cottage · 1 taza de fresas · 15 g de nuez",
+    kcal: 290,
+    p: 28,
+    c: 18,
     g: 12,
     veg: true,
-    con: []
+    con: ["lacteo", "nuez"],
+    main: "cottage"
   }, {
     n: "Huevos con aguacate y espinaca",
-    d: "3 huevos · ½ aguacate · espinaca salteada (sin tortilla, bajo en carbos)",
+    d: "3 huevos · ½ aguacate · espinaca salteada",
     kcal: 330,
     p: 21,
     c: 8,
     g: 24,
     veg: true,
     con: ["huevo"],
-    lc: true
+    lc: true,
+    main: "huevo"
+  }, {
+    n: "Chilaquiles verdes con pollo y huevo",
+    d: "Totopos horneados · salsa verde · 1 huevo · 80 g de pollo",
+    kcal: 410,
+    p: 34,
+    c: 24,
+    g: 18,
+    veg: false,
+    con: ["huevo"],
+    main: "pollo"
+  }, {
+    n: "Yogur griego con avena",
+    d: "250 g de yogur griego alto en proteína · 30 g de avena · canela",
+    kcal: 320,
+    p: 30,
+    c: 28,
+    g: 8,
+    veg: true,
+    con: ["lacteo"],
+    main: "yogur"
+  }, {
+    n: "Omelette de panela y champiñones",
+    d: "1 huevo + 4 claras · 60 g de panela · champiñones",
+    kcal: 300,
+    p: 32,
+    c: 12,
+    g: 14,
+    veg: true,
+    con: ["huevo", "lacteo"],
+    main: "huevo"
+  }, {
+    n: "Molletes proteicos de frijol",
+    d: "1 bolillo integral chico · ½ taza de frijol · 60 g de panela",
+    kcal: 380,
+    p: 24,
+    c: 38,
+    g: 12,
+    veg: true,
+    con: ["gluten", "lacteo"],
+    main: "frijol"
   }],
   comida: [{
-    n: "Pollo a la plancha con tostadas y aguacate",
-    d: "150 g de pechuga · 2 tostadas horneadas · ½ aguacate · muchas verduras",
-    kcal: 460,
-    p: 42,
-    c: 32,
-    g: 20,
-    veg: false,
-    con: []
-  }, {
-    n: "Pescado a la plancha con verduras",
-    d: "150 g de pescado · verduras al vapor · ½ aguacate · limón",
-    kcal: 400,
-    p: 36,
-    c: 14,
-    g: 22,
-    veg: false,
-    con: ["pescado"]
-  }, {
-    n: "Fajitas de res",
-    d: "130 g de res · pimientos y cebolla · 2 tortillas de maíz",
-    kcal: 450,
-    p: 36,
-    c: 32,
-    g: 20,
-    veg: false,
-    con: []
-  }, {
-    n: "Tinga de pollo en tostadas (3)",
-    d: "130 g de pollo en tinga · 3 tostadas horneadas · lechuga · ½ aguacate",
-    kcal: 460,
-    p: 34,
-    c: 36,
-    g: 20,
-    veg: false,
-    con: []
-  }, {
-    n: "Bowl de quinoa, frijol y aguacate",
-    d: "¾ taza de quinoa · ½ taza de frijol · ½ aguacate · verduras (vegano)",
-    kcal: 470,
-    p: 18,
-    c: 58,
-    g: 18,
-    veg: true,
-    con: []
-  }, {
-    n: "Pollo con mole y arroz",
-    d: "120 g de pollo bañado en mole rojo · ½ taza de arroz integral · 1 tortilla",
-    kcal: 510,
-    p: 32,
-    c: 42,
-    g: 24,
-    veg: false,
-    con: ["nuez"]
-  }, {
-    n: "Pollo con ensalada y aguacate",
-    d: "150 g de pechuga · ensalada grande · ½ aguacate · limón (sin tostadas, bajo en carbos)",
-    kcal: 390,
-    p: 42,
-    c: 10,
+    n: "Pollo a la plancha con ensalada y aguacate",
+    d: "180 g de pechuga · ensalada grande · ½ aguacate · limón",
+    kcal: 410,
+    p: 48,
+    c: 12,
     g: 20,
     veg: false,
     con: [],
-    lc: true
+    lc: true,
+    main: "pollo"
+  }, {
+    n: "Pescado a la plancha con verduras",
+    d: "180 g de pescado · verduras al vapor · ½ aguacate",
+    kcal: 420,
+    p: 42,
+    c: 14,
+    g: 22,
+    veg: false,
+    con: ["pescado"],
+    main: "pescado"
+  }, {
+    n: "Fajitas de res",
+    d: "160 g de res · pimientos y cebolla · 1 tortilla de maíz",
+    kcal: 430,
+    p: 42,
+    c: 20,
+    g: 20,
+    veg: false,
+    con: [],
+    main: "res"
+  }, {
+    n: "Tinga de pollo en tostadas (2)",
+    d: "160 g de pollo en tinga · 2 tostadas horneadas · ½ aguacate",
+    kcal: 440,
+    p: 40,
+    c: 26,
+    g: 20,
+    veg: false,
+    con: [],
+    main: "pollo"
+  }, {
+    n: "Pollo con mole y arroz",
+    d: "160 g de pollo bañado en mole · ⅓ taza de arroz integral · 1 tortilla",
+    kcal: 490,
+    p: 42,
+    c: 30,
+    g: 22,
+    veg: false,
+    con: ["nuez"],
+    main: "pollo"
+  }, {
+    n: "Picadillo de res con verduras",
+    d: "170 g de picadillo de res · papa, zanahoria y chícharo · 1 tortilla",
+    kcal: 450,
+    p: 40,
+    c: 28,
+    g: 20,
+    veg: false,
+    con: [],
+    main: "res"
+  }, {
+    n: "Calabazas guisadas con pollo",
+    d: "170 g de pollo deshebrado · calabacitas con jitomate y elote · 1 tortilla",
+    kcal: 400,
+    p: 40,
+    c: 22,
+    g: 14,
+    veg: false,
+    con: [],
+    main: "pollo"
+  }, {
+    n: "Pechuga con camote al horno",
+    d: "190 g de pechuga · 150 g de camote al horno · ensalada verde",
+    kcal: 470,
+    p: 46,
+    c: 34,
+    g: 12,
+    veg: false,
+    con: [],
+    main: "pollo"
+  }, {
+    n: "Bowl de pollo, quinoa y aguacate",
+    d: "150 g de pollo · ½ taza de quinoa · ½ aguacate · verduras",
+    kcal: 480,
+    p: 42,
+    c: 30,
+    g: 20,
+    veg: false,
+    con: [],
+    main: "pollo"
   }],
   cena: [{
     n: "Caldo de pollo con verduras",
-    d: "120 g de pollo · calabaza, zanahoria y chayote · 1 tortilla",
-    kcal: 300,
-    p: 28,
-    c: 20,
+    d: "160 g de pollo · calabaza, zanahoria y chayote · 1 tortilla",
+    kcal: 320,
+    p: 36,
+    c: 18,
     g: 10,
     veg: false,
-    con: []
+    con: [],
+    main: "pollo"
   }, {
     n: "Ensalada de atún con aguacate",
-    d: "1 lata de atún en agua · ½ aguacate · 2 tostadas horneadas · ensalada",
+    d: "1½ latas de atún en agua · ½ aguacate · 1 tostada horneada · ensalada",
     kcal: 340,
-    p: 30,
-    c: 18,
+    p: 38,
+    c: 12,
     g: 16,
     veg: false,
-    con: ["pescado"]
+    con: ["pescado"],
+    main: "atun"
   }, {
-    n: "Omelette de claras con espinaca",
-    d: "4 claras + 1 huevo · espinaca · 30 g de panela",
-    kcal: 280,
-    p: 30,
+    n: "Omelette de claras con espinaca y panela",
+    d: "5 claras + 1 huevo · espinaca · 50 g de panela",
+    kcal: 300,
+    p: 36,
     c: 10,
     g: 12,
     veg: true,
-    con: ["huevo", "lacteo"]
+    con: ["huevo", "lacteo"],
+    main: "huevo"
   }, {
-    n: "Quesadillas de nopal con panela (2)",
-    d: "2 tortillas · 60 g de panela · nopal asado · salsa",
-    kcal: 320,
-    p: 18,
-    c: 30,
+    n: "Calabazas guisadas con pollo y queso cottage",
+    d: "150 g de pollo · calabacitas con jitomate · 80 g de queso cottage",
+    kcal: 350,
+    p: 38,
+    c: 16,
     g: 14,
-    veg: true,
-    con: ["lacteo"]
-  }, {
-    n: "Sopa de lentejas con verduras",
-    d: "1 taza de lentejas · zanahoria y apio · 1 tortilla (vegano)",
-    kcal: 330,
-    p: 18,
-    c: 48,
-    g: 6,
-    veg: true,
-    con: []
-  }, {
-    n: "Tinga de pollo en tostadas (2)",
-    d: "100 g de pollo en tinga · 2 tostadas horneadas · lechuga",
-    kcal: 340,
-    p: 26,
-    c: 30,
-    g: 12,
     veg: false,
-    con: []
+    con: ["lacteo"],
+    main: "pollo"
+  }, {
+    n: "Picadillo de res con ensalada",
+    d: "160 g de picadillo de res · ensalada grande · ¼ aguacate",
+    kcal: 350,
+    p: 36,
+    c: 14,
+    g: 16,
+    veg: false,
+    con: [],
+    lc: true,
+    main: "res"
+  }, {
+    n: "Tacos de tinga de pollo (2)",
+    d: "150 g de pollo en tinga · 2 tostadas horneadas · lechuga",
+    kcal: 380,
+    p: 36,
+    c: 26,
+    g: 14,
+    veg: false,
+    con: [],
+    main: "pollo"
+  }, {
+    n: "Pescado al mojo de ajo con verduras",
+    d: "170 g de pescado · ejotes y zanahoria salteados",
+    kcal: 330,
+    p: 40,
+    c: 12,
+    g: 14,
+    veg: false,
+    con: ["pescado"],
+    lc: true,
+    main: "pescado"
+  }, {
+    n: "Sopa de lentejas",
+    d: "1 taza de lentejas · zanahoria, apio y jitomate · cilantro",
+    kcal: 280,
+    p: 18,
+    c: 40,
+    g: 4,
+    veg: true,
+    con: [],
+    main: "lenteja"
+  }, {
+    n: "Pechuga asada con ensalada",
+    d: "180 g de pechuga asada · ensalada grande · ½ aguacate · limón",
+    kcal: 390,
+    p: 46,
+    c: 10,
+    g: 18,
+    veg: false,
+    con: [],
+    main: "pollo"
   }],
   snack: [{
     n: "Yogur griego con nuez",
-    d: "150 g de yogur griego natural · 10 g de nuez",
-    kcal: 170,
-    p: 15,
-    c: 8,
+    d: "200 g de yogur griego natural · 10 g de nuez",
+    kcal: 200,
+    p: 22,
+    c: 10,
     g: 8,
     veg: true,
-    con: ["lacteo", "nuez"]
+    con: ["lacteo", "nuez"],
+    main: "yogur"
   }, {
-    n: "Manzana con crema de cacahuate",
-    d: "1 manzana · 1 cda (15 g) de crema de cacahuate natural",
-    kcal: 200,
-    p: 6,
-    c: 24,
-    g: 10,
+    n: "Queso cottage con fresas",
+    d: "120 g de queso cottage · 1 taza de fresas",
+    kcal: 120,
+    p: 14,
+    c: 8,
+    g: 2,
     veg: true,
-    con: ["nuez"]
+    con: ["lacteo"],
+    main: "cottage"
   }, {
-    n: "Jícama con limón y chile",
-    d: "1 taza (130 g) de jícama · limón · chile en polvo",
-    kcal: 60,
-    p: 1,
-    c: 14,
-    g: 0,
-    veg: true,
-    con: []
-  }, {
-    n: "Puño de almendras",
-    d: "20 g de almendras (~15 piezas)",
+    n: "Ensalada de pepino con yogur griego y ajonjolí",
+    d: "150 g de yogur griego natural · pepino · 10 g de ajonjolí · limón",
     kcal: 140,
-    p: 5,
-    c: 5,
-    g: 12,
+    p: 17,
+    c: 8,
+    g: 7,
     veg: true,
-    con: ["nuez"]
+    con: ["lacteo"],
+    main: "yogur"
   }, {
     n: "Huevos cocidos con pepino",
     d: "2 huevos cocidos · pepino con limón y chile",
@@ -1634,16 +1705,58 @@ const MENU_DB = {
     c: 4,
     g: 11,
     veg: true,
-    con: ["huevo"]
+    con: ["huevo"],
+    main: "huevo"
   }, {
-    n: "Zanahoria con hummus",
-    d: "1 taza de bastones de zanahoria · 2 cda de hummus",
-    kcal: 120,
-    p: 4,
-    c: 16,
-    g: 5,
+    n: "Puño de almendras",
+    d: "20 g de almendras (~15 piezas)",
+    kcal: 140,
+    p: 5,
+    c: 5,
+    g: 12,
     veg: true,
-    con: []
+    con: ["nuez"],
+    main: "almendra"
+  }, {
+    n: "Rollitos de pavo con aguacate",
+    d: "60 g de pechuga de pavo · ¼ aguacate · pepino",
+    kcal: 160,
+    p: 16,
+    c: 6,
+    g: 9,
+    veg: false,
+    con: [],
+    main: "pavo"
+  }, {
+    n: "Edamames con sal",
+    d: "1 taza de edamames con vaina",
+    kcal: 150,
+    p: 14,
+    c: 12,
+    g: 6,
+    veg: true,
+    con: [],
+    main: "edamame"
+  }, {
+    n: "Jícama con limón y chile",
+    d: "1 taza (130 g) de jícama · limón · chile en polvo",
+    kcal: 60,
+    p: 1,
+    c: 14,
+    g: 0,
+    veg: true,
+    con: [],
+    main: "jicama"
+  }, {
+    n: "Camote cocido con canela",
+    d: "120 g de camote cocido · canela",
+    kcal: 100,
+    p: 2,
+    c: 24,
+    g: 0,
+    veg: true,
+    con: [],
+    main: "camote"
   }]
 };
 const ALERGENOS = [["lacteo", "Lácteos"], ["gluten", "Gluten"], ["huevo", "Huevo"], ["pescado", "Pescado / mariscos"], ["cerdo", "Cerdo"], ["nuez", "Frutos secos"], ["otros", "Otros"]];
@@ -2013,7 +2126,7 @@ function Axo({
     ry: "30",
     fill: "#ffffff",
     opacity: "0.4"
-  }), /*#__PURE__*/React.createElement("ellipse", {
+  }), !rubbing && /*#__PURE__*/React.createElement("ellipse", {
     cx: "80",
     cy: "128",
     rx: "9",
@@ -2495,28 +2608,63 @@ function Axo({
       rx: "2",
       fill: col
     })));
-  })(), rubbing && /*#__PURE__*/React.createElement("g", {
-    className: "axo-rub2"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M126 136 C 122 141, 116 148, 108 154 C 104 157, 99 159, 99 155 C 99 151, 105 150, 110 146 C 116 141, 122 136, 126 136 Z",
+  })(), rubbing && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("g", {
+    className: "axo-rub-l",
+    style: {
+      transformOrigin: "82px 132px"
+    }
+  }, /*#__PURE__*/React.createElement("ellipse", {
+    cx: "88",
+    cy: "146",
+    rx: "8",
+    ry: "14",
     fill: bodyFill,
     stroke: pal.gill,
-    strokeWidth: "1.8",
-    strokeLinejoin: "round"
+    strokeWidth: "2",
+    transform: "rotate(38 88 146)"
   }), /*#__PURE__*/React.createElement("circle", {
-    cx: "101",
-    cy: "156",
-    r: "9",
+    cx: "94",
+    cy: "155",
+    r: "8",
     fill: bodyFill,
     stroke: pal.gill,
-    strokeWidth: "1.8"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "98",
-    cy: "153",
-    r: "4",
+    strokeWidth: "2"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "91",
+    cy: "152",
+    rx: "2.6",
+    ry: "2",
     fill: "#ffffff",
-    opacity: "0.5"
-  }))));
+    opacity: "0.45"
+  })), /*#__PURE__*/React.createElement("g", {
+    className: "axo-rub-r",
+    style: {
+      transformOrigin: "118px 132px"
+    }
+  }, /*#__PURE__*/React.createElement("ellipse", {
+    cx: "112",
+    cy: "146",
+    rx: "8",
+    ry: "14",
+    fill: bodyFill,
+    stroke: pal.gill,
+    strokeWidth: "2",
+    transform: "rotate(-38 112 146)"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "106",
+    cy: "155",
+    r: "8",
+    fill: bodyFill,
+    stroke: pal.gill,
+    strokeWidth: "2"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "109",
+    cy: "152",
+    rx: "2.6",
+    ry: "2",
+    fill: "#ffffff",
+    opacity: "0.45"
+  })))));
 }
 
 /* ---------- RING ---------- */
@@ -4439,258 +4587,6 @@ function InfoDot({
     }
   }, text));
 }
-
-/* ---------- BLOQUES DE COLORES (estilo block blast) ---------- */
-var BJ_ROWS = 9,
-  BJ_COLS = 7;
-var BJ_COLORS = [{
-  bg: "#FF6B6B",
-  em: "🍎"
-}, {
-  bg: "#34BC97",
-  em: "🥦"
-}, {
-  bg: "#5B8DEF",
-  em: "🫐"
-}, {
-  bg: "#F2B705",
-  em: "🍌"
-}];
-function bjMake() {
-  var g = [];
-  for (var r = 0; r < BJ_ROWS; r++) {
-    var row = [];
-    for (var c = 0; c < BJ_COLS; c++) row.push(Math.floor(Math.random() * BJ_COLORS.length));
-    g.push(row);
-  }
-  return g;
-}
-function bjGroup(g, r, c) {
-  var color = g[r][c];
-  if (color == null) return [];
-  var stack = [[r, c]],
-    seen = {},
-    out = [];
-  seen[r + "," + c] = true;
-  while (stack.length) {
-    var cur = stack.pop(),
-      y = cur[0],
-      x = cur[1];
-    out.push([y, x]);
-    var nb = [[y - 1, x], [y + 1, x], [y, x - 1], [y, x + 1]];
-    for (var k = 0; k < nb.length; k++) {
-      var ny = nb[k][0],
-        nx = nb[k][1];
-      if (ny >= 0 && ny < BJ_ROWS && nx >= 0 && nx < BJ_COLS && !seen[ny + "," + nx] && g[ny][nx] === color) {
-        seen[ny + "," + nx] = true;
-        stack.push([ny, nx]);
-      }
-    }
-  }
-  return out;
-}
-function bjCollapse(g) {
-  var cols = [];
-  for (var c = 0; c < BJ_COLS; c++) {
-    var col = [];
-    for (var r = BJ_ROWS - 1; r >= 0; r--) if (g[r][c] != null) col.push(g[r][c]);
-    cols.push(col);
-  }
-  cols = cols.filter(function (col) {
-    return col.length > 0;
-  });
-  while (cols.length < BJ_COLS) cols.push([]);
-  var ng = [];
-  for (var r2 = 0; r2 < BJ_ROWS; r2++) {
-    var row = [];
-    for (var c2 = 0; c2 < BJ_COLS; c2++) row.push(null);
-    ng.push(row);
-  }
-  for (var c3 = 0; c3 < BJ_COLS; c3++) {
-    var col2 = cols[c3];
-    for (var k2 = 0; k2 < col2.length; k2++) ng[BJ_ROWS - 1 - k2][c3] = col2[k2];
-  }
-  return ng;
-}
-function bjHasMoves(g) {
-  for (var r = 0; r < BJ_ROWS; r++) for (var c = 0; c < BJ_COLS; c++) {
-    var v = g[r][c];
-    if (v == null) continue;
-    if (r + 1 < BJ_ROWS && g[r + 1][c] === v || c + 1 < BJ_COLS && g[r][c + 1] === v) return true;
-  }
-  return false;
-}
-function BlockJamScreen({
-  pet,
-  chub,
-  petName,
-  setScreen,
-  setXp,
-  showToast,
-  best,
-  recordBest
-}) {
-  const [grid, setGrid] = useState(bjMake);
-  const [score, setScore] = useState(0);
-  const [over, setOver] = useState(false);
-  const reward = Math.min(30, Math.max(3, Math.floor(score / 15)));
-  const tap = (r, c) => {
-    if (over) return;
-    const grp = bjGroup(grid, r, c);
-    if (grp.length < 2) return;
-    const ng = grid.map(function (row) {
-      return row.slice();
-    });
-    grp.forEach(function (p) {
-      ng[p[0]][p[1]] = null;
-    });
-    const collapsed = bjCollapse(ng);
-    const ns = score + grp.length * (grp.length + 1);
-    setScore(ns);
-    setGrid(collapsed);
-    if (!bjHasMoves(collapsed)) {
-      setOver(true);
-      recordBest("blockjam", ns);
-    }
-  };
-  const restart = () => {
-    setGrid(bjMake());
-    setScore(0);
-    setOver(false);
-  };
-  const claim = () => {
-    recordBest("blockjam", score);
-    setXp(function (x) {
-      return Math.min(99, x + reward);
-    });
-    showToast("+" + reward + " XP 🧩");
-    setScreen("arcade");
-  };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "screen",
-    style: {
-      background: "linear-gradient(180deg,#EFF4FF,#E3ECFF)"
-    }
-  }, /*#__PURE__*/React.createElement(Header, {
-    title: "\uD83E\uDDE9 Bloques de colores",
-    back: () => setScreen("arcade")
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "scroll",
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center"
-    }
-  }, over ? /*#__PURE__*/React.createElement("div", {
-    className: "center",
-    style: {
-      paddingTop: 20
-    }
-  }, /*#__PURE__*/React.createElement(Axo, {
-    paletteKey: pet.palette,
-    accessory: pet.accessory,
-    outfit: pet.outfit,
-    estilo: pet.estilo,
-    chub: chub,
-    mood: "amor",
-    size: 150
-  }), /*#__PURE__*/React.createElement("h2", {
-    className: "display",
-    style: {
-      fontSize: 26,
-      margin: "8px 0 4px"
-    }
-  }, "\xA1", score, " puntos!"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
-    className: "display",
-    style: {
-      color: "#F2B705",
-      fontSize: 15
-    }
-  }, "\uD83C\uDFC6 \xA1Nuevo r\xE9cord!"), /*#__PURE__*/React.createElement("p", {
-    className: "muted",
-    style: {
-      marginBottom: 16
-    }
-  }, "Ya no quedan jugadas \xB7 \uD83C\uDFC6 ", Math.max(best, score)), /*#__PURE__*/React.createElement("button", {
-    className: "btn primary big",
-    onClick: claim
-  }, "Reclamar +", reward, " XP y volver"), /*#__PURE__*/React.createElement("button", {
-    className: "btn ghost",
-    style: {
-      marginTop: 10
-    },
-    onClick: restart
-  }, "\uD83D\uDD04 Jugar otra vez")) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: "100%",
-      padding: "8px 0",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center"
-    }
-  }, /*#__PURE__*/React.createElement("p", {
-    style: {
-      textAlign: "center",
-      fontFamily: "Fredoka",
-      fontWeight: 600,
-      color: "#7a8093",
-      marginBottom: 4,
-      fontSize: 13.5,
-      maxWidth: 300
-    }
-  }, "Toca grupos de 2 o m\xE1s del mismo color. \xA1Entre m\xE1s grandes, m\xE1s puntos!"), /*#__PURE__*/React.createElement("p", {
-    style: {
-      textAlign: "center",
-      fontFamily: "Fredoka",
-      fontWeight: 700,
-      color: "#5B8DEF",
-      marginBottom: 10
-    }
-  }, "Puntos: ", score, " \xB7 \uD83C\uDFC6 ", best), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(7,1fr)",
-      gap: 4,
-      width: "100%",
-      maxWidth: 318,
-      background: "#ffffff80",
-      padding: 6,
-      borderRadius: 14
-    }
-  }, grid.map(function (row, r) {
-    return row.map(function (v, c) {
-      return /*#__PURE__*/React.createElement("button", {
-        key: r + "-" + c,
-        onClick: () => tap(r, c),
-        style: {
-          height: 38,
-          borderRadius: 9,
-          border: "none",
-          background: v == null ? "#00000008" : BJ_COLORS[v].bg,
-          boxShadow: v == null ? "none" : "inset 0 -3px 0 #0000002a",
-          fontSize: 17,
-          cursor: v == null ? "default" : "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 0
-        }
-      }, v == null ? "" : BJ_COLORS[v].em);
-    });
-  })), /*#__PURE__*/React.createElement("button", {
-    className: "btn ghost",
-    style: {
-      marginTop: 14
-    },
-    onClick: claim
-  }, "Reclamar +", reward, " XP y salir"), /*#__PURE__*/React.createElement("button", {
-    className: "btn ghost",
-    style: {
-      marginTop: 8
-    },
-    onClick: restart
-  }, "\uD83D\uDD04 Reiniciar"))));
-}
 function App() {
   const [userId, setUserId] = useState(null);
   const [phase, setPhase] = useState("auth"); // "auth" | "onboarding" | "app"
@@ -4894,13 +4790,52 @@ function App() {
     });
     return d;
   };
-  const [weekPlan, setWeekPlan] = React.useState(() => {
+  const genWeek = () => {
+    const pools = {};
+    MEAL_SPLIT.forEach(([k]) => {
+      const al = [...allowedIdx(k)];
+      for (let i = al.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [al[i], al[j]] = [al[j], al[i]];
+      }
+      pools[k] = al;
+    });
+    const cursor = {};
+    MEAL_SPLIT.forEach(([k]) => cursor[k] = 0);
     const w = {};
-    DIAS.forEach(d => {
-      w[d] = genDay();
+    DIAS.forEach(day => {
+      const d = {};
+      const usedMains = [];
+      MEAL_SPLIT.forEach(([k]) => {
+        const pool = pools[k];
+        if (!pool.length) {
+          d[k] = pickIdx(k);
+          return;
+        }
+        // buscar el siguiente platillo cuyo ingrediente principal no esté ya usado hoy
+        let chosen = null;
+        for (let off = 0; off < pool.length; off++) {
+          const idx = pool[(cursor[k] + off) % pool.length];
+          const mn = MENU_DB[k][idx].main;
+          if (!mn || !usedMains.includes(mn)) {
+            chosen = idx;
+            cursor[k] = (cursor[k] + off + 1) % pool.length;
+            break;
+          }
+        }
+        if (chosen === null) {
+          chosen = pool[cursor[k] % pool.length];
+          cursor[k] = (cursor[k] + 1) % pool.length;
+        } // relajar regla
+        d[k] = chosen;
+        const mn = MENU_DB[k][chosen].main;
+        if (mn) usedMains.push(mn);
+      });
+      w[day] = d;
     });
     return w;
-  });
+  };
+  const [weekPlan, setWeekPlan] = React.useState(genWeek);
   const [weekEaten, setWeekEaten] = React.useState({});
   const toggleEaten = (day, meal) => {
     const k = day + "_" + meal;
@@ -4926,13 +4861,7 @@ function App() {
     ...w,
     [day]: genDay()
   }));
-  const regenWeek = () => {
-    const w = {};
-    DIAS.forEach(d => {
-      w[d] = genDay();
-    });
-    setWeekPlan(w);
-  };
+  const regenWeek = () => setWeekPlan(genWeek());
   const toggleEvitar = key => setPrefs(p => ({
     ...p,
     evitar: p.evitar.includes(key) ? p.evitar.filter(x => x !== key) : [...p.evitar, key]
@@ -5371,7 +5300,7 @@ function App() {
       gap: 4,
       marginBottom: 6
     }
-  }, DIAS.map(d => {
+  }, DIAS.map((d, di) => {
     const eaten = MEAL_SPLIT.filter(([k]) => weekEaten[d + "_" + k]).length;
     return /*#__PURE__*/React.createElement("div", {
       key: d,
@@ -5389,7 +5318,7 @@ function App() {
         display: "block",
         color: "#4a4f6a"
       }
-    }, d), /*#__PURE__*/React.createElement("div", {
+    }, DIAS_LABEL[di]), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         justifyContent: "center",
@@ -5759,10 +5688,10 @@ function App() {
       d: "L",
       peso: 69.2
     }, {
-      d: "M",
+      d: "Ma",
       peso: 69.0
     }, {
-      d: "X",
+      d: "Mi",
       peso: 68.7
     }, {
       d: "J",
@@ -6204,7 +6133,7 @@ function App() {
     }, "Generar otra receta")));
   };
   const JuegosScreen = () => {
-    const games = [["game_catch", "🍬", "Atrapa la comida sana", "catch"], ["game_blockjam", "🧩", "Bloques de colores", "blockjam"], ["game_memo", "🧠", "Memorama de comida", "memo"], ["game_quiz", "🥗", "¿Saludable o antojo?", "quiz"], ["game_cal", "🔥", "¿Más calorías?", "cal"], ["game_simon", "🎵", "Axo Dice", "simon"]];
+    const games = [["game_catch", "🍬", "Atrapa la comida sana", "catch"], ["game_memo", "🧠", "Memorama de comida", "memo"], ["game_quiz", "🥗", "¿Saludable o antojo?", "quiz"], ["game_cal", "🔥", "¿Más calorías?", "cal"], ["game_simon", "🎵", "Axo Dice", "simon"]];
     return /*#__PURE__*/React.createElement("div", {
       className: "screen"
     }, /*#__PURE__*/React.createElement(Header, {
@@ -6882,15 +6811,6 @@ function App() {
     showToast: showToast,
     best: best.quiz || 0,
     recordBest: recordBest
-  }), screen === "game_blockjam" && /*#__PURE__*/React.createElement(BlockJamScreen, {
-    pet: pet,
-    chub: chub,
-    petName: petName,
-    setScreen: setScreen,
-    setXp: setXp,
-    showToast: showToast,
-    best: best.blockjam || 0,
-    recordBest: recordBest
   }), screen === "game_memo" && /*#__PURE__*/React.createElement(MemoScreen, {
     pet: pet,
     chub: chub,
@@ -7360,9 +7280,6 @@ class ErrorBoundary extends React.Component {
   }
 }
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(ErrorBoundary, null, /*#__PURE__*/React.createElement(App, null)));
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(React.createElement(App));
 </script>
 </body>
 </html>
