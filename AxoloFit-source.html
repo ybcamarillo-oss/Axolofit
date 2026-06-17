@@ -427,7 +427,7 @@ const PALETTES = {
 };
 // Skins que se regalan al cumplir metas (1ra vez y cada 7 días)
 const SKINS_REGALO = ["dorado", "leucistico", "galaxia", "albino", "cobre", "melanico", "salvaje", "arcoiris"];
-const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, corona: { label: "Corona", premium: true } };
+const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, conejo: { label: "Gorro conejo", premium: false }, gato: { label: "Gorro gato", premium: false }, corona: { label: "Corona", premium: true } };
 const ESTILOS = { clasico: { label: "Clásico", premium: false }, galan: { label: "Galán", premium: false } };
 const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false }, hoodieRojo: { label: "Hoodie rojo", premium: false }, hoodieAzul: { label: "Hoodie azul", premium: false }, playeraRaya: { label: "Playera rayada", premium: false }, poloRosa: { label: "Polo rosa", premium: false } };
 const BACKGROUNDS = { agua: { label: "Agua", from: "#E7F7F4", to: "#CDEFE9", premium: false }, lavanda: { label: "Lavanda", from: "#F0EBFF", to: "#E2D8FF", premium: false }, atardecer: { label: "Atardecer", from: "#FFE9D6", to: "#FFD3C0", premium: false }, noche: { label: "Noche", from: "#4E5180", to: "#3A3D63", premium: true } };
@@ -711,6 +711,37 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
         {accessory === "gorra" && (
           <g transform="translate(100,46)"><path d="M-34 6 Q -34 -22 0 -22 Q 34 -22 34 6 Z" fill="#3E7BD6" /><path d="M2 6 Q 38 6 46 16 Q 24 13 2 13 Z" fill="#2F66BC" /><circle cx="0" cy="-20" r="3.5" fill="#2F66BC" /></g>
         )}
+        {accessory === "conejo" && (
+          <g transform="translate(100,40)">
+            {/* oreja izquierda */}
+            <ellipse cx="-20" cy="-34" rx="9" ry="26" fill="#FBFBF7" stroke="#E8E5DC" strokeWidth="2" transform="rotate(-14 -20 -34)" />
+            <ellipse cx="-20" cy="-34" rx="4.5" ry="17" fill="#F6B8C8" transform="rotate(-14 -20 -34)" />
+            {/* oreja derecha */}
+            <ellipse cx="20" cy="-34" rx="9" ry="26" fill="#FBFBF7" stroke="#E8E5DC" strokeWidth="2" transform="rotate(14 20 -34)" />
+            <ellipse cx="20" cy="-34" rx="4.5" ry="17" fill="#F6B8C8" transform="rotate(14 20 -34)" />
+            {/* gorro peludo */}
+            <path d="M-40 6 Q -42 -26 0 -26 Q 42 -26 40 6 Q 20 -2 0 -2 Q -20 -2 -40 6 Z" fill="#FBFBF7" stroke="#E8E5DC" strokeWidth="2" />
+          </g>
+        )}
+        {accessory === "gato" && (
+          <g transform="translate(100,42)">
+            {/* gorro gris tejido */}
+            <path d="M-38 8 Q -40 -24 0 -24 Q 40 -24 38 8 Q 19 0 0 0 Q -19 0 -38 8 Z" fill="#C9C2B0" stroke="#B0A892" strokeWidth="2" />
+            {/* oreja izquierda de gato */}
+            <path d="M-30 -16 L -38 -36 L -16 -24 Z" fill="#C9C2B0" stroke="#B0A892" strokeWidth="2" strokeLinejoin="round" />
+            {/* oreja derecha */}
+            <path d="M30 -16 L 38 -36 L 16 -24 Z" fill="#C9C2B0" stroke="#B0A892" strokeWidth="2" strokeLinejoin="round" />
+            {/* rayitas tipo Pusheen */}
+            <line x1="-10" y1="-20" x2="-10" y2="-13" stroke="#6E5E3C" strokeWidth="2.2" strokeLinecap="round" />
+            <line x1="0" y1="-21" x2="0" y2="-13" stroke="#6E5E3C" strokeWidth="2.2" strokeLinecap="round" />
+            <line x1="10" y1="-20" x2="10" y2="-13" stroke="#6E5E3C" strokeWidth="2.2" strokeLinecap="round" />
+            {/* pompones colgantes */}
+            <line x1="-34" y1="6" x2="-38" y2="24" stroke="#B0A892" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="-38" cy="27" r="4" fill="#C9C2B0" stroke="#B0A892" strokeWidth="1.5" />
+            <line x1="34" y1="6" x2="38" y2="24" stroke="#B0A892" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="38" cy="27" r="4" fill="#C9C2B0" stroke="#B0A892" strokeWidth="1.5" />
+          </g>
+        )}
         {accessory === "monito" && (
           <g transform="translate(100,120)"><path d="M0 0 L -20 -11 L -20 11 Z" fill="#E0556E" /><path d="M0 0 L 20 -11 L 20 11 Z" fill="#E0556E" /><rect x="-6" y="-8" width="12" height="16" rx="4" fill="#C24459" /></g>
         )}
@@ -761,8 +792,6 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
               {/* puños */}
               <ellipse cx={cx - jw * 0.92} cy="142" rx="13" ry="4.5" fill={dark} transform={"rotate(-28 " + (cx - jw * 0.92) + " 142)"} />
               <ellipse cx={cx + jw * 0.92} cy="142" rx="13" ry="4.5" fill={dark} transform={"rotate(28 " + (cx + jw * 0.92) + " 142)"} />
-              {/* capucha */}
-              <path d={"M" + (cx - jw * 0.5) + " 124 Q " + cx + " 110 " + (cx + jw * 0.5) + " 124 Q " + cx + " 132 " + (cx - jw * 0.5) + " 124 Z"} fill={dark} />
               {/* bolsa canguro */}
               <path d={"M" + (cx - jw * 0.5) + " 165 Q " + cx + " 172 " + (cx + jw * 0.5) + " 165 L " + (cx + jw * 0.42) + " 182 L " + (cx - jw * 0.42) + " 182 Z"} fill="none" stroke={dark} strokeWidth="2.5" />
               {/* cordones (más abajo, sobre el pecho) */}
