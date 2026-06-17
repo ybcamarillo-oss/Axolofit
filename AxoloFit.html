@@ -4838,12 +4838,30 @@ function App() {
   };
   const [weekPlan, setWeekPlan] = React.useState(genWeek);
   const [weekEaten, setWeekEaten] = React.useState({});
-  const toggleEaten = (day, meal) => {
+  const toggleEaten = (day, meal, dish) => {
     const k = day + "_" + meal;
+    const yaEstaba = weekEaten[k];
     setWeekEaten(e => ({
       ...e,
       [k]: !e[k]
     }));
+    if (!dish) return;
+    const planUid = "plan_" + day + "_" + meal;
+    if (!yaEstaba) {
+      // palomear: agregar al conteo del día
+      addFood({
+        id: planUid,
+        n: dish.n,
+        u: "1 porción",
+        kcal: dish.kcal,
+        p: dish.p,
+        c: dish.c,
+        g: dish.g
+      });
+    } else {
+      // despalomear: quitar del conteo
+      setLog(l => l.filter(f => f.id !== planUid));
+    }
   };
   const swapMeal = (day, meal) => setWeekPlan(w => {
     const al = allowedIdx(meal);
@@ -6495,7 +6513,7 @@ function App() {
           color: "#7a8099"
         }
       }, "Cambiar"), /*#__PURE__*/React.createElement("button", {
-        onClick: () => toggleEaten(selDay, k),
+        onClick: () => toggleEaten(selDay, k, dish),
         style: {
           background: done ? "#EAF7F2" : "#f4f6fb",
           border: "none",
@@ -6506,7 +6524,7 @@ function App() {
           cursor: "pointer",
           color: done ? "#34BC97" : "#9aa0b4"
         }
-      }, done ? "✓ Listo" : "Palomear"))), /*#__PURE__*/React.createElement("b", {
+      }, done ? "✓ Comido" : "Palomear"))), /*#__PURE__*/React.createElement("b", {
         style: {
           fontSize: 15,
           textDecoration: done ? "line-through" : "none"
@@ -6524,32 +6542,7 @@ function App() {
           fontWeight: 600,
           color: "#7a8099"
         }
-      }, dish.kcal, " kcal \xB7 Prot ", dish.p, "g \xB7 Carbos ", dish.c, "g \xB7 Grasa ", dish.g, "g"), done && /*#__PURE__*/React.createElement("button", {
-        style: {
-          marginTop: 6,
-          fontSize: 12,
-          fontFamily: "Fredoka",
-          fontWeight: 600,
-          background: "#EAF7F2",
-          border: "none",
-          borderRadius: 10,
-          padding: "5px 10px",
-          cursor: "pointer",
-          color: "#2c6f5b"
-        },
-        onClick: () => {
-          addFood({
-            id: "plan_" + k,
-            n: dish.n,
-            u: "1 porción",
-            kcal: dish.kcal,
-            p: dish.p,
-            c: dish.c,
-            g: dish.g
-          });
-          showToast("Registrado en tu día 🍽️");
-        }
-      }, "+ Registrar en hoy"));
+      }, dish.kcal, " kcal \xB7 Prot ", dish.p, "g \xB7 Carbos ", dish.c, "g \xB7 Grasa ", dish.g, "g"));
     }), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       style: {
