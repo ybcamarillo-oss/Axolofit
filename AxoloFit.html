@@ -1223,6 +1223,8 @@ const PALETTES = {
     premium: true
   }
 };
+// Skins que se regalan al cumplir metas (1ra vez y cada 7 días)
+const SKINS_REGALO = ["dorado", "leucistico", "galaxia", "albino", "cobre", "melanico", "salvaje", "arcoiris"];
 const ACCESSORIES = {
   ninguno: {
     label: "Ninguno",
@@ -1270,6 +1272,22 @@ const OUTFITS = {
   },
   sarape: {
     label: "Sarape",
+    premium: false
+  },
+  hoodieRojo: {
+    label: "Hoodie rojo",
+    premium: false
+  },
+  hoodieAzul: {
+    label: "Hoodie azul",
+    premium: false
+  },
+  playeraRaya: {
+    label: "Playera rayada",
+    premium: false
+  },
+  poloRosa: {
+    label: "Polo rosa",
     premium: false
   }
 };
@@ -2608,6 +2626,151 @@ function Axo({
       rx: "2",
       fill: col
     })));
+  })(), (outfit === "hoodieRojo" || outfit === "hoodieAzul") && (() => {
+    const jw = tRx * 1.3;
+    const cx = 100;
+    const base = outfit === "hoodieRojo" ? "#D7263D" : "#2E6FD6";
+    const dark = outfit === "hoodieRojo" ? "#A81B2E" : "#2156A8";
+    return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+      d: "M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 190 Q " + cx + " 200 " + (cx - jw * 0.85) + " 190 Z",
+      fill: base
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: cx - jw * 0.92,
+      cy: "134",
+      rx: "15",
+      ry: "11",
+      fill: base,
+      transform: "rotate(-28 " + (cx - jw * 0.92) + " 134)"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: cx + jw * 0.92,
+      cy: "134",
+      rx: "15",
+      ry: "11",
+      fill: base,
+      transform: "rotate(28 " + (cx + jw * 0.92) + " 134)"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: cx - jw * 0.92,
+      cy: "142",
+      rx: "13",
+      ry: "4.5",
+      fill: dark,
+      transform: "rotate(-28 " + (cx - jw * 0.92) + " 142)"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: cx + jw * 0.92,
+      cy: "142",
+      rx: "13",
+      ry: "4.5",
+      fill: dark,
+      transform: "rotate(28 " + (cx + jw * 0.92) + " 142)"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M" + (cx - jw * 0.5) + " 124 Q " + cx + " 110 " + (cx + jw * 0.5) + " 124 Q " + cx + " 132 " + (cx - jw * 0.5) + " 124 Z",
+      fill: dark
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M" + (cx - jw * 0.5) + " 165 Q " + cx + " 172 " + (cx + jw * 0.5) + " 165 L " + (cx + jw * 0.42) + " 182 L " + (cx - jw * 0.42) + " 182 Z",
+      fill: "none",
+      stroke: dark,
+      strokeWidth: "2.5"
+    }), /*#__PURE__*/React.createElement("line", {
+      x1: cx - 5,
+      y1: "126",
+      x2: cx - 7,
+      y2: "148",
+      stroke: "#fff",
+      strokeWidth: "2.5",
+      strokeLinecap: "round"
+    }), /*#__PURE__*/React.createElement("line", {
+      x1: cx + 5,
+      y1: "126",
+      x2: cx + 7,
+      y2: "148",
+      stroke: "#fff",
+      strokeWidth: "2.5",
+      strokeLinecap: "round"
+    }));
+  })(), outfit === "playeraRaya" && (() => {
+    const jw = tRx * 1.26;
+    const cx = 100;
+    return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+      d: "M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 188 Q " + cx + " 198 " + (cx - jw * 0.85) + " 188 Z",
+      fill: "#F7F7F7"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: cx - jw * 0.92,
+      cy: "132",
+      rx: "14",
+      ry: "10",
+      fill: "#F7F7F7",
+      transform: "rotate(-28 " + (cx - jw * 0.92) + " 132)"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: cx + jw * 0.92,
+      cy: "132",
+      rx: "14",
+      ry: "10",
+      fill: "#F7F7F7",
+      transform: "rotate(28 " + (cx + jw * 0.92) + " 132)"
+    }), /*#__PURE__*/React.createElement("rect", {
+      x: cx - jw * 0.82,
+      y: "150",
+      width: jw * 1.64,
+      height: "11",
+      fill: "#222"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M88 127 Q100 137 112 127",
+      fill: "none",
+      stroke: "#222",
+      strokeWidth: "4",
+      strokeLinecap: "round"
+    }));
+  })(), outfit === "poloRosa" && (() => {
+    const jw = tRx * 1.26;
+    const cx = 100;
+    return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+      d: "M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 188 Q " + cx + " 198 " + (cx - jw * 0.85) + " 188 Z",
+      fill: "#F3A6BE"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: cx - jw * 0.92,
+      cy: "132",
+      rx: "14",
+      ry: "10",
+      fill: "#F3A6BE",
+      transform: "rotate(-28 " + (cx - jw * 0.92) + " 132)"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: cx + jw * 0.92,
+      cy: "132",
+      rx: "14",
+      ry: "10",
+      fill: "#F3A6BE",
+      transform: "rotate(28 " + (cx + jw * 0.92) + " 132)"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: cx - jw * 0.92,
+      cy: "139",
+      rx: "12",
+      ry: "4",
+      fill: "#E48BA6",
+      transform: "rotate(-28 " + (cx - jw * 0.92) + " 139)"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: cx + jw * 0.92,
+      cy: "139",
+      rx: "12",
+      ry: "4",
+      fill: "#E48BA6",
+      transform: "rotate(28 " + (cx + jw * 0.92) + " 139)"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M" + (cx - 12) + " 126 L " + (cx - 4) + " 138 L " + cx + " 130 Z",
+      fill: "#E48BA6"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M" + (cx + 12) + " 126 L " + (cx + 4) + " 138 L " + cx + " 130 Z",
+      fill: "#E48BA6"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: cx,
+      cy: "140",
+      r: "1.8",
+      fill: "#fff"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: cx,
+      cy: "148",
+      r: "1.8",
+      fill: "#fff"
+    }));
   })(), rubbing && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("g", {
     className: "axo-rub-l",
     style: {
@@ -4692,6 +4855,7 @@ function App() {
           setXp(axo.xp != null ? axo.xp : 0);
           setStreak(axo.racha != null ? axo.racha : 0);
           setUltimoDia(axo.ultimo_dia || null);
+          setSkinsUnlocked(axo.skins ? axo.skins.split(",").filter(Boolean) : []);
         }
         if (comidas && comidas.length > 0) {
           setLog(comidas.map((c, i) => ({
@@ -4889,6 +5053,8 @@ function App() {
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
   const [ultimoDia, setUltimoDia] = useState(null);
+  const [skinsUnlocked, setSkinsUnlocked] = useState([]);
+  const [regaloSkin, setRegaloSkin] = useState(null);
   const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : "cria";
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest(b => ({
@@ -5028,16 +5194,41 @@ function App() {
     } // primer día o se rompió la racha
     setStreak(nuevaRacha);
     setUltimoDia(hoyStr);
-    if (userId) guardarAxo(userId, {
+    // Desbloqueo de skin: primera vez (racha 1) y cada 7 días (7, 14, 21...)
+    const esDiaDeRegalo = nuevaRacha === 1 || nuevaRacha % 7 === 0;
+    let nuevaSkin = null;
+    if (esDiaDeRegalo && ultimoDia !== hoyStr) {
+      const noDesbloqueadas = SKINS_REGALO.filter(s => !skinsUnlocked.includes(s));
+      if (noDesbloqueadas.length > 0) {
+        nuevaSkin = noDesbloqueadas[0];
+        const nuevasUnlocked = [...skinsUnlocked, nuevaSkin];
+        setSkinsUnlocked(nuevasUnlocked);
+        if (userId) guardarAxo(userId, {
+          variedad: pet.palette,
+          accesorio: pet.accessory,
+          outfit: pet.outfit,
+          nivel: level,
+          xp: xp,
+          racha: nuevaRacha,
+          ultimo_dia: hoyStr,
+          skins: nuevasUnlocked.join(",")
+        });
+      }
+    }
+    if (!nuevaSkin && userId) guardarAxo(userId, {
       variedad: pet.palette,
       accesorio: pet.accessory,
       outfit: pet.outfit,
       nivel: level,
       xp: xp,
       racha: nuevaRacha,
-      ultimo_dia: hoyStr
+      ultimo_dia: hoyStr,
+      skins: skinsUnlocked.join(",")
     });
-    if (ultimoDia === hoyStr) showToast("+50 XP · ¡Bien hecho hoy! 🎁");else showToast("+50 XP · 🔥 ¡Racha de " + nuevaRacha + (nuevaRacha === 1 ? " día!" : " días!") + " 🎁");
+    if (nuevaSkin) {
+      setRegaloSkin(nuevaSkin);
+      setOverlay("regalo");
+    } else if (ultimoDia === hoyStr) showToast("+50 XP · ¡Bien hecho hoy! 🎁");else showToast("+50 XP · 🔥 ¡Racha de " + nuevaRacha + (nuevaRacha === 1 ? " día!" : " días!"));
   };
   const tryPremium = e => {
     e && e.stopPropagation();
@@ -6917,12 +7108,89 @@ function App() {
     className: "reward"
   }, "+50 XP"), /*#__PURE__*/React.createElement("span", {
     className: "reward"
-  }, "\uD83C\uDF81 Skin nueva"), /*#__PURE__*/React.createElement("span", {
-    className: "reward"
   }, "\uD83D\uDD25 Racha ", streak + 1)), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: closeCelebrate
-  }, "\xA1Gracias, ", petName, "!"))), overlay === "paywall" && /*#__PURE__*/React.createElement("div", {
+  }, "\xA1Gracias, ", petName, "!"))), overlay === "regalo" && regaloSkin && /*#__PURE__*/React.createElement("div", {
+    className: "overlay celebrate",
+    onClick: () => {
+      setOverlay(null);
+      setRegaloSkin(null);
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "papel"
+  }, Array.from({
+    length: 14
+  }).map((_, i) => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    style: {
+      left: i * 7 % 100 + "%",
+      animationDelay: i % 5 * 0.2 + "s",
+      background: ["#FF6F9C", "#7C5CFF", "#34BC97", "#FFD15C"][i % 4]
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "celebrate-card",
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 52,
+      marginBottom: 4
+    }
+  }, "\uD83C\uDF81"), /*#__PURE__*/React.createElement("h2", {
+    className: "display",
+    style: {
+      fontSize: 23,
+      margin: "2px 0 6px"
+    }
+  }, "\xA1Nuevo color desbloqueado!"), /*#__PURE__*/React.createElement("div", {
+    className: "kiss-stage",
+    style: {
+      margin: "4px 0"
+    }
+  }, /*#__PURE__*/React.createElement(Axo, {
+    paletteKey: regaloSkin,
+    accessory: pet.accessory,
+    outfit: pet.outfit,
+    estilo: pet.estilo,
+    chub: chub,
+    mood: "amor",
+    size: 150
+  })), /*#__PURE__*/React.createElement("p", {
+    className: "display",
+    style: {
+      fontSize: 19,
+      color: "#E79FAE",
+      margin: "2px 0"
+    }
+  }, PALETTES[regaloSkin] ? PALETTES[regaloSkin].label : regaloSkin), /*#__PURE__*/React.createElement("p", {
+    className: "muted",
+    style: {
+      margin: "2px 14px 12px"
+    }
+  }, "Ya puedes vestir a ", petName, " con este color desde su perfil."), /*#__PURE__*/React.createElement("button", {
+    className: "btn primary big",
+    style: {
+      marginBottom: 8
+    },
+    onClick: () => {
+      updatePet({
+        ...pet,
+        palette: regaloSkin
+      });
+      setOverlay(null);
+      setRegaloSkin(null);
+      showToast("¡" + petName + " estrena color! 🎨");
+    }
+  }, "Pon\xE9rselo ahora"), /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost",
+    style: {
+      width: "100%"
+    },
+    onClick: () => {
+      setOverlay(null);
+      setRegaloSkin(null);
+    }
+  }, "M\xE1s tarde"))), overlay === "paywall" && /*#__PURE__*/React.createElement("div", {
     className: "overlay",
     onClick: () => setOverlay(null)
   }, /*#__PURE__*/React.createElement("div", {
