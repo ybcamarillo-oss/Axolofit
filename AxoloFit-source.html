@@ -1557,7 +1557,20 @@ function App() {
   };
   const [weekPlan, setWeekPlan] = React.useState(genWeek);
   const [weekEaten, setWeekEaten] = React.useState({});
-  const toggleEaten = (day,meal) => { const k=day+"_"+meal; setWeekEaten(e=>({...e,[k]:!e[k]})); };
+  const toggleEaten = (day, meal, dish) => {
+    const k = day + "_" + meal;
+    const yaEstaba = weekEaten[k];
+    setWeekEaten(e => ({ ...e, [k]: !e[k] }));
+    if (!dish) return;
+    const planUid = "plan_" + day + "_" + meal;
+    if (!yaEstaba) {
+      // palomear: agregar al conteo del día
+      addFood({ id: planUid, n: dish.n, u: "1 porción", kcal: dish.kcal, p: dish.p, c: dish.c, g: dish.g });
+    } else {
+      // despalomear: quitar del conteo
+      setLog(l => l.filter(f => f.id !== planUid));
+    }
+  };
   const swapMeal = (day,meal) => setWeekPlan(w=>{ const al=allowedIdx(meal); const cur=w[day][meal]; const pos=al.indexOf(cur); const next=al[(pos+1)%al.length]; return {...w,[day]:{...w[day],[meal]:next}}; });
   const regenDay = (day) => setWeekPlan(w=>({...w,[day]:genDay()}));
   const regenWeek = () => setWeekPlan(genWeek());
@@ -1993,13 +2006,12 @@ function App() {
                 <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:"#9aa0b4"}}>{mealIcons[k]} {label}</span>
                 <div style={{display:"flex",gap:6}}>
                   <button onClick={()=>swapMeal(selDay,k)} style={{background:"#f4f6fb",border:"none",borderRadius:10,padding:"5px 10px",fontSize:12,fontFamily:"Fredoka",cursor:"pointer",color:"#7a8099"}}>Cambiar</button>
-                  <button onClick={()=>toggleEaten(selDay,k)} style={{background:done?"#EAF7F2":"#f4f6fb",border:"none",borderRadius:10,padding:"5px 10px",fontSize:12,fontFamily:"Fredoka",cursor:"pointer",color:done?"#34BC97":"#9aa0b4"}}>{done?"✓ Listo":"Palomear"}</button>
+                  <button onClick={()=>toggleEaten(selDay,k,dish)} style={{background:done?"#EAF7F2":"#f4f6fb",border:"none",borderRadius:10,padding:"5px 10px",fontSize:12,fontFamily:"Fredoka",cursor:"pointer",color:done?"#34BC97":"#9aa0b4"}}>{done?"✓ Comido":"Palomear"}</button>
                 </div>
               </div>
               <b style={{fontSize:15,textDecoration:done?"line-through":"none"}}>{dish.n}</b>
               <div className="muted sm" style={{marginTop:2}}>{dish.d}</div>
               <div className="muted sm" style={{marginTop:3,fontFamily:"Fredoka",fontWeight:600,color:"#7a8099"}}>{dish.kcal} kcal · Prot {dish.p}g · Carbos {dish.c}g · Grasa {dish.g}g</div>
-              {done && <button style={{marginTop:6,fontSize:12,fontFamily:"Fredoka",fontWeight:600,background:"#EAF7F2",border:"none",borderRadius:10,padding:"5px 10px",cursor:"pointer",color:"#2c6f5b"}} onClick={()=>{addFood({id:"plan_"+k,n:dish.n,u:"1 porción",kcal:dish.kcal,p:dish.p,c:dish.c,g:dish.g});showToast("Registrado en tu día 🍽️");}}>+ Registrar en hoy</button>}
             </div>;
           })}
           <button className="btn primary big" style={{marginTop:4}} onClick={()=>regenDay(selDay)}>🔄 Regenerar {DIAS_FULL[DIAS.indexOf(selDay)]}</button>
