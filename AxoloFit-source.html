@@ -612,8 +612,11 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
         {/* torso */}
         <ellipse cx="100" cy="142" rx={tRx} ry="46" fill={bodyFill} />
         {/* cabeza */}
+        {(accessory === "conejo" || accessory === "gato") && (
+          <ellipse cx="100" cy="90" rx="64" ry="58"
+            fill={accessory === "conejo" ? "#F0EDE8" : "#CAC3B2"} />
+        )}
         <ellipse cx="100" cy="86" rx="54" ry="46" fill={bodyFill} />
-        {/* pancita */}
         <ellipse cx="100" cy="150" rx={bRx} ry="30" fill="#ffffff" opacity="0.4" />
         {/* bracitos */}
         {!rubbing && <ellipse cx="80" cy="128" rx="9" ry="13" fill={bodyFill} transform="rotate(-34 80 128)" />}
@@ -711,39 +714,40 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
         {accessory === "gorra" && (
           <g transform="translate(100,46)"><path d="M-34 6 Q -34 -22 0 -22 Q 34 -22 34 6 Z" fill="#3E7BD6" /><path d="M2 6 Q 38 6 46 16 Q 24 13 2 13 Z" fill="#2F66BC" /><circle cx="0" cy="-20" r="3.5" fill="#2F66BC" /></g>
         )}
+        {accessory === "monito" && (
+          <g transform="translate(100,120)"><path d="M0 0 L -20 -11 L -20 11 Z" fill="#E0556E" /><path d="M0 0 L 20 -11 L 20 11 Z" fill="#E0556E" /><rect x="-6" y="-8" width="12" height="16" rx="4" fill="#C24459" /></g>
+        )}
+        {/* gorritos: frente tapada + orejas encima de todo */}
         {accessory === "conejo" && (
-          <g transform="translate(100,40)">
-            {/* oreja izquierda */}
-            <ellipse cx="-20" cy="-34" rx="9" ry="26" fill="#FBFBF7" stroke="#E8E5DC" strokeWidth="2" transform="rotate(-14 -20 -34)" />
-            <ellipse cx="-20" cy="-34" rx="4.5" ry="17" fill="#F6B8C8" transform="rotate(-14 -20 -34)" />
-            {/* oreja derecha */}
-            <ellipse cx="20" cy="-34" rx="9" ry="26" fill="#FBFBF7" stroke="#E8E5DC" strokeWidth="2" transform="rotate(14 20 -34)" />
-            <ellipse cx="20" cy="-34" rx="4.5" ry="17" fill="#F6B8C8" transform="rotate(14 20 -34)" />
-            {/* gorro peludo */}
-            <path d="M-40 6 Q -42 -26 0 -26 Q 42 -26 40 6 Q 20 -2 0 -2 Q -20 -2 -40 6 Z" fill="#FBFBF7" stroke="#E8E5DC" strokeWidth="2" />
+          <g>
+            {/* franja superior que tapa la frente */}
+            <path d="M42 92 Q42 32 100 32 Q158 32 158 92 L148 92 Q148 48 100 48 Q52 48 52 92 Z" fill="#F0EDE8" />
+            {/* orejas — solo salen por arriba */}
+            <ellipse cx="76" cy="36" rx="12" ry="30" fill="#F0EDE8" stroke="#D8D2C8" strokeWidth="2" transform="rotate(-8 76 36)" />
+            <ellipse cx="76" cy="36" rx="5.5" ry="20" fill="#F4AABF" transform="rotate(-8 76 36)" />
+            <ellipse cx="124" cy="36" rx="12" ry="30" fill="#F0EDE8" stroke="#D8D2C8" strokeWidth="2" transform="rotate(8 124 36)" />
+            <ellipse cx="124" cy="36" rx="5.5" ry="20" fill="#F4AABF" transform="rotate(8 124 36)" />
           </g>
         )}
         {accessory === "gato" && (
-          <g transform="translate(100,42)">
-            {/* gorro gris tejido */}
-            <path d="M-38 8 Q -40 -24 0 -24 Q 40 -24 38 8 Q 19 0 0 0 Q -19 0 -38 8 Z" fill="#C9C2B0" stroke="#B0A892" strokeWidth="2" />
-            {/* oreja izquierda de gato */}
-            <path d="M-30 -16 L -38 -36 L -16 -24 Z" fill="#C9C2B0" stroke="#B0A892" strokeWidth="2" strokeLinejoin="round" />
-            {/* oreja derecha */}
-            <path d="M30 -16 L 38 -36 L 16 -24 Z" fill="#C9C2B0" stroke="#B0A892" strokeWidth="2" strokeLinejoin="round" />
-            {/* rayitas tipo Pusheen */}
-            <line x1="-10" y1="-20" x2="-10" y2="-13" stroke="#6E5E3C" strokeWidth="2.2" strokeLinecap="round" />
-            <line x1="0" y1="-21" x2="0" y2="-13" stroke="#6E5E3C" strokeWidth="2.2" strokeLinecap="round" />
-            <line x1="10" y1="-20" x2="10" y2="-13" stroke="#6E5E3C" strokeWidth="2.2" strokeLinecap="round" />
-            {/* pompones colgantes */}
-            <line x1="-34" y1="6" x2="-38" y2="24" stroke="#B0A892" strokeWidth="2.5" strokeLinecap="round" />
-            <circle cx="-38" cy="27" r="4" fill="#C9C2B0" stroke="#B0A892" strokeWidth="1.5" />
-            <line x1="34" y1="6" x2="38" y2="24" stroke="#B0A892" strokeWidth="2.5" strokeLinecap="round" />
-            <circle cx="38" cy="27" r="4" fill="#C9C2B0" stroke="#B0A892" strokeWidth="1.5" />
+          <g>
+            {/* franja superior que tapa la frente */}
+            <path d="M42 92 Q42 32 100 32 Q158 32 158 92 L148 92 Q148 48 100 48 Q52 48 52 92 Z" fill="#CAC3B2" />
+            {/* orejas de gato */}
+            <path d="M70 54 L 56 24 L 92 48 Z" fill="#CAC3B2" stroke="#B0A892" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M70 54 L 62 30 L 88 48 Z" fill="#E8D5C8" />
+            <path d="M130 54 L 144 24 L 108 48 Z" fill="#CAC3B2" stroke="#B0A892" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M130 54 L 138 30 L 112 48 Z" fill="#E8D5C8" />
+            {/* rayitas Pusheen en la frente */}
+            <line x1="89" y1="44" x2="89" y2="54" stroke="#7A6A52" strokeWidth="2.2" strokeLinecap="round" />
+            <line x1="100" y1="42" x2="100" y2="52" stroke="#7A6A52" strokeWidth="2.2" strokeLinecap="round" />
+            <line x1="111" y1="44" x2="111" y2="54" stroke="#7A6A52" strokeWidth="2.2" strokeLinecap="round" />
+            {/* pompones */}
+            <line x1="44" y1="114" x2="38" y2="134" stroke="#B0A892" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="37" cy="138" r="6" fill="#CAC3B2" stroke="#B0A892" strokeWidth="1.5" />
+            <line x1="156" y1="114" x2="162" y2="134" stroke="#B0A892" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="163" cy="138" r="6" fill="#CAC3B2" stroke="#B0A892" strokeWidth="1.5" />
           </g>
-        )}
-        {accessory === "monito" && (
-          <g transform="translate(100,120)"><path d="M0 0 L -20 -11 L -20 11 Z" fill="#E0556E" /><path d="M0 0 L 20 -11 L 20 11 Z" fill="#E0556E" /><rect x="-6" y="-8" width="12" height="16" rx="4" fill="#C24459" /></g>
         )}
         {outfit === "jersey" && (() => { const jw = tRx * 1.28; const cx = 100; return (
           <g>
