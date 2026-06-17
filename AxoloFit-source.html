@@ -1465,6 +1465,7 @@ function App() {
           setLevel(axo.nivel != null ? axo.nivel : 1);
           setXp(axo.xp != null ? axo.xp : 0);
           setStreak(axo.racha != null ? axo.racha : 0);
+          setUltimoDia(axo.ultimo_dia || null);
         }
         if (comidas && comidas.length > 0) {
           setLog(comidas.map((c, i) => ({ id: c.id, n: c.nombre, kcal: c.kcal, p: c.proteina, c: c.carbos, g: c.grasa, qty: 1, uid: i + 1 })));
@@ -1564,6 +1565,7 @@ function App() {
   const [level, setLevel] = useState(1);
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [ultimoDia, setUltimoDia] = useState(null);
   const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : "cria";
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest((b) => ({ ...b, [g]: Math.max(b[g] || 0, v) }));
@@ -1615,7 +1617,22 @@ function App() {
   const addAgua = () => setVasos((v) => { const nv = Math.min(targets.vasos, v + 1); checkGoals(log, nv); return nv; });
   const setWater = (i) => { const nv = (i + 1 === vasos ? i : i + 1); setVasos(nv); checkGoals(log, nv); };
   const phrase = useMemo(() => PHRASES[Math.floor(Math.random() * PHRASES.length)], [overlay]);
-  const closeCelebrate = () => { setOverlay(null); setXp((x) => { const nx = x + 50; if (nx >= 100) { setLevel((l) => l + 1); return nx - 100; } return nx; }); setStreak((s) => s + 1); showToast("+50 XP · ¡Nueva skin desbloqueada! 🎁"); };
+  const closeCelebrate = () => {
+    setOverlay(null);
+    setXp((x) => { const nx = x + 50; if (nx >= 100) { setLevel((l) => l + 1); return nx - 100; } return nx; });
+    // Racha por fecha real
+    const hoy = new Date(); const hoyStr = hoy.toISOString().slice(0, 10);
+    const ayer = new Date(hoy); ayer.setDate(ayer.getDate() - 1); const ayerStr = ayer.toISOString().slice(0, 10);
+    let nuevaRacha;
+    if (ultimoDia === hoyStr) { nuevaRacha = streak; } // ya contó hoy, no duplica
+    else if (ultimoDia === ayerStr) { nuevaRacha = streak + 1; } // día consecutivo
+    else { nuevaRacha = 1; } // primer día o se rompió la racha
+    setStreak(nuevaRacha);
+    setUltimoDia(hoyStr);
+    if (userId) guardarAxo(userId, { variedad: pet.palette, accesorio: pet.accessory, outfit: pet.outfit, nivel: level, xp: xp, racha: nuevaRacha, ultimo_dia: hoyStr });
+    if (ultimoDia === hoyStr) showToast("+50 XP · ¡Bien hecho hoy! 🎁");
+    else showToast("+50 XP · 🔥 ¡Racha de " + nuevaRacha + (nuevaRacha === 1 ? " día!" : " días!") + " 🎁");
+  };
   const tryPremium = (e) => { e && e.stopPropagation(); setOverlay("paywall"); };
   const bg = BACKGROUNDS[pet.bg], darkBg = pet.bg === "noche";
   const pesoIni = profile.pesoKg, pesoMeta = Math.max(40, profile.pesoKg - 6);
