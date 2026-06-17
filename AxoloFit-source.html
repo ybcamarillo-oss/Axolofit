@@ -425,9 +425,11 @@ const PALETTES = {
   cobre: { body: "#C98E63", gill: "#A8693F", blush: "#BE8055", label: "Cobre", premium: true },
   arcoiris: { body: "#C9A7F0", gill: "#8E5BD0", blush: "#FFB3D9", label: "Arcoíris", premium: true },
 };
+// Skins que se regalan al cumplir metas (1ra vez y cada 7 días)
+const SKINS_REGALO = ["dorado", "leucistico", "galaxia", "albino", "cobre", "melanico", "salvaje", "arcoiris"];
 const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, corona: { label: "Corona", premium: true } };
 const ESTILOS = { clasico: { label: "Clásico", premium: false }, galan: { label: "Galán", premium: false } };
-const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false } };
+const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false }, hoodieRojo: { label: "Hoodie rojo", premium: false }, hoodieAzul: { label: "Hoodie azul", premium: false }, playeraRaya: { label: "Playera rayada", premium: false }, poloRosa: { label: "Polo rosa", premium: false } };
 const BACKGROUNDS = { agua: { label: "Agua", from: "#E7F7F4", to: "#CDEFE9", premium: false }, lavanda: { label: "Lavanda", from: "#F0EBFF", to: "#E2D8FF", premium: false }, atardecer: { label: "Atardecer", from: "#FFE9D6", to: "#FFD3C0", premium: false }, noche: { label: "Noche", from: "#4E5180", to: "#3A3D63", premium: true } };
 const PHRASES = ["¡Lo lograste! Estoy orgulloso de ti 💗", "Hoy te cuidaste increíble. Gracias por cuidarme a mí también.", "Pequeños pasos, gran corazón. ¡Mua!", "Cada día contigo soy más fuerte 🥹"];
 const COACH_QA = {
@@ -747,7 +749,61 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
             {cols.map((col, idx) => <rect key={idx} x={100 - jw * 0.72} y={142 + idx * 12} width={jw * 1.44} height="9" rx="2" fill={col} />)}
           </g>
         ); })()}
-        {/* bracitos que se soban la panza — al final del SVG, encima de cualquier outfit */}
+        {(outfit === "hoodieRojo" || outfit === "hoodieAzul") && (() => {
+          const jw = tRx * 1.3; const cx = 100;
+          const base = outfit === "hoodieRojo" ? "#D7263D" : "#2E6FD6";
+          const dark = outfit === "hoodieRojo" ? "#A81B2E" : "#2156A8";
+          return (
+            <g>
+              <path d={"M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 190 Q " + cx + " 200 " + (cx - jw * 0.85) + " 190 Z"} fill={base} />
+              <ellipse cx={cx - jw * 0.92} cy="134" rx="15" ry="11" fill={base} transform={"rotate(-28 " + (cx - jw * 0.92) + " 134)"} />
+              <ellipse cx={cx + jw * 0.92} cy="134" rx="15" ry="11" fill={base} transform={"rotate(28 " + (cx + jw * 0.92) + " 134)"} />
+              {/* puños */}
+              <ellipse cx={cx - jw * 0.92} cy="142" rx="13" ry="4.5" fill={dark} transform={"rotate(-28 " + (cx - jw * 0.92) + " 142)"} />
+              <ellipse cx={cx + jw * 0.92} cy="142" rx="13" ry="4.5" fill={dark} transform={"rotate(28 " + (cx + jw * 0.92) + " 142)"} />
+              {/* capucha */}
+              <path d={"M" + (cx - jw * 0.5) + " 124 Q " + cx + " 110 " + (cx + jw * 0.5) + " 124 Q " + cx + " 132 " + (cx - jw * 0.5) + " 124 Z"} fill={dark} />
+              {/* bolsa canguro */}
+              <path d={"M" + (cx - jw * 0.5) + " 165 Q " + cx + " 172 " + (cx + jw * 0.5) + " 165 L " + (cx + jw * 0.42) + " 182 L " + (cx - jw * 0.42) + " 182 Z"} fill="none" stroke={dark} strokeWidth="2.5" />
+              {/* cordones */}
+              <line x1={cx - 5} y1="126" x2={cx - 7} y2="148" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+              <line x1={cx + 5} y1="126" x2={cx + 7} y2="148" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+            </g>
+          );
+        })()}
+        {outfit === "playeraRaya" && (() => {
+          const jw = tRx * 1.26; const cx = 100;
+          return (
+            <g>
+              <path d={"M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 188 Q " + cx + " 198 " + (cx - jw * 0.85) + " 188 Z"} fill="#F7F7F7" />
+              <ellipse cx={cx - jw * 0.92} cy="132" rx="14" ry="10" fill="#F7F7F7" transform={"rotate(-28 " + (cx - jw * 0.92) + " 132)"} />
+              <ellipse cx={cx + jw * 0.92} cy="132" rx="14" ry="10" fill="#F7F7F7" transform={"rotate(28 " + (cx + jw * 0.92) + " 132)"} />
+              {/* franja negra horizontal en el pecho */}
+              <rect x={cx - jw * 0.82} y="150" width={jw * 1.64} height="11" fill="#222" />
+              {/* cuello */}
+              <path d="M88 127 Q100 137 112 127" fill="none" stroke="#222" strokeWidth="4" strokeLinecap="round" />
+            </g>
+          );
+        })()}
+        {outfit === "poloRosa" && (() => {
+          const jw = tRx * 1.26; const cx = 100;
+          return (
+            <g>
+              <path d={"M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 188 Q " + cx + " 198 " + (cx - jw * 0.85) + " 188 Z"} fill="#F3A6BE" />
+              <ellipse cx={cx - jw * 0.92} cy="132" rx="14" ry="10" fill="#F3A6BE" transform={"rotate(-28 " + (cx - jw * 0.92) + " 132)"} />
+              <ellipse cx={cx + jw * 0.92} cy="132" rx="14" ry="10" fill="#F3A6BE" transform={"rotate(28 " + (cx + jw * 0.92) + " 132)"} />
+              {/* puños mangas */}
+              <ellipse cx={cx - jw * 0.92} cy="139" rx="12" ry="4" fill="#E48BA6" transform={"rotate(-28 " + (cx - jw * 0.92) + " 139)"} />
+              <ellipse cx={cx + jw * 0.92} cy="139" rx="12" ry="4" fill="#E48BA6" transform={"rotate(28 " + (cx + jw * 0.92) + " 139)"} />
+              {/* cuello de polo */}
+              <path d={"M" + (cx - 12) + " 126 L " + (cx - 4) + " 138 L " + cx + " 130 Z"} fill="#E48BA6" />
+              <path d={"M" + (cx + 12) + " 126 L " + (cx + 4) + " 138 L " + cx + " 130 Z"} fill="#E48BA6" />
+              {/* botones */}
+              <circle cx={cx} cy="140" r="1.8" fill="#fff" />
+              <circle cx={cx} cy="148" r="1.8" fill="#fff" />
+            </g>
+          );
+        })()}
         {rubbing && (
           <g>
             <g className="axo-rub-l" style={{ transformOrigin: "82px 132px" }}>
@@ -1466,6 +1522,7 @@ function App() {
           setXp(axo.xp != null ? axo.xp : 0);
           setStreak(axo.racha != null ? axo.racha : 0);
           setUltimoDia(axo.ultimo_dia || null);
+          setSkinsUnlocked(axo.skins ? axo.skins.split(",").filter(Boolean) : []);
         }
         if (comidas && comidas.length > 0) {
           setLog(comidas.map((c, i) => ({ id: c.id, n: c.nombre, kcal: c.kcal, p: c.proteina, c: c.carbos, g: c.grasa, qty: 1, uid: i + 1 })));
@@ -1579,6 +1636,8 @@ function App() {
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
   const [ultimoDia, setUltimoDia] = useState(null);
+  const [skinsUnlocked, setSkinsUnlocked] = useState([]);
+  const [regaloSkin, setRegaloSkin] = useState(null);
   const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : "cria";
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest((b) => ({ ...b, [g]: Math.max(b[g] || 0, v) }));
@@ -1642,9 +1701,22 @@ function App() {
     else { nuevaRacha = 1; } // primer día o se rompió la racha
     setStreak(nuevaRacha);
     setUltimoDia(hoyStr);
-    if (userId) guardarAxo(userId, { variedad: pet.palette, accesorio: pet.accessory, outfit: pet.outfit, nivel: level, xp: xp, racha: nuevaRacha, ultimo_dia: hoyStr });
-    if (ultimoDia === hoyStr) showToast("+50 XP · ¡Bien hecho hoy! 🎁");
-    else showToast("+50 XP · 🔥 ¡Racha de " + nuevaRacha + (nuevaRacha === 1 ? " día!" : " días!") + " 🎁");
+    // Desbloqueo de skin: primera vez (racha 1) y cada 7 días (7, 14, 21...)
+    const esDiaDeRegalo = nuevaRacha === 1 || nuevaRacha % 7 === 0;
+    let nuevaSkin = null;
+    if (esDiaDeRegalo && ultimoDia !== hoyStr) {
+      const noDesbloqueadas = SKINS_REGALO.filter(s => !skinsUnlocked.includes(s));
+      if (noDesbloqueadas.length > 0) {
+        nuevaSkin = noDesbloqueadas[0];
+        const nuevasUnlocked = [...skinsUnlocked, nuevaSkin];
+        setSkinsUnlocked(nuevasUnlocked);
+        if (userId) guardarAxo(userId, { variedad: pet.palette, accesorio: pet.accessory, outfit: pet.outfit, nivel: level, xp: xp, racha: nuevaRacha, ultimo_dia: hoyStr, skins: nuevasUnlocked.join(",") });
+      }
+    }
+    if (!nuevaSkin && userId) guardarAxo(userId, { variedad: pet.palette, accesorio: pet.accessory, outfit: pet.outfit, nivel: level, xp: xp, racha: nuevaRacha, ultimo_dia: hoyStr, skins: skinsUnlocked.join(",") });
+    if (nuevaSkin) { setRegaloSkin(nuevaSkin); setOverlay("regalo"); }
+    else if (ultimoDia === hoyStr) showToast("+50 XP · ¡Bien hecho hoy! 🎁");
+    else showToast("+50 XP · 🔥 ¡Racha de " + nuevaRacha + (nuevaRacha === 1 ? " día!" : " días!"));
   };
   const tryPremium = (e) => { e && e.stopPropagation(); setOverlay("paywall"); };
   const bg = BACKGROUNDS[pet.bg], darkBg = pet.bg === "noche";
@@ -2101,8 +2173,22 @@ function App() {
               <div className="kiss-stage"><Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="amor" size={170} /><Heart className="flying-heart" size={30} color="#FF4D7D" fill="#FF6F9C" /></div>
               <h2 className="display" style={{ fontSize: 24, margin: "2px 0 0" }}>¡Meta del día cumplida!</h2>
               <p className="muted" style={{ margin: "4px 0 10px" }}>{phrase}</p>
-              <div className="reward-row"><span className="reward">+50 XP</span><span className="reward">🎁 Skin nueva</span><span className="reward">🔥 Racha {streak + 1}</span></div>
+              <div className="reward-row"><span className="reward">+50 XP</span><span className="reward">🔥 Racha {streak + 1}</span></div>
               <button className="btn primary big" onClick={closeCelebrate}>¡Gracias, {petName}!</button>
+            </div>
+          </div>
+        )}
+        {overlay === "regalo" && regaloSkin && (
+          <div className="overlay celebrate" onClick={() => { setOverlay(null); setRegaloSkin(null); }}>
+            <div className="papel">{Array.from({ length: 14 }).map((_, i) => <span key={i} style={{ left: ((i * 7) % 100) + "%", animationDelay: ((i % 5) * 0.2) + "s", background: ["#FF6F9C", "#7C5CFF", "#34BC97", "#FFD15C"][i % 4] }} />)}</div>
+            <div className="celebrate-card" onClick={(e) => e.stopPropagation()}>
+              <div style={{ fontSize: 52, marginBottom: 4 }}>🎁</div>
+              <h2 className="display" style={{ fontSize: 23, margin: "2px 0 6px" }}>¡Nuevo color desbloqueado!</h2>
+              <div className="kiss-stage" style={{ margin: "4px 0" }}><Axo paletteKey={regaloSkin} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="amor" size={150} /></div>
+              <p className="display" style={{ fontSize: 19, color: "#E79FAE", margin: "2px 0" }}>{PALETTES[regaloSkin] ? PALETTES[regaloSkin].label : regaloSkin}</p>
+              <p className="muted" style={{ margin: "2px 14px 12px" }}>Ya puedes vestir a {petName} con este color desde su perfil.</p>
+              <button className="btn primary big" style={{ marginBottom: 8 }} onClick={() => { updatePet({ ...pet, palette: regaloSkin }); setOverlay(null); setRegaloSkin(null); showToast("¡" + petName + " estrena color! 🎨"); }}>Ponérselo ahora</button>
+              <button className="btn ghost" style={{ width: "100%" }} onClick={() => { setOverlay(null); setRegaloSkin(null); }}>Más tarde</button>
             </div>
           </div>
         )}
