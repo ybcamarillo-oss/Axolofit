@@ -166,8 +166,9 @@ html,body { height:100%; }
 </style>
 </head>
 <body>
-<div id="root"><div class="root"><p class="loading">Cargando AxoloFit…</p></div></div>
-<script>/**
+<div id="root"></div>
+<script>
+/**
  * @license React
  * react.production.min.js
  *
@@ -198,8 +199,10 @@ compare:void 0===b?null:b}};c.startTransition=function(a,b){b=J.transition;J.tra
 b)};c.useId=function(){return g.current.useId()};c.useImperativeHandle=function(a,b,c){return g.current.useImperativeHandle(a,b,c)};c.useInsertionEffect=function(a,b){return g.current.useInsertionEffect(a,b)};c.useLayoutEffect=function(a,b){return g.current.useLayoutEffect(a,b)};c.useMemo=function(a,b){return g.current.useMemo(a,b)};c.useReducer=function(a,b,c){return g.current.useReducer(a,b,c)};c.useRef=function(a){return g.current.useRef(a)};c.useState=function(a){return g.current.useState(a)};
 c.useSyncExternalStore=function(a,b,c){return g.current.useSyncExternalStore(a,b,c)};c.useTransition=function(){return g.current.useTransition()};c.version="18.2.0"});
 })();
+
 </script>
-<script>/**
+<script>
+/**
  * @license React
  * react-dom.production.min.js
  *
@@ -466,8 +469,9 @@ c,!1,d,e);a[Ja]=b.current;sc(8===a.nodeType?a.parentNode:a);return new Xf(b)};Q.
 var d=null!=c&&c.hydratedSources||null,e=!1,f="",g=bj;null!==c&&void 0!==c&&(!0===c.unstable_strictMode&&(e=!0),void 0!==c.identifierPrefix&&(f=c.identifierPrefix),void 0!==c.onRecoverableError&&(g=c.onRecoverableError));b=Xi(b,null,a,1,null!=c?c:null,e,!1,f,g);a[Ja]=b.current;sc(a);if(d)for(a=0;a<d.length;a++)c=d[a],e=c._getVersion,e=e(c._source),null==b.mutableSourceEagerHydrationData?b.mutableSourceEagerHydrationData=[c,e]:b.mutableSourceEagerHydrationData.push(c,e);return new Ud(b)};Q.render=
 function(a,b,c){if(!Vd(b))throw Error(n(200));return Wd(null,a,b,!1,c)};Q.unmountComponentAtNode=function(a){if(!Vd(a))throw Error(n(40));return a._reactRootContainer?(zb(function(){Wd(null,null,a,!1,function(){a._reactRootContainer=null;a[Ja]=null})}),!0):!1};Q.unstable_batchedUpdates=Tf;Q.unstable_renderSubtreeIntoContainer=function(a,b,c,d){if(!Vd(c))throw Error(n(200));if(null==a||void 0===a._reactInternals)throw Error(n(38));return Wd(a,b,c,!1,d)};Q.version="18.2.0-next-9e3b772b8-20220608"});
 })();
+
 </script>
-<script>function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+<script>
 const {
   useState,
   useMemo,
@@ -582,7 +586,7 @@ function AuthScreen({
       marginBottom: 0,
       paddingRight: 48
     },
-    placeholder: "Contrase\xF1a (m\xEDn. 6 caracteres)",
+    placeholder: "Contraseña (mín. 6 caracteres)",
     type: showPass ? "text" : "password",
     value: pass,
     onChange: e => setPass(e.target.value)
@@ -621,19 +625,19 @@ function AuthScreen({
     style: {
       fontSize: 24
     }
-  }, "\xA1Revisa tu email! \uD83D\uDC8C"), /*#__PURE__*/React.createElement("p", {
+  }, "¡Revisa tu email! 💌"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       maxWidth: 280,
       textAlign: "center"
     }
-  }, "Te mandamos un link de confirmaci\xF3n a ", /*#__PURE__*/React.createElement("b", null, email), ". \xC1brelo y luego regresa aqu\xED a iniciar sesi\xF3n."), /*#__PURE__*/React.createElement("button", {
+  }, "Te mandamos un link de confirmación a ", /*#__PURE__*/React.createElement("b", null, email), ". Ábrelo y luego regresa aquí a iniciar sesión."), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => {
       setModo("login");
       setConfirmado(false);
     }
-  }, "Ir a iniciar sesi\xF3n"));
+  }, "Ir a iniciar sesión"));
   if (modo === "reset") {
     if (resetEnviado) return /*#__PURE__*/React.createElement("div", {
       className: "screen center",
@@ -650,19 +654,19 @@ function AuthScreen({
       style: {
         fontSize: 24
       }
-    }, "\xA1Revisa tu email! \uD83D\uDC8C"), /*#__PURE__*/React.createElement("p", {
+    }, "¡Revisa tu email! 💌"), /*#__PURE__*/React.createElement("p", {
       className: "muted",
       style: {
         maxWidth: 280,
         textAlign: "center"
       }
-    }, "Te mandamos el link para crear nueva contrase\xF1a a ", /*#__PURE__*/React.createElement("b", null, email), "."), /*#__PURE__*/React.createElement("button", {
+    }, "Te mandamos el link para crear nueva contraseña a ", /*#__PURE__*/React.createElement("b", null, email), "."), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       onClick: () => {
         setModo("login");
         setResetEnviado(false);
       }
-    }, "Volver a iniciar sesi\xF3n"));
+    }, "Volver a iniciar sesión"));
     return /*#__PURE__*/React.createElement("div", {
       className: "screen center",
       style: {
@@ -678,7 +682,7 @@ function AuthScreen({
         fontSize: 24,
         margin: "6px 0 4px"
       }
-    }, "\xBFOlvidaste tu contrase\xF1a?"), /*#__PURE__*/React.createElement("p", {
+    }, "¿Olvidaste tu contraseña?"), /*#__PURE__*/React.createElement("p", {
       className: "muted",
       style: {
         marginBottom: 20,
@@ -749,7 +753,7 @@ function AuthScreen({
     }
   }, modo === "registro" && /*#__PURE__*/React.createElement("input", {
     style: inputStyle,
-    placeholder: "\xBFC\xF3mo te llamas?",
+    placeholder: "¿Cómo te llamas?",
     value: nombre,
     onChange: e => setNombre(e.target.value),
     maxLength: 30
@@ -794,7 +798,7 @@ function AuthScreen({
       setModo("reset");
       setError(null);
     }
-  }, "\xBFOlvidaste tu contrase\xF1a?")));
+  }, "¿Olvidaste tu contraseña?")));
 }
 
 /* ---------- ICONOS (SVG propios) ---------- */
@@ -942,63 +946,82 @@ function Icon({
   };
   return /*#__PURE__*/React.createElement("svg", c, P[name]);
 }
-const Camera = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "camera"
-}, p));
-const Mic = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "mic"
-}, p));
-const Search = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "search"
-}, p));
-const Pencil = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "pencil"
-}, p));
-const HomeIcon = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "home"
-}, p));
-const BarChart2 = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "chart"
-}, p));
-const Sparkles = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "sparkles"
-}, p));
-const Lock = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "lock"
-}, p));
-const ChevronLeft = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "chevL"
-}, p));
-const Plus = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "plus"
-}, p));
-const Droplet = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "droplet"
-}, p));
-const Flame = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "flame"
-}, p));
-const Heart = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "heart"
-}, p));
-const X = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "x"
-}, p));
-const ShieldCheck = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "shield"
-}, p));
-const Trophy = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "trophy"
-}, p));
-const MessageCircle = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "msg"
-}, p));
-const Check = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "check"
-}, p));
-const Crown = p => /*#__PURE__*/React.createElement(Icon, _extends({
-  name: "crown"
-}, p));
+const Camera = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "camera",
+  ...p
+});
+const Mic = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "mic",
+  ...p
+});
+const Search = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "search",
+  ...p
+});
+const Pencil = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "pencil",
+  ...p
+});
+const HomeIcon = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "home",
+  ...p
+});
+const BarChart2 = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "chart",
+  ...p
+});
+const Sparkles = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "sparkles",
+  ...p
+});
+const Lock = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "lock",
+  ...p
+});
+const ChevronLeft = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "chevL",
+  ...p
+});
+const Plus = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "plus",
+  ...p
+});
+const Droplet = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "droplet",
+  ...p
+});
+const Flame = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "flame",
+  ...p
+});
+const Heart = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "heart",
+  ...p
+});
+const X = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "x",
+  ...p
+});
+const ShieldCheck = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "shield",
+  ...p
+});
+const Trophy = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "trophy",
+  ...p
+});
+const MessageCircle = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "msg",
+  ...p
+});
+const Check = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "check",
+  ...p
+});
+const Crown = p => /*#__PURE__*/React.createElement(Icon, {
+  name: "crown",
+  ...p
+});
 
 /* ---------- DATA ---------- */
 const FOODS = [{
@@ -1428,7 +1451,7 @@ const GAME_ITEMS = [{
 const MENU_DB = {
   desayuno: [{
     n: "Huevos a la mexicana",
-    d: "3 huevos · 1 tortilla de maíz · jitomate, cebolla y chile",
+    d: "3 huevos · jitomate, cebolla y chile · 1 tortilla de maíz",
     kcal: 340,
     p: 26,
     c: 18,
@@ -1438,7 +1461,7 @@ const MENU_DB = {
     main: "huevo"
   }, {
     n: "Omelette de claras y panela",
-    d: "5 claras + 1 huevo · 50 g de panela · espinaca · 1 tortilla de maíz",
+    d: "5 claras + 1 huevo · 50 g de panela · espinacas · 1 tortilla de maíz",
     kcal: 320,
     p: 34,
     c: 18,
@@ -1458,7 +1481,7 @@ const MENU_DB = {
     main: "cottage"
   }, {
     n: "Huevos con aguacate y espinaca",
-    d: "3 huevos · ½ aguacate · espinaca salteada",
+    d: "3 huevos · ½ aguacate · espinacas salteadas",
     kcal: 330,
     p: 21,
     c: 8,
@@ -1469,7 +1492,7 @@ const MENU_DB = {
     main: "huevo"
   }, {
     n: "Chilaquiles verdes con pollo y huevo",
-    d: "Totopos horneados · salsa verde · 1 huevo · 80 g de pollo",
+    d: "Totopos horneados · salsa verde · 1 huevo · 80 g de pollo deshebrado",
     kcal: 410,
     p: 34,
     c: 24,
@@ -1479,7 +1502,7 @@ const MENU_DB = {
     main: "pollo"
   }, {
     n: "Yogur griego con avena",
-    d: "250 g de yogur griego alto en proteína · 30 g de avena · canela",
+    d: "250 g de yogur griego · 30 g de avena · canela",
     kcal: 320,
     p: 30,
     c: 28,
@@ -1489,7 +1512,7 @@ const MENU_DB = {
     main: "yogur"
   }, {
     n: "Omelette de panela y champiñones",
-    d: "1 huevo + 4 claras · 60 g de panela · champiñones",
+    d: "1 huevo + 4 claras · 60 g de panela · ½ taza de champiñones",
     kcal: 300,
     p: 32,
     c: 12,
@@ -1499,7 +1522,7 @@ const MENU_DB = {
     main: "huevo"
   }, {
     n: "Molletes proteicos de frijol",
-    d: "1 bolillo integral chico · ½ taza de frijol · 60 g de panela",
+    d: "1 bolillo integral chico · ½ taza de frijol · 60 g de panela gratinada",
     kcal: 380,
     p: 24,
     c: 38,
@@ -1507,10 +1530,182 @@ const MENU_DB = {
     veg: true,
     con: ["gluten", "lacteo"],
     main: "frijol"
+  }, {
+    n: "Quesadillas de panela con champiñones",
+    d: "2 tortillas de maíz · 60 g de panela · ½ taza de champiñones al comal",
+    kcal: 290,
+    p: 16,
+    c: 26,
+    g: 10,
+    veg: true,
+    con: ["lacteo"],
+    main: "panela"
+  }, {
+    n: "Champiñones guisados con panela",
+    d: "1 taza de champiñones con jitomate, cebolla y chile · 60 g de panela · 1 tortilla",
+    kcal: 240,
+    p: 15,
+    c: 18,
+    g: 9,
+    veg: true,
+    con: ["lacteo"],
+    main: "champiñon"
+  }, {
+    n: "Tostadas Salmas con frijol y nopales",
+    d: "3 tostadas Salmas · ½ taza de frijoles · 1 taza de nopales · 40 g de panela · ¼ aguacate",
+    kcal: 285,
+    p: 12,
+    c: 36,
+    g: 11,
+    veg: true,
+    con: ["lacteo"],
+    main: "frijol"
+  }, {
+    n: "Huevo revuelto con nopales",
+    d: "2 huevos + 2 claras · 1 taza de nopales cocidos · 1 tortilla de maíz",
+    kcal: 220,
+    p: 21,
+    c: 15,
+    g: 10,
+    veg: true,
+    con: ["huevo"],
+    main: "huevo"
+  }, {
+    n: "Avena trasnochada con chía y cottage",
+    d: "40 g de avena · 1 cdita de chía · 4 cdas de queso cottage · endulzante",
+    kcal: 265,
+    p: 16,
+    c: 35,
+    g: 5,
+    veg: true,
+    con: ["lacteo"],
+    main: "avena"
+  }, {
+    n: "Licuado proteico de plátano y yogur",
+    d: "200 g de yogur griego · ½ plátano · 1 taza de leche descremada",
+    kcal: 295,
+    p: 24,
+    c: 38,
+    g: 2,
+    veg: true,
+    con: ["lacteo"],
+    main: "yogur"
+  }, {
+    n: "Huevos divorciados ligeros",
+    d: "2 huevos estrellados · 2 tortillas al comal · salsa verde y roja naturales",
+    kcal: 260,
+    p: 14,
+    c: 24,
+    g: 10,
+    veg: true,
+    con: ["huevo"],
+    main: "huevo"
+  }, {
+    n: "Pan tostado con aguacate y requesón",
+    d: "1 rebanada de pan integral tostado · 40 g de requesón · ¼ aguacate",
+    kcal: 210,
+    p: 10,
+    c: 20,
+    g: 10,
+    veg: true,
+    con: ["gluten", "lacteo"],
+    main: "requesón"
+  }, {
+    n: "Claras con champiñones al ajillo",
+    d: "5 claras · champiñones con ajo y chile guajillo · 1 tortilla de maíz",
+    kcal: 195,
+    p: 21,
+    c: 14,
+    g: 1,
+    veg: true,
+    con: ["huevo"],
+    main: "huevo"
+  }, {
+    n: "Sincronizada de pavo y panela",
+    d: "2 tortillas de maíz · 2 rebanadas de pavo · 40 g de panela · salsa verde",
+    kcal: 255,
+    p: 16,
+    c: 24,
+    g: 7,
+    veg: false,
+    con: ["lacteo"],
+    main: "pavo"
+  }, {
+    n: "Huevos con jamón de pavo y ejotes",
+    d: "2 huevos · ½ taza de ejotes cocidos · 2 rebanadas de jamón de pavo",
+    kcal: 215,
+    p: 18,
+    c: 8,
+    g: 11,
+    veg: false,
+    con: ["huevo"],
+    lc: true,
+    main: "huevo"
+  }, {
+    n: "Gordita de maíz con requesón y nopales",
+    d: "1 gordita de maíz asada · 50 g de requesón · 1 taza de ensalada de nopales",
+    kcal: 245,
+    p: 12,
+    c: 30,
+    g: 5,
+    veg: true,
+    con: ["lacteo"],
+    main: "requesón"
+  }, {
+    n: "Yogur griego con manzana y almendras",
+    d: "200 g de yogur griego · 1 manzana picada · 10 almendras",
+    kcal: 310,
+    p: 22,
+    c: 32,
+    g: 10,
+    veg: true,
+    con: ["lacteo", "nuez"],
+    main: "yogur"
+  }, {
+    n: "Huevos con calabacitas y elote",
+    d: "2 huevos · ½ taza de calabacita · 2 cdas de granos de elote natural",
+    kcal: 205,
+    p: 14,
+    c: 12,
+    g: 11,
+    veg: true,
+    con: ["huevo"],
+    lc: true,
+    main: "huevo"
+  }, {
+    n: "Ensalada de frutas proteica",
+    d: "1 taza de papaya y melón · 150 g de requesón · 1 cda de semillas de girasol",
+    kcal: 260,
+    p: 18,
+    c: 28,
+    g: 9,
+    veg: true,
+    con: ["lacteo"],
+    main: "requesón"
+  }, {
+    n: "Claras con espinacas y salsa pasilla",
+    d: "5 claras · espinacas libres · salsa pasilla casera · 1 tortilla de maíz",
+    kcal: 165,
+    p: 21,
+    c: 14,
+    g: 1,
+    veg: true,
+    con: ["huevo"],
+    main: "huevo"
+  }, {
+    n: "Enchiladas de panela ligeras",
+    d: "3 tortillas de maíz · 60 g de panela · salsa verde hervida · lechuga picada",
+    kcal: 315,
+    p: 16,
+    c: 36,
+    g: 9,
+    veg: true,
+    con: ["lacteo"],
+    main: "panela"
   }],
   comida: [{
     n: "Pollo a la plancha con ensalada y aguacate",
-    d: "180 g de pechuga · ensalada grande · ½ aguacate · limón",
+    d: "180 g de pechuga · ensalada verde grande · ½ aguacate · limón",
     kcal: 410,
     p: 48,
     c: 12,
@@ -1521,7 +1716,7 @@ const MENU_DB = {
     main: "pollo"
   }, {
     n: "Pescado a la plancha con verduras",
-    d: "180 g de pescado · verduras al vapor · ½ aguacate",
+    d: "180 g de pescado blanco · verduras al vapor · ½ aguacate",
     kcal: 420,
     p: 42,
     c: 14,
@@ -1530,8 +1725,8 @@ const MENU_DB = {
     con: ["pescado"],
     main: "pescado"
   }, {
-    n: "Fajitas de res",
-    d: "160 g de res · pimientos y cebolla · 1 tortilla de maíz",
+    n: "Fajitas de res magra",
+    d: "160 g de res en tiras · pimientos y cebolla · 1 tortilla de maíz",
     kcal: 430,
     p: 42,
     c: 20,
@@ -1540,8 +1735,8 @@ const MENU_DB = {
     con: [],
     main: "res"
   }, {
-    n: "Tinga de pollo en tostadas (2)",
-    d: "160 g de pollo en tinga · 2 tostadas horneadas · ½ aguacate",
+    n: "Tinga de pollo en tostadas",
+    d: "160 g de pollo en tinga · 2 tostadas horneadas · ½ aguacate · lechuga",
     kcal: 440,
     p: 40,
     c: 26,
@@ -1550,7 +1745,7 @@ const MENU_DB = {
     con: [],
     main: "pollo"
   }, {
-    n: "Pollo con mole y arroz",
+    n: "Pollo con mole y arroz integral",
     d: "160 g de pollo bañado en mole · ⅓ taza de arroz integral · 1 tortilla",
     kcal: 490,
     p: 42,
@@ -1581,7 +1776,7 @@ const MENU_DB = {
     main: "pollo"
   }, {
     n: "Pechuga con camote al horno",
-    d: "190 g de pechuga · 150 g de camote al horno · ensalada verde",
+    d: "190 g de pechuga · 150 g de camote al horno · ensalada verde libre",
     kcal: 470,
     p: 46,
     c: 34,
@@ -1599,10 +1794,176 @@ const MENU_DB = {
     veg: false,
     con: [],
     main: "pollo"
+  }, {
+    n: "Tinga de zanahoria en tostadas",
+    d: "1½ tazas de zanahoria rallada guisada con chipotle · 2 tostadas · ¼ aguacate · lechuga",
+    kcal: 260,
+    p: 5,
+    c: 32,
+    g: 9,
+    veg: true,
+    con: [],
+    main: "zanahoria"
+  }, {
+    n: "Ceviche de hongos",
+    d: "1½ tazas de champiñones y setas marinados con limón, jitomate y pepino · ¼ aguacate · 2 tostadas",
+    kcal: 250,
+    p: 6,
+    c: 30,
+    g: 9,
+    veg: true,
+    con: [],
+    main: "champiñon"
+  }, {
+    n: "Pescado a la veracruzana",
+    d: "150 g de pescado blanco · salsa de jitomate con aceitunas y alcaparras · ½ taza de arroz",
+    kcal: 350,
+    p: 34,
+    c: 18,
+    g: 12,
+    veg: false,
+    con: ["pescado"],
+    main: "pescado"
+  }, {
+    n: "Bistec con nopales en salsa verde",
+    d: "160 g de falda de res en tiras · 1 taza de nopales · salsa verde asada · 1 tortilla",
+    kcal: 320,
+    p: 34,
+    c: 16,
+    g: 14,
+    veg: false,
+    con: [],
+    main: "res"
+  }, {
+    n: "Salpicón de pollo ligero",
+    d: "160 g de pollo deshebrado · lechuga, jitomate, cebolla, vinagre · ¼ aguacate · 2 tostadas",
+    kcal: 345,
+    p: 36,
+    c: 20,
+    g: 13,
+    veg: false,
+    con: [],
+    main: "pollo"
+  }, {
+    n: "Caldo tlalpeño de pollo",
+    d: "150 g de pechuga · garbanzos, ejotes, calabacitas y chipotle · ¼ aguacate",
+    kcal: 360,
+    p: 38,
+    c: 24,
+    g: 12,
+    veg: false,
+    con: [],
+    main: "pollo"
+  }, {
+    n: "Pechuga rellena de espinacas",
+    d: "160 g de pechuga rellena de espinacas y 30 g de panela · ensalada mixta",
+    kcal: 310,
+    p: 42,
+    c: 6,
+    g: 13,
+    veg: false,
+    con: ["lacteo"],
+    lc: true,
+    main: "pollo"
+  }, {
+    n: "Brochetas de res y vegetales",
+    d: "160 g de res magra en cubos · cebolla, pimiento y champiñones · ½ taza de arroz integral",
+    kcal: 390,
+    p: 36,
+    c: 32,
+    g: 12,
+    veg: false,
+    con: [],
+    main: "res"
+  }, {
+    n: "Pescado al vapor en papillote",
+    d: "160 g de pescado · calabacita, zanahoria y epazote en papel aluminio · ¼ aguacate",
+    kcal: 270,
+    p: 32,
+    c: 10,
+    g: 11,
+    veg: false,
+    con: ["pescado"],
+    lc: true,
+    main: "pescado"
+  }, {
+    n: "Ensalada de atún con pasta integral",
+    d: "1 lata de atún · ½ taza de pasta integral · zanahoria, chícharo y elote · yogur como aderezo",
+    kcal: 290,
+    p: 28,
+    c: 34,
+    g: 4,
+    veg: false,
+    con: ["pescado", "lacteo", "gluten"],
+    main: "atun"
+  }, {
+    n: "Pollo en salsa de tomatillo",
+    d: "170 g de pollo sin piel en salsa verde con cilantro · ½ taza de frijoles de la olla",
+    kcal: 365,
+    p: 38,
+    c: 22,
+    g: 13,
+    veg: false,
+    con: [],
+    main: "pollo"
+  }, {
+    n: "Bistec a la mexicana",
+    d: "160 g de bistec de res · jitomate, cebolla y chile verde · 1 tortilla de maíz",
+    kcal: 310,
+    p: 34,
+    c: 14,
+    g: 12,
+    veg: false,
+    con: [],
+    lc: true,
+    main: "res"
+  }, {
+    n: "Chiles rellenos de atún (sin capear)",
+    d: "2 chiles poblanos asados · 1 lata de atún guisado con jitomate y cebolla",
+    kcal: 230,
+    p: 28,
+    c: 16,
+    g: 4,
+    veg: false,
+    con: ["pescado"],
+    lc: true,
+    main: "atun"
+  }, {
+    n: "Pechuga al pesto de aguacate",
+    d: "160 g de pechuga · ¼ aguacate licuado con albahaca y ajo · ensalada de espinacas",
+    kcal: 330,
+    p: 38,
+    c: 8,
+    g: 16,
+    veg: false,
+    con: [],
+    lc: true,
+    main: "pollo"
+  }, {
+    n: "Pescado al mojo de ajo con ejotes",
+    d: "160 g de pescado blanco · ajo dorado al comal · 1½ tazas de ejotes con limón",
+    kcal: 240,
+    p: 32,
+    c: 12,
+    g: 6,
+    veg: false,
+    con: ["pescado"],
+    lc: true,
+    main: "pescado"
+  }, {
+    n: "Albóndigas de res en caldillo",
+    d: "160 g de albóndigas de res magra · caldillo de jitomate hervido · 1 tortilla",
+    kcal: 340,
+    p: 34,
+    c: 18,
+    g: 14,
+    veg: false,
+    con: [],
+    main: "res"
   }],
   cena: [{
     n: "Caldo de pollo con verduras",
-    d: "160 g de pollo · calabaza, zanahoria y chayote · 1 tortilla",
+    d: "160 g de pollo · calabaza, zanahoria y chayote · 1 tortilla de maíz",
     kcal: 320,
     p: 36,
     c: 18,
@@ -1612,23 +1973,25 @@ const MENU_DB = {
     main: "pollo"
   }, {
     n: "Ensalada de atún con aguacate",
-    d: "1½ latas de atún en agua · ½ aguacate · 1 tostada horneada · ensalada",
+    d: "1½ latas de atún en agua · ½ aguacate · 1 tostada horneada · ensalada grande",
     kcal: 340,
     p: 38,
     c: 12,
     g: 16,
     veg: false,
     con: ["pescado"],
+    lc: true,
     main: "atun"
   }, {
     n: "Omelette de claras con espinaca y panela",
-    d: "5 claras + 1 huevo · espinaca · 50 g de panela",
+    d: "5 claras + 1 huevo · espinacas libres · 50 g de panela",
     kcal: 300,
     p: 36,
     c: 10,
     g: 12,
     veg: true,
     con: ["huevo", "lacteo"],
+    lc: true,
     main: "huevo"
   }, {
     n: "Calabazas guisadas con pollo y queso cottage",
@@ -1652,8 +2015,8 @@ const MENU_DB = {
     lc: true,
     main: "res"
   }, {
-    n: "Tacos de tinga de pollo (2)",
-    d: "150 g de pollo en tinga · 2 tostadas horneadas · lechuga",
+    n: "Tacos de tinga de pollo",
+    d: "150 g de pollo en tinga · 2 tostadas horneadas · lechuga picada",
     kcal: 380,
     p: 36,
     c: 26,
@@ -1663,7 +2026,7 @@ const MENU_DB = {
     main: "pollo"
   }, {
     n: "Pescado al mojo de ajo con verduras",
-    d: "170 g de pescado · ejotes y zanahoria salteados",
+    d: "170 g de pescado blanco · ejotes y zanahoria salteados al comal",
     kcal: 330,
     p: 40,
     c: 12,
@@ -1674,7 +2037,7 @@ const MENU_DB = {
     main: "pescado"
   }, {
     n: "Sopa de lentejas",
-    d: "1 taza de lentejas · zanahoria, apio y jitomate · cilantro",
+    d: "1 taza de lentejas · zanahoria, apio, jitomate y cilantro fresco",
     kcal: 280,
     p: 18,
     c: 40,
@@ -1684,18 +2047,192 @@ const MENU_DB = {
     main: "lenteja"
   }, {
     n: "Pechuga asada con ensalada",
-    d: "180 g de pechuga asada · ensalada grande · ½ aguacate · limón",
+    d: "180 g de pechuga asada · ensalada verde grande · ½ aguacate · limón",
     kcal: 390,
     p: 46,
     c: 10,
     g: 18,
     veg: false,
     con: [],
+    lc: true,
+    main: "pollo"
+  }, {
+    n: "Tacos de requesón y nopales",
+    d: "2 tortillas de maíz · 80 g de requesón · 1 taza de nopales asados al comal",
+    kcal: 220,
+    p: 14,
+    c: 26,
+    g: 4,
+    veg: true,
+    con: ["lacteo"],
+    main: "requesón"
+  }, {
+    n: "Panela asada con salsa de tomate",
+    d: "100 g de panela asada al comal · salsa de jitomate con orégano · ¼ aguacate",
+    kcal: 280,
+    p: 18,
+    c: 8,
+    g: 20,
+    veg: true,
+    con: ["lacteo"],
+    lc: true,
+    main: "panela"
+  }, {
+    n: "Atún a la mexicana rápido",
+    d: "1 lata de atún · jitomate, cebolla y cilantro picados · limón · 3 tostadas Salmas",
+    kcal: 200,
+    p: 25,
+    c: 16,
+    g: 3,
+    veg: false,
+    con: ["pescado"],
+    lc: true,
+    main: "atun"
+  }, {
+    n: "Pechuga deshebrada con salsa verde",
+    d: "140 g de pechuga deshebrada en salsa verde tibia · ensalada de pepino y jícama",
+    kcal: 245,
+    p: 34,
+    c: 12,
+    g: 5,
+    veg: false,
+    con: [],
+    lc: true,
+    main: "pollo"
+  }, {
+    n: "Sopa de verduras con pollo",
+    d: "Caldo de verduras con calabacita, chayote y apio · 120 g de pollo en cubos",
+    kcal: 210,
+    p: 28,
+    c: 14,
+    g: 4,
+    veg: false,
+    con: [],
+    lc: true,
+    main: "pollo"
+  }, {
+    n: "Crema de calabacita ligera",
+    d: "Calabacitas licuadas con leche descremada o caldo · 40 g de panela desmoronada encima",
+    kcal: 160,
+    p: 12,
+    c: 14,
+    g: 6,
+    veg: true,
+    con: ["lacteo"],
+    lc: true,
+    main: "calabacita"
+  }, {
+    n: "Tostadas de queso cottage",
+    d: "2 tostadas horneadas · 100 g de queso cottage · rebanadas de jitomate",
+    kcal: 175,
+    p: 15,
+    c: 20,
+    g: 3,
+    veg: true,
+    con: ["lacteo"],
+    main: "cottage"
+  }, {
+    n: "Ensalada César con pollo ligera",
+    d: "140 g de pechuga · lechuga romana · yogur con limón y parmesano como aderezo",
+    kcal: 255,
+    p: 36,
+    c: 6,
+    g: 9,
+    veg: false,
+    con: ["lacteo"],
+    lc: true,
+    main: "pollo"
+  }, {
+    n: "Rollitos de pavo y panela",
+    d: "4 rebanadas de pavo enrolladas con 15 g de panela c/u · ensalada de nopales fría",
+    kcal: 190,
+    p: 22,
+    c: 6,
+    g: 8,
+    veg: false,
+    con: ["lacteo"],
+    lc: true,
+    main: "pavo"
+  }, {
+    n: "Ceviche de atún",
+    d: "1 lata de atún · pepino, jitomate y cilantro picados · jugo de limón · ¼ aguacate",
+    kcal: 215,
+    p: 24,
+    c: 8,
+    g: 10,
+    veg: false,
+    con: ["pescado"],
+    lc: true,
+    main: "atun"
+  }, {
+    n: "Pescado con finas hierbas al comal",
+    d: "150 g de pescado blanco con tomillo y romero · 1 taza de nopales asados",
+    kcal: 160,
+    p: 28,
+    c: 8,
+    g: 2,
+    veg: false,
+    con: ["pescado"],
+    lc: true,
+    main: "pescado"
+  }, {
+    n: "Alambres de pollo nocturnos",
+    d: "140 g de pollo asado con pimientos y cebolla · 30 g de panela gratinada",
+    kcal: 275,
+    p: 36,
+    c: 10,
+    g: 10,
+    veg: false,
+    con: ["lacteo"],
+    lc: true,
+    main: "pollo"
+  }, {
+    n: "Setas guisadas al guajillo",
+    d: "1½ tazas de setas completas con ajo, cebolla y chile guajillo en tiras",
+    kcal: 120,
+    p: 5,
+    c: 18,
+    g: 2,
+    veg: true,
+    con: [],
+    main: "seta"
+  }, {
+    n: "Huevo en salsa roja",
+    d: "2 huevos pochados en salsa de jitomate caliente · 1 tortilla de maíz",
+    kcal: 200,
+    p: 13,
+    c: 12,
+    g: 10,
+    veg: true,
+    con: ["huevo"],
+    lc: true,
+    main: "huevo"
+  }, {
+    n: "Ensalada verde proteica nocturna",
+    d: "Espinacas y lechuga libres · 120 g de pechuga · 30 g de panela · 10 almendras",
+    kcal: 320,
+    p: 36,
+    c: 6,
+    g: 16,
+    veg: false,
+    con: ["lacteo", "nuez"],
+    lc: true,
+    main: "pollo"
+  }, {
+    n: "Brochetas de pollo y verduras",
+    d: "140 g de pollo en cubos asado con cebolla y pimiento morrón · ensalada verde libre",
+    kcal: 210,
+    p: 32,
+    c: 10,
+    g: 4,
+    veg: false,
+    con: [],
+    lc: true,
     main: "pollo"
   }],
   snack: [{
     n: "Yogur griego con nuez",
-    d: "200 g de yogur griego natural · 10 g de nuez",
+    d: "200 g de yogur griego natural · 10 g de nuez de Castilla",
     kcal: 200,
     p: 22,
     c: 10,
@@ -1705,7 +2242,7 @@ const MENU_DB = {
     main: "yogur"
   }, {
     n: "Queso cottage con fresas",
-    d: "120 g de queso cottage · 1 taza de fresas",
+    d: "120 g de queso cottage · 1 taza de fresas frescas",
     kcal: 120,
     p: 14,
     c: 8,
@@ -1714,8 +2251,8 @@ const MENU_DB = {
     con: ["lacteo"],
     main: "cottage"
   }, {
-    n: "Ensalada de pepino con yogur griego y ajonjolí",
-    d: "150 g de yogur griego natural · pepino · 10 g de ajonjolí · limón",
+    n: "Ensalada de pepino con yogur y ajonjolí",
+    d: "150 g de yogur griego · pepino libre · 10 g de ajonjolí tostado · limón",
     kcal: 140,
     p: 17,
     c: 8,
@@ -1725,37 +2262,40 @@ const MENU_DB = {
     main: "yogur"
   }, {
     n: "Huevos cocidos con pepino",
-    d: "2 huevos cocidos · pepino con limón y chile",
+    d: "2 huevos cocidos · pepino con limón y chile en polvo",
     kcal: 170,
     p: 13,
     c: 4,
     g: 11,
     veg: true,
     con: ["huevo"],
+    lc: true,
     main: "huevo"
   }, {
     n: "Puño de almendras",
-    d: "20 g de almendras (~15 piezas)",
+    d: "20 g de almendras naturales (~15 piezas)",
     kcal: 140,
     p: 5,
     c: 5,
     g: 12,
     veg: true,
     con: ["nuez"],
+    lc: true,
     main: "almendra"
   }, {
     n: "Rollitos de pavo con aguacate",
-    d: "60 g de pechuga de pavo · ¼ aguacate · pepino",
+    d: "60 g de pechuga de pavo · ¼ aguacate · bastones de pepino",
     kcal: 160,
     p: 16,
     c: 6,
     g: 9,
     veg: false,
     con: [],
+    lc: true,
     main: "pavo"
   }, {
     n: "Edamames con sal",
-    d: "1 taza de edamames con vaina",
+    d: "1 taza de edamames al vapor con su vaina · sal de grano",
     kcal: 150,
     p: 14,
     c: 12,
@@ -1765,7 +2305,7 @@ const MENU_DB = {
     main: "edamame"
   }, {
     n: "Jícama con limón y chile",
-    d: "1 taza (130 g) de jícama · limón · chile en polvo",
+    d: "1 taza (130 g) de jícama en bastones · limón · chile en polvo",
     kcal: 60,
     p: 1,
     c: 14,
@@ -1775,7 +2315,7 @@ const MENU_DB = {
     main: "jicama"
   }, {
     n: "Camote cocido con canela",
-    d: "120 g de camote cocido · canela",
+    d: "120 g de camote al vapor · canela molida pura",
     kcal: 100,
     p: 2,
     c: 24,
@@ -1783,6 +2323,122 @@ const MENU_DB = {
     veg: true,
     con: [],
     main: "camote"
+  }, {
+    n: "Fruta de mano con almendras",
+    d: "1 manzana o pera mediana · 10 almendras completas",
+    kcal: 150,
+    p: 3,
+    c: 20,
+    g: 6,
+    veg: true,
+    con: ["nuez"],
+    main: "fruta"
+  }, {
+    n: "Tostadas Salmas con requesón",
+    d: "3 tostadas Salmas · 50 g de requesón · orégano o chile quebrado",
+    kcal: 140,
+    p: 7,
+    c: 18,
+    g: 4,
+    veg: true,
+    con: ["lacteo"],
+    main: "requesón"
+  }, {
+    n: "Gelatina de dieta con yogur",
+    d: "1 taza de gelatina sin azúcar en cubos · 3 cdas de yogur griego natural",
+    kcal: 65,
+    p: 6,
+    c: 4,
+    g: 2,
+    veg: true,
+    con: ["lacteo"],
+    lc: true,
+    main: "yogur"
+  }, {
+    n: "Zanahoria rallada con limón",
+    d: "1 taza de zanahoria rallada fresca · limón · chile picante libre",
+    kcal: 45,
+    p: 1,
+    c: 10,
+    g: 0,
+    veg: true,
+    con: [],
+    main: "zanahoria"
+  }, {
+    n: "Panela en cubos con orégano",
+    d: "60 g de queso panela · ½ cdita de aceite de oliva · orégano seco",
+    kcal: 175,
+    p: 11,
+    c: 2,
+    g: 14,
+    veg: true,
+    con: ["lacteo"],
+    lc: true,
+    main: "panela"
+  }, {
+    n: "Pechuga de pavo y jícama",
+    d: "3 rebanadas de jamón de pavo · ½ taza de jícama en cubos",
+    kcal: 90,
+    p: 10,
+    c: 8,
+    g: 2,
+    veg: false,
+    con: [],
+    lc: true,
+    main: "pavo"
+  }, {
+    n: "Apio con queso crema light",
+    d: "4 bastones grandes de apio fresco · 2 cdas de queso crema light",
+    kcal: 75,
+    p: 3,
+    c: 6,
+    g: 5,
+    veg: true,
+    con: ["lacteo"],
+    lc: true,
+    main: "apio"
+  }, {
+    n: "Pepitas tostadas",
+    d: "20 g de semillas de calabaza naturales tostadas al comal con sal",
+    kcal: 115,
+    p: 6,
+    c: 3,
+    g: 10,
+    veg: true,
+    con: [],
+    lc: true,
+    main: "pepita"
+  }, {
+    n: "Yogur griego de vainilla helado",
+    d: "150 g de yogur griego · endulzante · esencia de vainilla · congelado tipo paleta",
+    kcal: 95,
+    p: 15,
+    c: 6,
+    g: 1,
+    veg: true,
+    con: ["lacteo"],
+    lc: true,
+    main: "yogur"
+  }, {
+    n: "Champiñones en escabeche",
+    d: "1 taza de champiñones en salmuera con vinagre, cebolla y zanahoria",
+    kcal: 50,
+    p: 3,
+    c: 9,
+    g: 0,
+    veg: true,
+    con: [],
+    main: "champiñon"
+  }, {
+    n: "Agua de horchata de avena AxoloFit",
+    d: "1 vaso de avena con leche de almendras sin azúcar, endulzante y canela",
+    kcal: 40,
+    p: 1,
+    c: 8,
+    g: 1,
+    veg: true,
+    con: [],
+    main: "avena"
   }]
 };
 const ALERGENOS = [["lacteo", "Lácteos"], ["gluten", "Gluten"], ["huevo", "Huevo"], ["pescado", "Pescado / mariscos"], ["cerdo", "Cerdo"], ["nuez", "Frutos secos"], ["otros", "Otros"]];
@@ -3136,7 +3792,7 @@ function StudioLogo() {
     fontSize: "22",
     fontWeight: "600",
     fill: "#8a8da0"
-  }, "Organizaci\xF3n \xB7 Eficiencia \xB7 Innovaci\xF3n"));
+  }, "Organización · Eficiencia · Innovación"));
 }
 
 /* ---------- HEADER ---------- */
@@ -3187,7 +3843,7 @@ function NumField({
     className: "stepper"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => commit(value - 1)
-  }, "\u2013"), /*#__PURE__*/React.createElement("div", {
+  }, "–"), /*#__PURE__*/React.createElement("div", {
     className: "num-wrap"
   }, /*#__PURE__*/React.createElement("input", {
     className: "num-input",
@@ -3335,7 +3991,7 @@ function Onboarding({
       maxWidth: 310
     },
     onClick: () => setStep("objetivo")
-  }, "Crear mi ajolote \uD83D\uDC97"));
+  }, "Crear mi ajolote 💗"));
   if (step === "objetivo") return /*#__PURE__*/React.createElement("div", {
     className: "screen"
   }, /*#__PURE__*/React.createElement(Header, {
@@ -3359,14 +4015,14 @@ function Onboarding({
       textAlign: "center",
       marginBottom: 4
     }
-  }, "\xBFCu\xE1l es tu objetivo?"), /*#__PURE__*/React.createElement("p", {
+  }, "¿Cuál es tu objetivo?"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       textAlign: "center",
       marginBottom: 20,
       fontSize: 14
     }
-  }, "Esto ajusta tus calor\xEDas y macros autom\xE1ticamente."), /*#__PURE__*/React.createElement("div", {
+  }, "Esto ajusta tus calorías y macros automáticamente."), /*#__PURE__*/React.createElement("div", {
     className: "col"
   }, [["perder", "⬇️ Perder peso", "Déficit calórico controlado (−20% de tu gasto)."], ["mantener", "⚖️ Mantener mi peso", "Comes exactamente lo que gastas."], ["ganar", "⬆️ Ganar peso", "Superávit moderado (+15%) para ganar masa."]].map(([v, t, desc]) => /*#__PURE__*/React.createElement("button", {
     key: v,
@@ -3402,7 +4058,7 @@ function Onboarding({
     className: "scroll"
   }, /*#__PURE__*/React.createElement("div", {
     className: "field"
-  }, /*#__PURE__*/React.createElement("label", null, "Sexo biol\xF3gico"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("label", null, "Sexo biológico"), /*#__PURE__*/React.createElement("div", {
     className: "col"
   }, [["F", "Mujer"], ["M", "Hombre"], ["X", "Prefiero no decirlo"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
     key: v,
@@ -3412,14 +4068,14 @@ function Onboarding({
     size: 18
   })))), /*#__PURE__*/React.createElement("p", {
     className: "hint"
-  }, "Solo se usa para calcular tu energ\xEDa. Si eliges \u201Cprefiero no decirlo\u201D, usamos un c\xE1lculo neutral (promedio) y omitimos el % de grasa.")), /*#__PURE__*/React.createElement(NumField, {
+  }, "Solo se usa para calcular tu energía. Si eliges “prefiero no decirlo”, usamos un cálculo neutral (promedio) y omitimos el % de grasa.")), /*#__PURE__*/React.createElement(NumField, {
     label: "Edad",
     value: d.edad,
     onChange: v => set("edad", v),
-    suffix: "a\xF1os",
+    suffix: "años",
     min: 15,
     max: 90,
-    hint: "Toca el n\xFAmero para escribirlo, o usa \u2212 / +."
+    hint: "Toca el número para escribirlo, o usa − / +."
   }), /*#__PURE__*/React.createElement(NumField, {
     label: "Peso",
     value: d.pesoKg,
@@ -3462,12 +4118,12 @@ function Onboarding({
     style: {
       marginTop: 4
     }
-  }, "Con esto calculamos tu % de grasa, estructura \xF3sea, ICM y peso corporal ideal personalizado."), /*#__PURE__*/React.createElement("p", {
+  }, "Con esto calculamos tu % de grasa, estructura ósea, ICM y peso corporal ideal personalizado."), /*#__PURE__*/React.createElement("p", {
     className: "hint",
     style: {
       marginBottom: 4
     }
-  }, "Necesitas una cinta m\xE9trica. Mide en cm sobre la piel, sin apretar."), /*#__PURE__*/React.createElement(NumField, {
+  }, "Necesitas una cinta métrica. Mide en cm sobre la piel, sin apretar."), /*#__PURE__*/React.createElement(NumField, {
     label: "Cuello",
     value: d.cuelloCm,
     onChange: v => set("cuelloCm", v),
@@ -3489,13 +4145,13 @@ function Onboarding({
     min: 60,
     max: 180
   }), /*#__PURE__*/React.createElement(NumField, {
-    label: "Mu\xF1eca",
+    label: "Muñeca",
     value: d.muñecaCm,
     onChange: v => set("muñecaCm", v),
     suffix: "cm",
     min: 10,
     max: 30,
-    hint: "Mide alrededor de la mu\xF1eca en su parte m\xE1s delgada."
+    hint: "Mide alrededor de la muñeca en su parte más delgada."
   })), /*#__PURE__*/React.createElement("div", {
     className: "footer-cta"
   }, /*#__PURE__*/React.createElement("button", {
@@ -3508,7 +4164,7 @@ function Onboarding({
       marginTop: 4
     },
     onClick: () => setSkipWarn(true)
-  }, "No tengo cinta \u2014 lo hago m\xE1s tarde")), skipWarn && /*#__PURE__*/React.createElement("div", {
+  }, "No tengo cinta — lo hago más tarde")), skipWarn && /*#__PURE__*/React.createElement("div", {
     className: "overlay",
     onClick: () => setSkipWarn(false)
   }, /*#__PURE__*/React.createElement("div", {
@@ -3537,7 +4193,7 @@ function Onboarding({
       fontSize: 22,
       flexShrink: 0
     }
-  }, "\uD83D\uDCA1"), /*#__PURE__*/React.createElement("h2", {
+  }, "💡"), /*#__PURE__*/React.createElement("h2", {
     className: "display",
     style: {
       fontSize: 19,
@@ -3550,7 +4206,7 @@ function Onboarding({
       lineHeight: 1.6,
       marginBottom: 16
     }
-  }, "Las medidas de cuello, cintura, cadera y mu\xF1eca nos permiten calcular tu distribuci\xF3n de grasa, riesgo cardiometab\xF3lico, estructura \xF3sea y peso ideal personalizado. Sin ellas, tu plan ser\xE1 menos preciso.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", {
+  }, "Las medidas de cuello, cintura, cadera y muñeca nos permiten calcular tu distribución de grasa, riesgo cardiometabólico, estructura ósea y peso ideal personalizado. Sin ellas, tu plan será menos preciso.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", {
     style: {
       color: "#B06A12"
     }
@@ -3572,7 +4228,7 @@ function Onboarding({
       }));
       setStep("resultados");
     }
-  }, "Entendido, las agrego despu\xE9s"))));
+  }, "Entendido, las agrego después"))));
   if (step === "resultados") {
     const r = computeProfile(d);
     const Stat = ({
@@ -3602,7 +4258,7 @@ function Onboarding({
       className: "card hero-card"
     }, /*#__PURE__*/React.createElement("span", {
       className: "muted"
-    }, "Tu meta diaria \xB7 ", d.objetivo === "ganar" ? "⬆️ Ganar peso" : d.objetivo === "mantener" ? "⚖️ Mantener" : "⬇️ Perder peso"), /*#__PURE__*/React.createElement("div", {
+    }, "Tu meta diaria · ", d.objetivo === "ganar" ? "⬆️ Ganar peso" : d.objetivo === "mantener" ? "⚖️ Mantener" : "⬇️ Perder peso"), /*#__PURE__*/React.createElement("div", {
       className: "big-num"
     }, r.objetivoDeficit, /*#__PURE__*/React.createElement("small", null, " kcal")), /*#__PURE__*/React.createElement("div", {
       className: "macro-row"
@@ -3610,7 +4266,7 @@ function Onboarding({
       style: {
         color: "#7C5CFF"
       }
-    }, "Prote\xEDna ", r.prote, " g"), /*#__PURE__*/React.createElement("span", {
+    }, "Proteína ", r.prote, " g"), /*#__PURE__*/React.createElement("span", {
       style: {
         color: "#F2B705"
       }
@@ -3668,7 +4324,7 @@ function Onboarding({
         marginTop: -2,
         marginBottom: 10
       }
-    }, "Sin medidas solo calculamos por peso. Agr\xE9galas en tu perfil para ver % grasa, ICM y peso ideal."), /*#__PURE__*/React.createElement("button", {
+    }, "Sin medidas solo calculamos por peso. Agrégalas en tu perfil para ver % grasa, ICM y peso ideal."), /*#__PURE__*/React.createElement("button", {
       onClick: () => setShowInfo(s => !s),
       style: {
         width: "100%",
@@ -3703,16 +4359,16 @@ function Onboarding({
       style: {
         color: "#2A2D43"
       }
-    }, term), " \u2014 ", def))), /*#__PURE__*/React.createElement("div", {
+    }, term), " — ", def))), /*#__PURE__*/React.createElement("div", {
       className: "safety"
     }, /*#__PURE__*/React.createElement(ShieldCheck, {
       size: 18
-    }), /*#__PURE__*/React.createElement("p", null, "Estos c\xE1lculos son orientativos y no sustituyen a un profesional de la salud. Nunca te pediremos comer por debajo de un m\xEDnimo seguro. Si tu relaci\xF3n con la comida te preocupa, entra a ", /*#__PURE__*/React.createElement("b", null, "M\xE1s \u2192 Apoyo"), "."))), /*#__PURE__*/React.createElement("div", {
+    }), /*#__PURE__*/React.createElement("p", null, "Estos cálculos son orientativos y no sustituyen a un profesional de la salud. Nunca te pediremos comer por debajo de un mínimo seguro. Si tu relación con la comida te preocupa, entra a ", /*#__PURE__*/React.createElement("b", null, "Más → Apoyo"), "."))), /*#__PURE__*/React.createElement("div", {
       className: "footer-cta"
     }, /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       onClick: () => setStep("nombrar")
-    }, "\xA1Me encanta!")));
+    }, "¡Me encanta!")));
   }
   return /*#__PURE__*/React.createElement("div", {
     className: "screen center",
@@ -3730,13 +4386,13 @@ function Onboarding({
       fontSize: 24,
       margin: "4px 0 2px"
     }
-  }, "\xA1Est\xE1 a punto de nacer!"), /*#__PURE__*/React.createElement("p", {
+  }, "¡Está a punto de nacer!"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       fontSize: 14,
       marginBottom: 10
     }
-  }, "\xBFC\xF3mo lo vas a llamar?"), /*#__PURE__*/React.createElement("input", {
+  }, "¿Cómo lo vas a llamar?"), /*#__PURE__*/React.createElement("input", {
     className: "name-input",
     value: name,
     maxLength: 14,
@@ -3749,14 +4405,14 @@ function Onboarding({
         ...d
       }, name || "Axo"), 950);
     }
-  }, "\xA1Que nazca! \uD83E\uDD5A\uD83D\uDC97")) : /*#__PURE__*/React.createElement("p", {
+  }, "¡Que nazca! 🥚💗")) : /*#__PURE__*/React.createElement("p", {
     className: "display",
     style: {
       fontSize: 22,
       color: "#E79FAE",
       marginTop: 8
     }
-  }, "\xA1Naciendo\u2026 \uD83E\uDD5A\u2728!"));
+  }, "¡Naciendo… 🥚✨!"));
 }
 
 /* ---------- NUEVA CONTRASEÑA (recovery flow) ---------- */
@@ -3820,13 +4476,13 @@ function NewPassScreen({
     style: {
       fontSize: 24
     }
-  }, "\xA1Contrase\xF1a actualizada! \uD83C\uDF89"), /*#__PURE__*/React.createElement("p", {
+  }, "¡Contraseña actualizada! 🎉"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       maxWidth: 280,
       textAlign: "center"
     }
-  }, "Ya puedes entrar con tu nueva contrase\xF1a."), /*#__PURE__*/React.createElement("button", {
+  }, "Ya puedes entrar con tu nueva contraseña."), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: onDone
   }, "Entrar a AxoloFit"));
@@ -3845,14 +4501,14 @@ function NewPassScreen({
       fontSize: 24,
       margin: "6px 0 4px"
     }
-  }, "Nueva contrase\xF1a"), /*#__PURE__*/React.createElement("p", {
+  }, "Nueva contraseña"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       marginBottom: 20,
       fontSize: 14,
       maxWidth: 270
     }
-  }, "Elige una contrase\xF1a nueva para tu cuenta."), /*#__PURE__*/React.createElement("div", {
+  }, "Elige una contraseña nueva para tu cuenta."), /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       maxWidth: 320
@@ -3868,7 +4524,7 @@ function NewPassScreen({
       marginBottom: 0,
       paddingRight: 48
     },
-    placeholder: "Nueva contrase\xF1a (m\xEDn. 6 caracteres)",
+    placeholder: "Nueva contraseña (mín. 6 caracteres)",
     type: showPass ? "text" : "password",
     value: pass,
     onChange: e => setPass(e.target.value)
@@ -3893,7 +4549,7 @@ function NewPassScreen({
     size: 20
   }))), /*#__PURE__*/React.createElement("input", {
     style: inputStyle,
-    placeholder: "Repite la contrase\xF1a",
+    placeholder: "Repite la contraseña",
     type: showPass ? "text" : "password",
     value: pass2,
     onChange: e => setPass2(e.target.value)
@@ -4002,7 +4658,7 @@ function QuizScreen({
       background: "linear-gradient(180deg,#FFF4EC,#E7F7F4)"
     }
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "\uD83E\uDD57 \xBFSaludable o antojo?",
+    title: "🥗 ¿Saludable o antojo?",
     back: () => setScreen("arcade")
   }), /*#__PURE__*/React.createElement("div", {
     className: "scroll",
@@ -4032,18 +4688,18 @@ function QuizScreen({
       fontSize: 26,
       margin: "8px 0 4px"
     }
-  }, "\xA1", score, "/", GAME_ITEMS.length, " correctas!"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
+  }, "¡", score, "/", GAME_ITEMS.length, " correctas!"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
     className: "display",
     style: {
       color: "#F2B705",
       fontSize: 15
     }
-  }, "\uD83C\uDFC6 \xA1Nuevo r\xE9cord!"), /*#__PURE__*/React.createElement("p", {
+  }, "🏆 ¡Nuevo récord!"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       marginBottom: 16
     }
-  }, "Ganaste +", score * 10, " XP \xB7 \uD83C\uDFC6 ", Math.max(best, score)), /*#__PURE__*/React.createElement("button", {
+  }, "Ganaste +", score * 10, " XP · 🏆 ", Math.max(best, score)), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => {
       setXp(x => Math.min(99, x + score * 10));
@@ -4095,14 +4751,14 @@ function QuizScreen({
       boxShadow: "none"
     },
     onClick: () => answer(true)
-  }, "\uD83E\uDD57 Saludable"), /*#__PURE__*/React.createElement("button", {
+  }, "🥗 Saludable"), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     style: {
       background: "linear-gradient(180deg,#FFB36B,#FF9036)",
       boxShadow: "none"
     },
     onClick: () => answer(false)
-  }, "\uD83C\uDF69 Antojo")))));
+  }, "🍩 Antojo")))));
 }
 function MemoScreen({
   pet,
@@ -4175,7 +4831,7 @@ function MemoScreen({
       background: "linear-gradient(180deg,#F0EBFF,#E2D8FF)"
     }
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "\uD83E\uDDE0 Memorama de comida",
+    title: "🧠 Memorama de comida",
     back: () => setScreen("arcade")
   }), /*#__PURE__*/React.createElement("div", {
     className: "scroll"
@@ -4204,9 +4860,9 @@ function MemoScreen({
       fontSize: 21,
       margin: "4px 12px"
     }
-  }, "\xA1", petName, " est\xE1 feliz! ", pairs, " pares en ", moves, " movimientos"), /*#__PURE__*/React.createElement("p", {
+  }, "¡", petName, " está feliz! ", pairs, " pares en ", moves, " movimientos"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "\uD83C\uDFC6 Mejor nivel: ", Math.max(best, nivel)), /*#__PURE__*/React.createElement("p", {
+  }, "🏆 Mejor nivel: ", Math.max(best, nivel)), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       marginBottom: 14
@@ -4217,7 +4873,7 @@ function MemoScreen({
       marginBottom: 8
     },
     onClick: nextLevel
-  }, "\uD83C\uDF89 Siguiente nivel (+2 pares)"), /*#__PURE__*/React.createElement("button", {
+  }, "🎉 Siguiente nivel (+2 pares)"), /*#__PURE__*/React.createElement("button", {
     className: "btn ghost",
     onClick: () => {
       recordBest("memo", nivel);
@@ -4234,7 +4890,7 @@ function MemoScreen({
       color: "#7a8099",
       margin: "2px 0 14px"
     }
-  }, "Nivel ", nivel, " \xB7 ", moves, " mov \xB7 ", matched.length / 2, "/", pairs, " pares"), /*#__PURE__*/React.createElement("div", {
+  }, "Nivel ", nivel, " · ", moves, " mov · ", matched.length / 2, "/", pairs, " pares"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(4,1fr)",
@@ -4265,7 +4921,7 @@ function MemoScreen({
       textAlign: "center",
       marginTop: 14
     }
-  }, "Encuentra los pares. Al ganar, \xA1", petName, " pide m\xE1s pares!"), /*#__PURE__*/React.createElement("div", {
+  }, "Encuentra los pares. Al ganar, ¡", petName, " pide más pares!"), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 60
     }
@@ -4338,7 +4994,7 @@ function SimonScreen({
       background: "linear-gradient(180deg,#EAF6FF,#E2D8FF)"
     }
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "\uD83C\uDFB5 Axo Dice",
+    title: "🎵 Axo Dice",
     back: () => setScreen("arcade")
   }), /*#__PURE__*/React.createElement("div", {
     className: "scroll",
@@ -4412,12 +5068,12 @@ function SimonScreen({
     style: {
       marginTop: 10
     }
-  }, "Llegaste a la ronda ", score, ".", score > 0 ? " +" + score * 8 + " XP" : "", " \xB7 \uD83C\uDFC6 ", Math.max(best, score)), !started && !over && best > 0 && /*#__PURE__*/React.createElement("p", {
+  }, "Llegaste a la ronda ", score, ".", score > 0 ? " +" + score * 8 + " XP" : "", " · 🏆 ", Math.max(best, score)), !started && !over && best > 0 && /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       marginTop: 8
     }
-  }, "\uD83C\uDFC6 Tu r\xE9cord: ronda ", best), /*#__PURE__*/React.createElement("div", {
+  }, "🏆 Tu récord: ronda ", best), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 40
     }
@@ -4533,7 +5189,7 @@ function CatchScreen({
       background: "linear-gradient(180deg,#EAF6FF,#D7ECFF)"
     }
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "\uD83C\uDF6C Atrapa lo sano",
+    title: "🍬 Atrapa lo sano",
     back: () => setScreen("arcade")
   }), over ? /*#__PURE__*/React.createElement("div", {
     className: "center",
@@ -4554,24 +5210,24 @@ function CatchScreen({
       fontSize: 26,
       margin: "8px 0 2px"
     }
-  }, "\xA1", score, " puntos!"), /*#__PURE__*/React.createElement("p", {
+  }, "¡", score, " puntos!"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       marginBottom: 4
     }
-  }, "Llegaste al nivel ", level, " \xB7 +", score * 5, " XP"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
+  }, "Llegaste al nivel ", level, " · +", score * 5, " XP"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
     className: "display",
     style: {
       color: "#F2B705",
       fontSize: 16,
       marginBottom: 6
     }
-  }, "\uD83C\uDFC6 \xA1Nuevo r\xE9cord!"), score < best && /*#__PURE__*/React.createElement("p", {
+  }, "🏆 ¡Nuevo récord!"), score < best && /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       marginBottom: 6
     }
-  }, "R\xE9cord: ", best), /*#__PURE__*/React.createElement("button", {
+  }, "Récord: ", best), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => {
       setXp(x => Math.min(99, x + score * 5));
@@ -4603,11 +5259,11 @@ function CatchScreen({
     style: {
       color: "#E79FAE"
     }
-  }, "\u23F1\uFE0F ", time, "s"), /*#__PURE__*/React.createElement("span", {
+  }, "⏱️ ", time, "s"), /*#__PURE__*/React.createElement("span", {
     style: {
       color: "#34BC97"
     }
-  }, "\uD83C\uDF6C ", score, "/", tgt)), /*#__PURE__*/React.createElement("div", {
+  }, "🍬 ", score, "/", tgt)), /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       height: 5,
@@ -4678,13 +5334,13 @@ function CatchScreen({
       fontSize: 30,
       color: "#7C5CFF"
     }
-  }, "\xA1Nivel ", level, "! \uD83C\uDF89"))), /*#__PURE__*/React.createElement("p", {
+  }, "¡Nivel ", level, "! 🎉"))), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       textAlign: "center",
       marginTop: 10
     }
-  }, "Llega a ", tgt, " pts antes de que acabe el tiempo \xB7 \uD83C\uDFC6 ", best)));
+  }, "Llega a ", tgt, " pts antes de que acabe el tiempo · 🏆 ", best)));
 }
 function CalScreen({
   pet,
@@ -4722,7 +5378,7 @@ function CalScreen({
       background: "linear-gradient(180deg,#FFF6E6,#FFE9C8)"
     }
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "\uD83D\uDD25 \xBFCu\xE1l tiene m\xE1s calor\xEDas?",
+    title: "🔥 ¿Cuál tiene más calorías?",
     back: () => setScreen("arcade")
   }), /*#__PURE__*/React.createElement("div", {
     className: "scroll",
@@ -4750,18 +5406,18 @@ function CalScreen({
       fontSize: 26,
       margin: "8px 0 4px"
     }
-  }, "\xA1", score, "/", KCAL_PAIRS.length, " correctas!"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
+  }, "¡", score, "/", KCAL_PAIRS.length, " correctas!"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
     className: "display",
     style: {
       color: "#F2B705",
       fontSize: 15
     }
-  }, "\uD83C\uDFC6 \xA1Nuevo r\xE9cord!"), /*#__PURE__*/React.createElement("p", {
+  }, "🏆 ¡Nuevo récord!"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       marginBottom: 16
     }
-  }, "Ganaste +", score * 12, " XP \xB7 \uD83C\uDFC6 ", Math.max(best, score)), /*#__PURE__*/React.createElement("button", {
+  }, "Ganaste +", score * 12, " XP · 🏆 ", Math.max(best, score)), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => {
       setXp(x => Math.min(99, x + score * 12));
@@ -4781,7 +5437,7 @@ function CalScreen({
       color: "#9aa0b4",
       marginBottom: 8
     }
-  }, i + 1, " de ", KCAL_PAIRS.length, " \xB7 \xBFcu\xE1l tiene M\xC1S calor\xEDas?"), /*#__PURE__*/React.createElement("p", {
+  }, i + 1, " de ", KCAL_PAIRS.length, " · ¿cuál tiene MÁS calorías?"), /*#__PURE__*/React.createElement("p", {
     style: {
       textAlign: "center",
       fontFamily: "Fredoka",
@@ -5430,7 +6086,7 @@ function App() {
   }, /*#__PURE__*/React.createElement(Flame, {
     size: 16,
     color: "#FF7A3D"
-  }), " ", streak, " d\xEDas"), /*#__PURE__*/React.createElement("div", {
+  }), " ", streak, " días"), /*#__PURE__*/React.createElement("div", {
     className: "lvl-pill"
   }, "Nivel ", level, /*#__PURE__*/React.createElement("span", {
     className: "xp-track"
@@ -5487,7 +6143,7 @@ function App() {
       border: "none"
     },
     onClick: () => setScreen("pet")
-  }, "\u2728 Vestir a ", petName)), /*#__PURE__*/React.createElement("div", {
+  }, "✨ Vestir a ", petName)), /*#__PURE__*/React.createElement("div", {
     className: "rings"
   }, /*#__PURE__*/React.createElement("div", {
     className: "ring-item"
@@ -5509,7 +6165,7 @@ function App() {
     className: "ring-c"
   }, /*#__PURE__*/React.createElement("b", null, Math.round(totals.p)), /*#__PURE__*/React.createElement("span", null, "/", targets.prote, "g"))), /*#__PURE__*/React.createElement("span", {
     className: "ring-lbl"
-  }, "Prote\xEDna")), /*#__PURE__*/React.createElement("div", {
+  }, "Proteína")), /*#__PURE__*/React.createElement("div", {
     className: "ring-item"
   }, /*#__PURE__*/React.createElement(Ring, {
     progress: pAgua,
@@ -5556,7 +6212,7 @@ function App() {
   }, /*#__PURE__*/React.createElement(Droplet, {
     size: 16,
     color: "#3FA9F5"
-  }), " Agua de hoy \xB7 ", vasos, "/", targets.vasos, " vasos"), /*#__PURE__*/React.createElement("div", {
+  }), " Agua de hoy · ", vasos, "/", targets.vasos, " vasos"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
@@ -5594,7 +6250,7 @@ function App() {
     onClick: () => setOverlay("coach")
   }, /*#__PURE__*/React.createElement(MessageCircle, {
     size: 16
-  }), " Preg\xFAntale a ", petName)), /*#__PURE__*/React.createElement("div", {
+  }), " Pregúntale a ", petName)), /*#__PURE__*/React.createElement("div", {
     className: "quick-water"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn soft feature",
@@ -5604,7 +6260,7 @@ function App() {
   }), " Generar receta"), /*#__PURE__*/React.createElement("button", {
     className: "btn soft",
     onClick: () => setScreen("arcade")
-  }, "\uD83C\uDFAE Juegos")), /*#__PURE__*/React.createElement("div", {
+  }, "🎮 Juegos")), /*#__PURE__*/React.createElement("div", {
     className: "quick-water"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn soft feature",
@@ -5612,20 +6268,20 @@ function App() {
       flex: "1 1 100%"
     },
     onClick: () => setOverlay("menu")
-  }, "\uD83C\uDF7D\uFE0F Men\xFA del d\xEDa \xB7 generar"), /*#__PURE__*/React.createElement("button", {
+  }, "🍽️ Menú del día · generar"), /*#__PURE__*/React.createElement("button", {
     className: "btn soft feature",
     style: {
       flex: "1 1 100%"
     },
     onClick: () => setScreen("semana")
-  }, "\uD83D\uDCC5 Ver plan semanal")), !celebrated && /*#__PURE__*/React.createElement("div", {
+  }, "📅 Ver plan semanal")), !celebrated && /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
   }, /*#__PURE__*/React.createElement(Sparkles, {
     size: 16,
     color: "#F2B705"
-  }), " Para cerrar tu d\xEDa"), /*#__PURE__*/React.createElement("p", {
+  }), " Para cerrar tu día"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
   }, "Sugerencias que encajan en tus macros restantes."), ["pozole", "pechuga", "frijol", "pastor"].map(id => {
     const f = FOODS.find(x => x.id === id);
@@ -5634,7 +6290,7 @@ function App() {
       className: "sug-row"
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, f.n), /*#__PURE__*/React.createElement("span", {
       className: "muted sm"
-    }, " \xB7 ", f.kcal, " kcal \xB7 ", f.p, "g prot")), /*#__PURE__*/React.createElement("button", {
+    }, " · ", f.kcal, " kcal · ", f.p, "g prot")), /*#__PURE__*/React.createElement("button", {
       className: "add-btn",
       onClick: () => addFood(f)
     }, /*#__PURE__*/React.createElement(Plus, {
@@ -5646,12 +6302,12 @@ function App() {
     className: "card-h"
   }, "Hoy comiste"), log.length === 0 && /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "A\xFAn nada. Toca el bot\xF3n rosa para registrar."), log.map(f => /*#__PURE__*/React.createElement("div", {
+  }, "Aún nada. Toca el botón rosa para registrar."), log.map(f => /*#__PURE__*/React.createElement("div", {
     key: f.uid,
     className: "log-row"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, f.n), /*#__PURE__*/React.createElement("span", {
     className: "muted sm"
-  }, " \xB7 ", f.qty > 1 ? f.qty + "× " : "", f.kcal * f.qty, " kcal")), /*#__PURE__*/React.createElement("button", {
+  }, " · ", f.qty > 1 ? f.qty + "× " : "", f.kcal * f.qty, " kcal")), /*#__PURE__*/React.createElement("button", {
     className: "x-btn",
     onClick: () => removeFood(f.uid)
   }, /*#__PURE__*/React.createElement(X, {
@@ -5664,7 +6320,7 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
-  }, "\uD83D\uDCC5 Plan semanal"), /*#__PURE__*/React.createElement("div", {
+  }, "📅 Plan semanal"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 4,
@@ -5712,23 +6368,23 @@ function App() {
       padding: "10px"
     },
     onClick: () => setScreen("semana")
-  }, "Abrir planeaci\xF3n semanal")), /*#__PURE__*/React.createElement("div", {
+  }, "Abrir planeación semanal")), /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
       background: "linear-gradient(135deg,#EEF0FF,#F6EDFF)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
-  }, "\uD83C\uDF19 Antes de dormir"), /*#__PURE__*/React.createElement("p", {
+  }, "🌙 Antes de dormir"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Un momento contigo y con ", petName, ". Cu\xE9ntale c\xF3mo te fue hoy."), /*#__PURE__*/React.createElement("button", {
+  }, "Un momento contigo y con ", petName, ". Cuéntale cómo te fue hoy."), /*#__PURE__*/React.createElement("button", {
     className: "btn primary",
     style: {
       width: "100%",
       marginTop: 8
     },
     onClick: () => setOverlay("reflexion")
-  }, "\xBFC\xF3mo te fue hoy?")), /*#__PURE__*/React.createElement("div", {
+  }, "¿Cómo te fue hoy?")), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 90
     }
@@ -5800,7 +6456,7 @@ function App() {
       size: 18,
       color: "#9aa0b4"
     }), /*#__PURE__*/React.createElement("input", {
-      placeholder: "Busca: tacos, pozole, concha\u2026",
+      placeholder: "Busca: tacos, pozole, concha…",
       value: q,
       onChange: e => setQ(e.target.value)
     })), results.map(f => /*#__PURE__*/React.createElement("div", {
@@ -5808,7 +6464,7 @@ function App() {
       className: "sug-row"
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, f.n), /*#__PURE__*/React.createElement("span", {
       className: "muted sm"
-    }, " \xB7 ", f.u, " \xB7 ", f.kcal, " kcal \xB7 P", f.p, " C", f.c, " G", f.g)), /*#__PURE__*/React.createElement("button", {
+    }, " · ", f.u, " · ", f.kcal, " kcal · P", f.p, " C", f.c, " G", f.g)), /*#__PURE__*/React.createElement("button", {
       className: "add-btn",
       onClick: () => addFood(f)
     }, /*#__PURE__*/React.createElement(Plus, {
@@ -5894,7 +6550,7 @@ function App() {
         color: "#9aa0b4",
         letterSpacing: 0.3
       }
-    }, "\uD83C\uDF31 EVOLUCI\xD3N DE ", petName.toUpperCase()), /*#__PURE__*/React.createElement("div", {
+    }, "🌱 EVOLUCIÓN DE ", petName.toUpperCase()), /*#__PURE__*/React.createElement("div", {
       className: "evo-row"
     }, [["huevo", "🥚", "Huevo", 0], ["cria", "🐣", "Cría", 3], ["joven", "🦎", "Joven", 7], ["adulto", "⭐", "Adulto", 21], ["mistico", "✨", "Místico", 60]].map(([k, em, e, dias], idx, arr) => {
       const evoOrder = arr.map(x => x[0]);
@@ -5933,7 +6589,7 @@ function App() {
           color: "#b0b6c8",
           marginTop: 1
         }
-      }, "d\xEDa ", dias), current && /*#__PURE__*/React.createElement("small", {
+      }, "día ", dias), current && /*#__PURE__*/React.createElement("small", {
         style: {
           fontSize: 9,
           color: "#7C5CFF",
@@ -5957,7 +6613,7 @@ function App() {
       style: {
         marginBottom: 8
       }
-    }, "\uD83C\uDFA8 ", /*#__PURE__*/React.createElement("b", null, "Color"), " es el skin de ", petName, ". ", /*#__PURE__*/React.createElement("b", null, "Estilo"), ", ", /*#__PURE__*/React.createElement("b", null, "Accesorio"), " (cabeza) y ", /*#__PURE__*/React.createElement("b", null, "Outfit"), " (cuerpo) se combinan entre s\xED. Los que tienen \uD83D\uDC51 son premium (desbloqueados en este demo)."), /*#__PURE__*/React.createElement("div", {
+    }, "🎨 ", /*#__PURE__*/React.createElement("b", null, "Color"), " es el skin de ", petName, ". ", /*#__PURE__*/React.createElement("b", null, "Estilo"), ", ", /*#__PURE__*/React.createElement("b", null, "Accesorio"), " (cabeza) y ", /*#__PURE__*/React.createElement("b", null, "Outfit"), " (cuerpo) se combinan entre sí. Los que tienen 👑 son premium (desbloqueados en este demo)."), /*#__PURE__*/React.createElement("div", {
       className: "sect-t"
     }, "Color / Skin"), /*#__PURE__*/React.createElement(Swatches, {
       sk: "pal",
@@ -6047,7 +6703,7 @@ function App() {
       onClick: () => showToast("✨ Premium activo en este demo — todo desbloqueado")
     }, /*#__PURE__*/React.createElement(Crown, {
       size: 16
-    }), " Premium activo (demo) \xB7 todo desbloqueado"), /*#__PURE__*/React.createElement("div", {
+    }), " Premium activo (demo) · todo desbloqueado"), /*#__PURE__*/React.createElement("div", {
       style: {
         height: 80
       }
@@ -6092,7 +6748,7 @@ function App() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       className: "card-h"
-    }, "\u2696\uFE0F Tu peso \xB7 ", pa.toFixed(1), " kg"), /*#__PURE__*/React.createElement("div", {
+    }, "⚖️ Tu peso · ", pa.toFixed(1), " kg"), /*#__PURE__*/React.createElement("div", {
       className: "center",
       style: {
         margin: "2px 0"
@@ -6110,7 +6766,7 @@ function App() {
       style: {
         textAlign: "center"
       }
-    }, "Meta: ", pesoMeta, " kg \xB7 ", petName, " adelgaza contigo conforme bajas de peso."), /*#__PURE__*/React.createElement("div", {
+    }, "Meta: ", pesoMeta, " kg · ", petName, " adelgaza contigo conforme bajas de peso."), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 8,
@@ -6119,7 +6775,7 @@ function App() {
     }, /*#__PURE__*/React.createElement("button", {
       className: "btn soft",
       onClick: () => setPesoActual(Math.max(pesoMeta, +(pa - 0.5).toFixed(1)))
-    }, "\u2212 0.5 kg"), /*#__PURE__*/React.createElement("button", {
+    }, "− 0.5 kg"), /*#__PURE__*/React.createElement("button", {
       className: "btn soft",
       onClick: () => setPesoActual(Math.min(pesoIni, +(pa + 0.5).toFixed(1)))
     }, "+ 0.5 kg")), /*#__PURE__*/React.createElement("p", {
@@ -6127,33 +6783,33 @@ function App() {
       style: {
         textAlign: "center"
       }
-    }, "Demo: registra tu peso y mira c\xF3mo cambia tu ajolote.")), /*#__PURE__*/React.createElement("div", {
+    }, "Demo: registra tu peso y mira cómo cambia tu ajolote.")), /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("div", {
       className: "card-h"
-    }, "Peso \xB7 \xFAltimos 7 d\xEDas"), /*#__PURE__*/React.createElement(MiniChart, {
+    }, "Peso · últimos 7 días"), /*#__PURE__*/React.createElement(MiniChart, {
       data: data
     }), /*#__PURE__*/React.createElement("p", {
       className: "win"
-    }, "\u25BC 1.2 kg esta semana \xB7 \xA1", petName, " lo celebra contigo!")), /*#__PURE__*/React.createElement("div", {
+    }, "▼ 1.2 kg esta semana · ¡", petName, " lo celebra contigo!")), /*#__PURE__*/React.createElement("div", {
       className: "tip-box"
     }, /*#__PURE__*/React.createElement("span", {
       className: "tip-icon"
-    }, "\uD83D\uDCA1"), /*#__PURE__*/React.createElement("p", {
+    }, "💡"), /*#__PURE__*/React.createElement("p", {
       className: "tip-text"
-    }, /*#__PURE__*/React.createElement("b", null, "No te obsesiones con la b\xE1scula."), " El peso sube y baja por agua o m\xFAsculo. Lo ideal es ", /*#__PURE__*/React.createElement("b", null, "bajar de talla y perder grasa"), " manteniendo tus m\xFAsculos fuertes. \xA1Tus cent\xEDmetros nos dicen el progreso real!")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, "No te obsesiones con la báscula."), " El peso sube y baja por agua o músculo. Lo ideal es ", /*#__PURE__*/React.createElement("b", null, "bajar de talla y perder grasa"), " manteniendo tus músculos fuertes. ¡Tus centímetros nos dicen el progreso real!")), /*#__PURE__*/React.createElement("div", {
       className: "tip-box musc"
     }, /*#__PURE__*/React.createElement("span", {
       className: "tip-icon"
-    }, "\uD83D\uDCAA"), /*#__PURE__*/React.createElement("p", {
+    }, "💪"), /*#__PURE__*/React.createElement("p", {
       className: "tip-text"
-    }, /*#__PURE__*/React.createElement("b", null, "El m\xFAsculo es tu aliado."), " Al bajar de peso, conservar y ganar m\xFAsculo mantiene tu metabolismo activo, te da fuerza y hace que la grasa se vaya sin recuperarla. Por eso priorizamos la ", /*#__PURE__*/React.createElement("b", null, "prote\xEDna"), " y el movimiento, no solo comer menos.")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, "El músculo es tu aliado."), " Al bajar de peso, conservar y ganar músculo mantiene tu metabolismo activo, te da fuerza y hace que la grasa se vaya sin recuperarla. Por eso priorizamos la ", /*#__PURE__*/React.createElement("b", null, "proteína"), " y el movimiento, no solo comer menos.")), /*#__PURE__*/React.createElement("div", {
       className: "grid2"
     }, /*#__PURE__*/React.createElement("div", {
       className: "stat-chip"
-    }, /*#__PURE__*/React.createElement("b", null, streak), /*#__PURE__*/React.createElement("span", null, "Racha (d\xEDas)")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, streak), /*#__PURE__*/React.createElement("span", null, "Racha (días)")), /*#__PURE__*/React.createElement("div", {
       className: "stat-chip"
-    }, /*#__PURE__*/React.createElement("b", null, Math.round(totals.p), /*#__PURE__*/React.createElement("small", null, "g")), /*#__PURE__*/React.createElement("span", null, "Prote\xEDna hoy")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, Math.round(totals.p), /*#__PURE__*/React.createElement("small", null, "g")), /*#__PURE__*/React.createElement("span", null, "Proteína hoy")), /*#__PURE__*/React.createElement("div", {
       className: "stat-chip"
     }, /*#__PURE__*/React.createElement("b", null, Math.round(totals.kcal)), /*#__PURE__*/React.createElement("span", null, "Kcal hoy")), /*#__PURE__*/React.createElement("div", {
       className: "stat-chip"
@@ -6164,7 +6820,7 @@ function App() {
     }, /*#__PURE__*/React.createElement(Sparkles, {
       size: 16,
       color: "#7C5CFF"
-    }), " Informe avanzado \xB7 distribuci\xF3n de hoy"), (() => {
+    }), " Informe avanzado · distribución de hoy"), (() => {
       const pk = totals.p * 4,
         ck = totals.c * 4,
         gk = totals.g * 9,
@@ -6184,7 +6840,7 @@ function App() {
           marginBottom: 4
         }
       }, /*#__PURE__*/React.createElement("span", null, l, l === "Carbohidratos" && /*#__PURE__*/React.createElement(InfoDot, {
-        text: "Combina tus carbohidratos con fibra o prote\xEDna para evitar picos de glucosa. As\xED mantienes la energ\xEDa estable y el apetito bajo control todo el d\xEDa."
+        text: "Combina tus carbohidratos con fibra o proteína para evitar picos de glucosa. Así mantienes la energía estable y el apetito bajo control todo el día."
       })), /*#__PURE__*/React.createElement("span", {
         style: {
           color: col
@@ -6207,9 +6863,9 @@ function App() {
       className: "tip-box glu"
     }, /*#__PURE__*/React.createElement("span", {
       className: "tip-icon"
-    }, "\uD83D\uDD75\uFE0F"), /*#__PURE__*/React.createElement("p", {
+    }, "🕵️"), /*#__PURE__*/React.createElement("p", {
       className: "tip-text"
-    }, /*#__PURE__*/React.createElement("b", null, "Tip de Axo:"), " combinar tus carbohidratos con fibra o prote\xEDna evita los picos de glucosa. \xA1As\xED mantienes tu energ\xEDa estable y el apetito bajo control toda la tarde!")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, "Tip de Axo:"), " combinar tus carbohidratos con fibra o proteína evita los picos de glucosa. ¡Así mantienes tu energía estable y el apetito bajo control toda la tarde!")), /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("div", {
       className: "card-h"
@@ -6230,7 +6886,7 @@ function App() {
   const MoreScreen = () => /*#__PURE__*/React.createElement("div", {
     className: "screen"
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "M\xE1s",
+    title: "Más",
     back: () => setScreen("home")
   }), /*#__PURE__*/React.createElement("div", {
     className: "scroll",
@@ -6245,13 +6901,13 @@ function App() {
     color: "#F2B705"
   }), " AxoloFit Premium"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "IA por foto ilimitada \xB7 recetas infinitas \xB7 skins y especies raras \xB7 informes avanzados \xB7 minijuegos exclusivos."), /*#__PURE__*/React.createElement("button", {
+  }, "IA por foto ilimitada · recetas infinitas · skins y especies raras · informes avanzados · minijuegos exclusivos."), /*#__PURE__*/React.createElement("button", {
     className: "btn primary",
     onClick: () => setOverlay("paywall")
   }, "Ver planes")), /*#__PURE__*/React.createElement("button", {
     className: "list-row",
     onClick: () => setOverlay("prefs")
-  }, "\uD83E\uDD57 Preferencias y alergias"), /*#__PURE__*/React.createElement("button", {
+  }, "🥗 Preferencias y alergias"), /*#__PURE__*/React.createElement("button", {
     className: "list-row",
     onClick: () => setOverlay("privacy")
   }, /*#__PURE__*/React.createElement(ShieldCheck, {
@@ -6279,7 +6935,7 @@ function App() {
       setUserId(null);
       setPhase("auth");
     }
-  }, "\uD83D\uDEAA Cerrar sesi\xF3n"), /*#__PURE__*/React.createElement("div", {
+  }, "🚪 Cerrar sesión"), /*#__PURE__*/React.createElement("div", {
     className: "studio"
   }, /*#__PURE__*/React.createElement(StudioLogo, null), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
@@ -6294,7 +6950,7 @@ function App() {
       fontSize: 11,
       opacity: 0.7
     }
-  }, "Herramienta de seguimiento y educaci\xF3n nutricional. No sustituye la atenci\xF3n profesional.")), /*#__PURE__*/React.createElement("div", {
+  }, "Herramienta de seguimiento y educación nutricional. No sustituye la atención profesional.")), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 80
     }
@@ -6348,12 +7004,12 @@ function App() {
       style: {
         marginTop: 14
       }
-    }, "Escuchando\u2026 di lo que comiste")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    }, "Escuchando… di lo que comiste")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
       className: "transcript"
-    }, "\u201CMe com\xED tres tacos al pastor y una coca sin az\xFAcar\u201D"), parsed.map((f, i) => /*#__PURE__*/React.createElement("div", {
+    }, "“Me comí tres tacos al pastor y una coca sin azúcar”"), parsed.map((f, i) => /*#__PURE__*/React.createElement("div", {
       key: i,
       className: "log-row"
-    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, f.qty, "\xD7 ", f.n)), /*#__PURE__*/React.createElement("span", {
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, f.qty, "× ", f.n)), /*#__PURE__*/React.createElement("span", {
       className: "muted sm"
     }, f.kcal * f.qty, " kcal"))), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
@@ -6400,9 +7056,9 @@ function App() {
       className: "log-row"
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, f.n), /*#__PURE__*/React.createElement("span", {
       className: "muted sm"
-    }, " \xB7 ~", f.kcal, " kcal \xB7 92% seguro")))), /*#__PURE__*/React.createElement("p", {
+    }, " · ~", f.kcal, " kcal · 92% seguro")))), /*#__PURE__*/React.createElement("p", {
       className: "muted sm"
-    }, "Toca un alimento para corregir la porci\xF3n."), /*#__PURE__*/React.createElement("button", {
+    }, "Toca un alimento para corregir la porción."), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       onClick: () => {
         detected.forEach(f => addFood(f, f.qty));
@@ -6439,9 +7095,9 @@ function App() {
       className: "tip-box"
     }, /*#__PURE__*/React.createElement("span", {
       className: "tip-icon"
-    }, "\uD83C\uDF2E"), /*#__PURE__*/React.createElement("p", {
+    }, "🌮"), /*#__PURE__*/React.createElement("p", {
       className: "tip-text"
-    }, /*#__PURE__*/React.createElement("b", null, "\xA1Come rico, come sano!"), " Con buenos ingredientes, la comida mexicana nutre y sabe incre\xEDble.")), /*#__PURE__*/React.createElement("h2", {
+    }, /*#__PURE__*/React.createElement("b", null, "¡Come rico, come sano!"), " Con buenos ingredientes, la comida mexicana nutre y sabe increíble.")), /*#__PURE__*/React.createElement("h2", {
       className: "display",
       style: {
         fontSize: 21,
@@ -6478,9 +7134,9 @@ function App() {
       style: {
         fontWeight: 600
       }
-    }, "\u2022 ", x)))), /*#__PURE__*/React.createElement("div", {
+    }, "• ", x)))), /*#__PURE__*/React.createElement("div", {
       className: "sect-t"
-    }, "Preparaci\xF3n"), /*#__PURE__*/React.createElement("p", {
+    }, "Preparación"), /*#__PURE__*/React.createElement("p", {
       className: "muted sm",
       style: {
         lineHeight: 1.5,
@@ -6501,7 +7157,7 @@ function App() {
         setOverlay(null);
         setScreen("home");
       }
-    }, "A\xF1adir a hoy"), /*#__PURE__*/React.createElement("button", {
+    }, "Añadir a hoy"), /*#__PURE__*/React.createElement("button", {
       className: "btn ghost",
       style: {
         width: "100%",
@@ -6515,7 +7171,7 @@ function App() {
     return /*#__PURE__*/React.createElement("div", {
       className: "screen"
     }, /*#__PURE__*/React.createElement(Header, {
-      title: "\uD83C\uDFAE Juegos",
+      title: "🎮 Juegos",
       back: () => setScreen("home")
     }), /*#__PURE__*/React.createElement("div", {
       className: "scroll",
@@ -6550,7 +7206,7 @@ function App() {
         textAlign: "center",
         marginTop: 6
       }
-    }, "Gana XP y supera tu r\xE9cord para vestir a ", petName, "."), /*#__PURE__*/React.createElement("div", {
+    }, "Gana XP y supera tu récord para vestir a ", petName, "."), /*#__PURE__*/React.createElement("div", {
       style: {
         height: 80
       }
@@ -6612,9 +7268,9 @@ function App() {
         textAlign: "center",
         margin: "2px 0 8px"
       }
-    }, "Antes de dormir\u2026"), /*#__PURE__*/React.createElement("div", {
+    }, "Antes de dormir…"), /*#__PURE__*/React.createElement("div", {
       className: "streak-big"
-    }, "\uD83D\uDD25 ", streak, " d\xEDas seguidos"), /*#__PURE__*/React.createElement("p", {
+    }, "🔥 ", streak, " días seguidos"), /*#__PURE__*/React.createElement("p", {
       className: "muted",
       style: {
         textAlign: "center",
@@ -6626,7 +7282,7 @@ function App() {
         textAlign: "center",
         marginTop: 14
       }
-    }, "\xBFC\xF3mo te fue hoy?"), /*#__PURE__*/React.createElement("div", {
+    }, "¿Cómo te fue hoy?"), /*#__PURE__*/React.createElement("div", {
       className: "col"
     }, opciones.map(o => /*#__PURE__*/React.createElement("button", {
       key: o.t,
@@ -6681,9 +7337,9 @@ function App() {
       className: "reward"
     }, "+20 XP"), /*#__PURE__*/React.createElement("span", {
       className: "reward"
-    }, "\uD83D\uDD25 Racha ", streak), /*#__PURE__*/React.createElement("span", {
+    }, "🔥 Racha ", streak), /*#__PURE__*/React.createElement("span", {
       className: "reward"
-    }, "\uD83D\uDC97 Beso")), /*#__PURE__*/React.createElement("button", {
+    }, "💗 Beso")), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       onClick: () => {
         setXp(x => Math.min(99, x + 20));
@@ -6691,7 +7347,7 @@ function App() {
         setReflexionPicked(null);
         setOverlay(null);
       }
-    }, "Buenas noches \uD83C\uDF19"))));
+    }, "Buenas noches 🌙"))));
   };
   const SemanaScreen = () => {
     const plan = weekPlan[selDay];
@@ -6705,7 +7361,7 @@ function App() {
     return /*#__PURE__*/React.createElement("div", {
       className: "screen"
     }, /*#__PURE__*/React.createElement(Header, {
-      title: "Planeaci\xF3n semanal",
+      title: "Planeación semanal",
       back: () => setScreen("home")
     }), /*#__PURE__*/React.createElement("div", {
       className: "scroll",
@@ -6723,13 +7379,13 @@ function App() {
         flex: 1
       },
       onClick: () => setOverlay("porciones")
-    }, "\uD83C\uDF7D\uFE0F Gu\xEDa por porciones"), /*#__PURE__*/React.createElement("button", {
+    }, "🍽️ Guía por porciones"), /*#__PURE__*/React.createElement("button", {
       className: "btn soft feature",
       style: {
         flex: 1
       },
       onClick: () => setOverlay("prefs")
-    }, "\u2699\uFE0F Mis preferencias")), (prefs.veg || prefs.lowcarb || prefs.evitar.length > 0) && /*#__PURE__*/React.createElement("p", {
+    }, "⚙️ Mis preferencias")), (prefs.veg || prefs.lowcarb || prefs.evitar.length > 0) && /*#__PURE__*/React.createElement("p", {
       className: "muted sm",
       style: {
         marginBottom: 10,
@@ -6784,7 +7440,7 @@ function App() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       className: "muted"
-    }, DIAS_FULL[DIAS.indexOf(selDay)], " \xB7 total del d\xEDa"), /*#__PURE__*/React.createElement("div", {
+    }, DIAS_FULL[DIAS.indexOf(selDay)], " · total del día"), /*#__PURE__*/React.createElement("div", {
       className: "big-num"
     }, dayTot, /*#__PURE__*/React.createElement("small", null, " kcal")), /*#__PURE__*/React.createElement("div", {
       className: "macro-row"
@@ -6802,7 +7458,7 @@ function App() {
         marginTop: 6,
         lineHeight: 1.4
       }
-    }, "\uD83D\uDCA1 Las calor\xEDas var\xEDan por d\xEDa porque cada platillo tiene diferente aporte. Todos los men\xFAs est\xE1n dise\xF1ados dentro de tu rango objetivo personalizado.")), MEAL_SPLIT.map(([k, label]) => {
+    }, "💡 Las calorías varían por día porque cada platillo tiene diferente aporte. Todos los menús están diseñados dentro de tu rango objetivo personalizado.")), MEAL_SPLIT.map(([k, label]) => {
       const dish = MENU_DB[k][plan[k]];
       const ek = selDay + "_" + k;
       const done = weekEaten[ek];
@@ -6874,14 +7530,14 @@ function App() {
           fontWeight: 600,
           color: "#7a8099"
         }
-      }, dish.kcal, " kcal \xB7 Prot ", dish.p, "g \xB7 Carbos ", dish.c, "g \xB7 Grasa ", dish.g, "g"));
+      }, dish.kcal, " kcal · Prot ", dish.p, "g · Carbos ", dish.c, "g · Grasa ", dish.g, "g"));
     }), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       style: {
         marginTop: 4
       },
       onClick: () => regenDay(selDay)
-    }, "\uD83D\uDD04 Regenerar ", DIAS_FULL[DIAS.indexOf(selDay)]), /*#__PURE__*/React.createElement("div", {
+    }, "🔄 Regenerar ", DIAS_FULL[DIAS.indexOf(selDay)]), /*#__PURE__*/React.createElement("div", {
       style: {
         marginTop: 10,
         background: "#f6f7fb",
@@ -7023,13 +7679,13 @@ function App() {
     }, /*#__PURE__*/React.createElement(Sparkles, {
       size: 15,
       color: "#F2B705"
-    }), " Men\xFA del d\xEDa \xB7 meta ", goal, " kcal"), /*#__PURE__*/React.createElement("div", {
+    }), " Menú del día · meta ", goal, " kcal"), /*#__PURE__*/React.createElement("div", {
       className: "tip-box"
     }, /*#__PURE__*/React.createElement("span", {
       className: "tip-icon"
-    }, "\uD83C\uDF2E"), /*#__PURE__*/React.createElement("p", {
+    }, "🌮"), /*#__PURE__*/React.createElement("p", {
       className: "tip-text"
-    }, /*#__PURE__*/React.createElement("b", null, "\xA1Come rico, come sano!"), " La comida mexicana est\xE1 llena de sabor y nutrientes cuando balanceamos los ingredientes. Comer bien no es comer aburrido.")), dishes.map(x => /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, "¡Come rico, come sano!"), " La comida mexicana está llena de sabor y nutrientes cuando balanceamos los ingredientes. Comer bien no es comer aburrido.")), dishes.map(x => /*#__PURE__*/React.createElement("div", {
       key: x.k,
       style: {
         borderBottom: "1px solid #f4f5f9",
@@ -7072,7 +7728,7 @@ function App() {
         fontWeight: 600,
         color: "#7a8099"
       }
-    }, x.d.kcal, " kcal \xB7 P", x.d.p, " \xB7 C", x.d.c, " \xB7 G", x.d.g))), /*#__PURE__*/React.createElement("div", {
+    }, x.d.kcal, " kcal · P", x.d.p, " · C", x.d.c, " · G", x.d.g))), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         justifyContent: "space-between",
@@ -7082,7 +7738,7 @@ function App() {
       style: {
         fontFamily: "'Fredoka'"
       }
-    }, "Total del d\xEDa"), /*#__PURE__*/React.createElement("b", {
+    }, "Total del día"), /*#__PURE__*/React.createElement("b", {
       style: {
         fontFamily: "'Fredoka'",
         color: okColor
@@ -7124,14 +7780,14 @@ function App() {
         setOverlay(null);
         setScreen("home");
       }
-    }, "A\xF1adir todo a hoy"), /*#__PURE__*/React.createElement("button", {
+    }, "Añadir todo a hoy"), /*#__PURE__*/React.createElement("button", {
       className: "btn ghost",
       style: {
         width: "100%",
         marginTop: 4
       },
       onClick: regen
-    }, "Regenerar men\xFA")));
+    }, "Regenerar menú")));
   };
   const Nav = () => /*#__PURE__*/React.createElement("div", {
     className: "navbar"
@@ -7238,7 +7894,7 @@ function App() {
       fontSize: 24,
       margin: "2px 0 0"
     }
-  }, "\xA1Meta del d\xEDa cumplida!"), /*#__PURE__*/React.createElement("p", {
+  }, "¡Meta del día cumplida!"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       margin: "4px 0 10px"
@@ -7249,10 +7905,10 @@ function App() {
     className: "reward"
   }, "+50 XP"), /*#__PURE__*/React.createElement("span", {
     className: "reward"
-  }, "\uD83D\uDD25 Racha ", streak + 1)), /*#__PURE__*/React.createElement("button", {
+  }, "🔥 Racha ", streak + 1)), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: closeCelebrate
-  }, "\xA1Gracias, ", petName, "!"))), overlay === "regalo" && regaloSkin && /*#__PURE__*/React.createElement("div", {
+  }, "¡Gracias, ", petName, "!"))), overlay === "regalo" && regaloSkin && /*#__PURE__*/React.createElement("div", {
     className: "overlay celebrate",
     onClick: () => {
       setOverlay(null);
@@ -7277,13 +7933,13 @@ function App() {
       fontSize: 52,
       marginBottom: 4
     }
-  }, "\uD83C\uDF81"), /*#__PURE__*/React.createElement("h2", {
+  }, "🎁"), /*#__PURE__*/React.createElement("h2", {
     className: "display",
     style: {
       fontSize: 23,
       margin: "2px 0 6px"
     }
-  }, "\xA1Nuevo color desbloqueado!"), /*#__PURE__*/React.createElement("div", {
+  }, "¡Nuevo color desbloqueado!"), /*#__PURE__*/React.createElement("div", {
     className: "kiss-stage",
     style: {
       margin: "4px 0"
@@ -7322,7 +7978,7 @@ function App() {
       setRegaloSkin(null);
       showToast("¡" + petName + " estrena color! 🎨");
     }
-  }, "Pon\xE9rselo ahora"), /*#__PURE__*/React.createElement("button", {
+  }, "Ponérselo ahora"), /*#__PURE__*/React.createElement("button", {
     className: "btn ghost",
     style: {
       width: "100%"
@@ -7331,7 +7987,7 @@ function App() {
       setOverlay(null);
       setRegaloSkin(null);
     }
-  }, "M\xE1s tarde"))), overlay === "paywall" && /*#__PURE__*/React.createElement("div", {
+  }, "Más tarde"))), overlay === "paywall" && /*#__PURE__*/React.createElement("div", {
     className: "overlay",
     onClick: () => setOverlay(null)
   }, /*#__PURE__*/React.createElement("div", {
@@ -7357,7 +8013,7 @@ function App() {
     }
   }, "Hazte Premium"), /*#__PURE__*/React.createElement("div", {
     className: "plan best"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Anual"), /*#__PURE__*/React.createElement("small", null, " 2 meses gratis")), /*#__PURE__*/React.createElement("b", null, "$799", /*#__PURE__*/React.createElement("small", null, "/a\xF1o"))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Anual"), /*#__PURE__*/React.createElement("small", null, " 2 meses gratis")), /*#__PURE__*/React.createElement("b", null, "$799", /*#__PURE__*/React.createElement("small", null, "/año"))), /*#__PURE__*/React.createElement("div", {
     className: "plan"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Mensual")), /*#__PURE__*/React.createElement("b", null, "$99", /*#__PURE__*/React.createElement("small", null, "/mes"))), /*#__PURE__*/React.createElement("ul", {
     className: "perks"
@@ -7372,12 +8028,12 @@ function App() {
       setOverlay(null);
       showToast("Demo: aquí iría el checkout 🛒");
     }
-  }, "Probar 7 d\xEDas gratis"), /*#__PURE__*/React.createElement("p", {
+  }, "Probar 7 días gratis"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       textAlign: "center"
     }
-  }, "Gratis siempre: registro de comida, ajolote b\xE1sico y stats b\xE1sicas."))), overlay === "coach" && /*#__PURE__*/React.createElement("div", {
+  }, "Gratis siempre: registro de comida, ajolote básico y stats básicas."))), overlay === "coach" && /*#__PURE__*/React.createElement("div", {
     className: "overlay",
     onClick: () => setOverlay(null)
   }, /*#__PURE__*/React.createElement("div", {
@@ -7399,7 +8055,7 @@ function App() {
     size: 70
   }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, petName, ", tu coach"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Nutrici\xF3n con base en evidencia, sin culpa."))), Object.keys(COACH_QA).map(q => /*#__PURE__*/React.createElement("div", {
+  }, "Nutrición con base en evidencia, sin culpa."))), Object.keys(COACH_QA).map(q => /*#__PURE__*/React.createElement("div", {
     key: q,
     className: "coach-q " + (coachOpenMap[q] ? "open" : ""),
     onClick: () => setCoachOpenMap(m => ({
@@ -7424,12 +8080,12 @@ function App() {
     size: 20
   })), /*#__PURE__*/React.createElement("p", {
     className: "detect-h"
-  }, "\uD83E\uDD57 Preferencias y alergias"), /*#__PURE__*/React.createElement("p", {
+  }, "🥗 Preferencias y alergias"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       marginBottom: 14
     }
-  }, "Esto ajusta tu plan semanal y el men\xFA del d\xEDa. Lo que marques aqu\xED, ", petName, " no te lo va a sugerir."), /*#__PURE__*/React.createElement("button", {
+  }, "Esto ajusta tu plan semanal y el menú del día. Lo que marques aquí, ", petName, " no te lo va a sugerir."), /*#__PURE__*/React.createElement("button", {
     className: "row-opt",
     style: {
       marginBottom: 14
@@ -7443,7 +8099,7 @@ function App() {
       fontFamily: "Fredoka",
       fontSize: 16
     }
-  }, "\uD83C\uDF31 Vegetariano"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("small", {
+  }, "🌱 Vegetariano"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("small", {
     style: {
       color: "#9aa0b4"
     }
@@ -7482,11 +8138,11 @@ function App() {
       fontFamily: "Fredoka",
       fontSize: 16
     }
-  }, "\uD83E\uDD69 Bajo en carbohidratos"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("small", {
+  }, "🥩 Bajo en carbohidratos"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("small", {
     style: {
       color: "#9aa0b4"
     }
-  }, "Platillos con pocos o nada de carbos (\u226416 g)")), /*#__PURE__*/React.createElement("span", {
+  }, "Platillos con pocos o nada de carbos (≤16 g)")), /*#__PURE__*/React.createElement("span", {
     style: {
       width: 46,
       height: 28,
@@ -7549,7 +8205,7 @@ function App() {
       ...p,
       otrosTxt: e.target.value
     })),
-    placeholder: "\xBFQu\xE9 m\xE1s evitas? Ej: fresa, camar\xF3n, soya\u2026",
+    placeholder: "¿Qué más evitas? Ej: fresa, camarón, soya…",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -7565,7 +8221,7 @@ function App() {
     style: {
       marginTop: 6
     }
-  }, "Lo guardamos como recordatorio. A\xFAn no filtra solo, as\xED que revisa los ingredientes de cada platillo.")), /*#__PURE__*/React.createElement("button", {
+  }, "Lo guardamos como recordatorio. Aún no filtra solo, así que revisa los ingredientes de cada platillo.")), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => {
       regenWeek();
@@ -7585,44 +8241,44 @@ function App() {
     size: 20
   })), /*#__PURE__*/React.createElement("p", {
     className: "detect-h"
-  }, "\uD83C\uDF7D\uFE0F Gu\xEDa por porciones"), /*#__PURE__*/React.createElement("p", {
+  }, "🍽️ Guía por porciones"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       marginBottom: 14
     }
-  }, "Si no te laten los men\xFAs fijos, esta es una forma flexible que a mucha gente le funciona: armar el plato por porciones, priorizando prote\xEDna y verduras. Ayuda a mantener la glucosa estable y a no andar con hambre entre comidas."), /*#__PURE__*/React.createElement("div", {
+  }, "Si no te laten los menús fijos, esta es una forma flexible que a mucha gente le funciona: armar el plato por porciones, priorizando proteína y verduras. Ayuda a mantener la glucosa estable y a no andar con hambre entre comidas."), /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
       marginBottom: 10
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
-  }, "\u2600\uFE0F Desayuno"), /*#__PURE__*/React.createElement("p", {
+  }, "☀️ Desayuno"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "M\xE1s prote\xEDna que fruta. Si es fruta de mano, 1 pieza. Puedes sumar 1 carbohidrato (1 tortilla o 1 pan).")), /*#__PURE__*/React.createElement("div", {
+  }, "Más proteína que fruta. Si es fruta de mano, 1 pieza. Puedes sumar 1 carbohidrato (1 tortilla o 1 pan).")), /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
       marginBottom: 10
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
-  }, "\uD83C\uDF7D\uFE0F Comida"), /*#__PURE__*/React.createElement("p", {
+  }, "🍽️ Comida"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Una porci\xF3n de prote\xEDna + 2 tostadas + \xBD aguacate + muchas verduras.")), /*#__PURE__*/React.createElement("div", {
+  }, "Una porción de proteína + 2 tostadas + ½ aguacate + muchas verduras.")), /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
       marginBottom: 10
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
-  }, "\uD83C\uDF19 Cena"), /*#__PURE__*/React.createElement("p", {
+  }, "🌙 Cena"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Ligera: prote\xEDna + verduras. Si te da hambre, un snack con prote\xEDna (yogur griego, huevo cocido).")), /*#__PURE__*/React.createElement("p", {
+  }, "Ligera: proteína + verduras. Si te da hambre, un snack con proteína (yogur griego, huevo cocido).")), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       marginTop: 4
     }
-  }, "La idea no es contar todo al gramo, sino la proporci\xF3n del plato. Es una gu\xEDa general, no un plan m\xE9dico: si tienes una condici\xF3n (diabetes, ri\xF1\xF3n, embarazo), conf\xEDrmalo con tu nutri\xF3logo."))), overlay === "privacy" && /*#__PURE__*/React.createElement("div", {
+  }, "La idea no es contar todo al gramo, sino la proporción del plato. Es una guía general, no un plan médico: si tienes una condición (diabetes, riñón, embarazo), confírmalo con tu nutriólogo."))), overlay === "privacy" && /*#__PURE__*/React.createElement("div", {
     className: "overlay",
     onClick: () => setOverlay(null)
   }, /*#__PURE__*/React.createElement("div", {
@@ -7643,7 +8299,7 @@ function App() {
     className: "legal"
   }, /*#__PURE__*/React.createElement("p", {
     className: "legal-note"
-  }, "Borrador de muestra. Debe revisarlo un abogado antes de publicarse."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Responsable."), " Ricky Rabbit Dev Studio (\u201Cnosotros\u201D) es responsable del tratamiento de tus datos personales."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Datos que recabamos."), " De identificaci\xF3n (nombre, correo) y de salud: sexo, edad, peso, estatura, circunferencias y h\xE1bitos alimenticios. Los datos de salud son ", /*#__PURE__*/React.createElement("b", null, "datos personales sensibles"), "."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Finalidades."), " Calcular tus requerimientos nutricionales, personalizar recomendaciones y operar la app. No tomamos decisiones m\xE9dicas por ti ni reemplazamos a un profesional."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Consentimiento."), " Para datos sensibles obtenemos tu consentimiento libre, espec\xEDfico e informado, conforme a la Ley Federal de Protecci\xF3n de Datos Personales en Posesi\xF3n de los Particulares vigente (DOF 20 de marzo de 2025)."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Derechos ARCO."), " Puedes acceder, rectificar, cancelar u oponerte, y revocar tu consentimiento, en privacidad@rickyrabbit.studio. La autoridad es la Secretar\xEDa Anticorrupci\xF3n y Buen Gobierno."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Seguridad."), " Aplicamos medidas de seguridad para proteger tus datos. No vendemos tus datos personales.")), /*#__PURE__*/React.createElement("button", {
+  }, "Borrador de muestra. Debe revisarlo un abogado antes de publicarse."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Responsable."), " Ricky Rabbit Dev Studio (“nosotros”) es responsable del tratamiento de tus datos personales."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Datos que recabamos."), " De identificación (nombre, correo) y de salud: sexo, edad, peso, estatura, circunferencias y hábitos alimenticios. Los datos de salud son ", /*#__PURE__*/React.createElement("b", null, "datos personales sensibles"), "."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Finalidades."), " Calcular tus requerimientos nutricionales, personalizar recomendaciones y operar la app. No tomamos decisiones médicas por ti ni reemplazamos a un profesional."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Consentimiento."), " Para datos sensibles obtenemos tu consentimiento libre, específico e informado, conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares vigente (DOF 20 de marzo de 2025)."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Derechos ARCO."), " Puedes acceder, rectificar, cancelar u oponerte, y revocar tu consentimiento, en privacidad@rickyrabbit.studio. La autoridad es la Secretaría Anticorrupción y Buen Gobierno."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Seguridad."), " Aplicamos medidas de seguridad para proteger tus datos. No vendemos tus datos personales.")), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => setOverlay(null)
   }, "Entendido"))), eating && /*#__PURE__*/React.createElement("div", {
@@ -7668,7 +8324,7 @@ function App() {
       fontSize: 18,
       animation: "floaty 1.4s ease-in-out infinite"
     }
-  }, "\u2728"), /*#__PURE__*/React.createElement("span", {
+  }, "✨"), /*#__PURE__*/React.createElement("span", {
     style: {
       position: "absolute",
       top: "14%",
@@ -7676,7 +8332,7 @@ function App() {
       fontSize: 16,
       animation: "floaty 1.6s ease-in-out infinite .3s"
     }
-  }, "\uD83D\uDE0B"))), toast && /*#__PURE__*/React.createElement("div", {
+  }, "😋"))), toast && /*#__PURE__*/React.createElement("div", {
     className: "toast"
   }, toast)));
 }
