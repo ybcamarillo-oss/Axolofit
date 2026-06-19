@@ -5816,19 +5816,26 @@ function App() {
       setLog(l => l.filter(f => f.id !== planUid));
     }
   };
-  const swapMeal = (day, meal) => setWeekPlan(w => {
+  const swapMeal = (day, meal) => {
     const al = allowedIdx(meal);
-    const cur = w[day][meal];
-    const pos = al.indexOf(cur);
-    const next = al[(pos + 1) % al.length];
-    return {
-      ...w,
-      [day]: {
-        ...w[day],
-        [meal]: next
-      }
-    };
-  });
+    if (al.length <= 1) {
+      showToast("No hay más opciones con tus preferencias 🤷");
+      return;
+    }
+    setWeekPlan(w => {
+      const cur = w[day][meal];
+      const opts = al.filter(i => i !== cur);
+      const next = opts[Math.floor(Math.random() * opts.length)];
+      showToast("Cambiado por: " + MENU_DB[meal][next].n + " ✅");
+      return {
+        ...w,
+        [day]: {
+          ...w[day],
+          [meal]: next
+        }
+      };
+    });
+  };
   const regenDay = day => setWeekPlan(w => ({
     ...w,
     [day]: genDay()
@@ -7631,8 +7638,13 @@ function App() {
     };
     const swap = k => {
       const al = allowedIdx(k);
-      const pos = al.indexOf(sel[k]);
-      const next = al[(pos + 1) % al.length];
+      if (al.length <= 1) {
+        showToast("No hay más opciones 🤷");
+        return;
+      }
+      const opts = al.filter(i => i !== sel[k]);
+      const next = opts[Math.floor(Math.random() * opts.length)];
+      showToast("Cambiado por: " + MENU_DB[k][next].n + " ✅");
       setMenuSwaps(m => ({
         ...m,
         [k]: next
