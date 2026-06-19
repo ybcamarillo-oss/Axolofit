@@ -5824,8 +5824,12 @@ function App() {
     }
     setWeekPlan(w => {
       const cur = w[day][meal];
+      const curKcal = MENU_DB[meal][cur].kcal;
       const opts = al.filter(i => i !== cur);
-      const next = opts[Math.floor(Math.random() * opts.length)];
+      // ordenar por diferencia calórica, tomar los 3 más cercanos y elegir uno al azar
+      opts.sort((a, b) => Math.abs(MENU_DB[meal][a].kcal - curKcal) - Math.abs(MENU_DB[meal][b].kcal - curKcal));
+      const pool = opts.slice(0, 3);
+      const next = pool[Math.floor(Math.random() * pool.length)];
       showToast("Cambiado por: " + MENU_DB[meal][next].n + " ✅");
       return {
         ...w,
@@ -7642,8 +7646,11 @@ function App() {
         showToast("No hay más opciones 🤷");
         return;
       }
+      const curKcal = MENU_DB[k][sel[k]].kcal;
       const opts = al.filter(i => i !== sel[k]);
-      const next = opts[Math.floor(Math.random() * opts.length)];
+      opts.sort((a, b) => Math.abs(MENU_DB[k][a].kcal - curKcal) - Math.abs(MENU_DB[k][b].kcal - curKcal));
+      const pool = opts.slice(0, 3);
+      const next = pool[Math.floor(Math.random() * pool.length)];
       showToast("Cambiado por: " + MENU_DB[k][next].n + " ✅");
       setMenuSwaps(m => ({
         ...m,
