@@ -1728,8 +1728,12 @@ function App() {
     if (al.length <= 1) { showToast("No hay más opciones con tus preferencias 🤷"); return; }
     setWeekPlan(w => {
       const cur = w[day][meal];
+      const curKcal = MENU_DB[meal][cur].kcal;
       const opts = al.filter(i => i !== cur);
-      const next = opts[Math.floor(Math.random() * opts.length)];
+      // ordenar por diferencia calórica, tomar los 3 más cercanos y elegir uno al azar
+      opts.sort((a,b) => Math.abs(MENU_DB[meal][a].kcal - curKcal) - Math.abs(MENU_DB[meal][b].kcal - curKcal));
+      const pool = opts.slice(0, 3);
+      const next = pool[Math.floor(Math.random() * pool.length)];
       showToast("Cambiado por: " + MENU_DB[meal][next].n + " ✅");
       return { ...w, [day]: { ...w[day], [meal]: next } };
     });
@@ -2213,7 +2217,17 @@ function App() {
     const closest = (cat, t) => { const arr = MENU_DB[cat]; let bi = 0, bd = 1e9; arr.forEach((x, i) => { const df = Math.abs(x.kcal - t); if (df < bd) { bd = df; bi = i; } }); return bi; };
     const baseSel = (() => { const s = {}; MEAL_SPLIT.forEach(([k, , pct]) => { s[k] = closest(k, goal * pct); }); return s; })();
     const sel = { ...baseSel, ...menuSwaps };
-    const swap = (k) => { const al = allowedIdx(k); if (al.length <= 1) { showToast("No hay más opciones 🤷"); return; } const opts = al.filter(i => i !== sel[k]); const next = opts[Math.floor(Math.random() * opts.length)]; showToast("Cambiado por: " + MENU_DB[k][next].n + " ✅"); setMenuSwaps(m => ({ ...m, [k]: next })); };
+    const swap = (k) => {
+      const al = allowedIdx(k);
+      if (al.length <= 1) { showToast("No hay más opciones 🤷"); return; }
+      const curKcal = MENU_DB[k][sel[k]].kcal;
+      const opts = al.filter(i => i !== sel[k]);
+      opts.sort((a,b) => Math.abs(MENU_DB[k][a].kcal - curKcal) - Math.abs(MENU_DB[k][b].kcal - curKcal));
+      const pool = opts.slice(0, 3);
+      const next = pool[Math.floor(Math.random() * pool.length)];
+      showToast("Cambiado por: " + MENU_DB[k][next].n + " ✅");
+      setMenuSwaps(m => ({ ...m, [k]: next }));
+    };
     const regen = () => { const s = {}; MEAL_SPLIT.forEach(([k]) => { s[k] = pickIdx(k); }); setMenuSwaps(s); };
     const dishes = MEAL_SPLIT.map(([k, label]) => ({ k, label, d: MENU_DB[k][sel[k]] }));
     const tot = dishes.reduce((a, x) => ({ kcal: a.kcal + x.d.kcal, p: a.p + x.d.p, c: a.c + x.d.c, g: a.g + x.d.g }), { kcal: 0, p: 0, c: 0, g: 0 });
