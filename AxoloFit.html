@@ -4066,9 +4066,24 @@ function Onboarding({
     onClick: () => set("sexo", v)
   }, l, d.sexo === v && /*#__PURE__*/React.createElement(Check, {
     size: 18
-  })))), /*#__PURE__*/React.createElement("p", {
+  })))), d.sexo === "X" ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 8,
+      padding: "10px 13px",
+      background: "#FFF6EA",
+      border: "1.5px solid #FFC98A",
+      borderRadius: 12
+    }
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: 0,
+      fontSize: 13,
+      color: "#B06A12",
+      lineHeight: 1.5
+    }
+  }, /*#__PURE__*/React.createElement("b", null, "⚠️ Este dato afecta tu cálculo."), " El sexo biológico determina tu gasto calórico basal y el mínimo de calorías seguras al día. Sin él usamos un promedio que puede no ser preciso para ti. Si puedes, elige Mujer u Hombre para un plan más exacto.")) : /*#__PURE__*/React.createElement("p", {
     className: "hint"
-  }, "Solo se usa para calcular tu energía. Si eliges “prefiero no decirlo”, usamos un cálculo neutral (promedio) y omitimos el % de grasa.")), /*#__PURE__*/React.createElement(NumField, {
+  }, "Solo se usa para calcular tu energía y el piso mínimo de calorías seguras. No se comparte con nadie.")), /*#__PURE__*/React.createElement(NumField, {
     label: "Edad",
     value: d.edad,
     onChange: v => set("edad", v),
