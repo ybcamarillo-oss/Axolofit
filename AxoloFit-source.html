@@ -1675,8 +1675,16 @@ function App() {
   const [prefs, setPrefs] = useState({ veg: false, evitar: [], lowcarb: false });
   const allowedIdx = (k) => { const arr = MENU_DB[k].map((it, idx) => ({ it, idx })).filter(({ it }) => (!prefs.veg || it.veg) && (prefs.lowcarb ? it.c <= 16 : !it.lc) && !it.con.some((c) => prefs.evitar.includes(c))).map((o) => o.idx); return arr.length ? arr : MENU_DB[k].map((_, i) => i); };
   const pickIdx = (k) => { const al = allowedIdx(k); return al[Math.floor(Math.random() * al.length)]; };
-  const genDay = () => { const d={}; MEAL_SPLIT.forEach(([k])=>{ d[k]=pickIdx(k); }); return d; };
+  const dayKcal = (d) => MEAL_SPLIT.reduce((sum, [k]) => sum + (MENU_DB[k][d[k]]?.kcal || 0), 0);
+  const genDay = (piso) => {
+    const floor = piso || targets.objetivoDeficit * 0.85;
+    let d = {}; let tries = 0;
+    do { MEAL_SPLIT.forEach(([k]) => { d[k] = pickIdx(k); }); tries++; }
+    while (dayKcal(d) < floor && tries < 20);
+    return d;
+  };
   const genWeek = () => {
+    const piso = targets.objetivoDeficit * 0.85;
     const pools = {};
     MEAL_SPLIT.forEach(([k]) => {
       const al = [...allowedIdx(k)];
@@ -1686,23 +1694,26 @@ function App() {
     const cursor = {}; MEAL_SPLIT.forEach(([k]) => cursor[k] = 0);
     const w = {};
     DIAS.forEach((day) => {
-      const d = {};
-      const usedMains = [];
-      MEAL_SPLIT.forEach(([k]) => {
-        const pool = pools[k];
-        if (!pool.length) { d[k] = pickIdx(k); return; }
-        // buscar el siguiente platillo cuyo ingrediente principal no esté ya usado hoy
-        let chosen = null;
-        for (let off = 0; off < pool.length; off++) {
-          const idx = pool[(cursor[k] + off) % pool.length];
-          const mn = MENU_DB[k][idx].main;
-          if (!mn || !usedMains.includes(mn)) { chosen = idx; cursor[k] = (cursor[k] + off + 1) % pool.length; break; }
-        }
-        if (chosen === null) { chosen = pool[cursor[k] % pool.length]; cursor[k] = (cursor[k] + 1) % pool.length; } // relajar regla
-        d[k] = chosen;
-        const mn = MENU_DB[k][chosen].main;
-        if (mn) usedMains.push(mn);
-      });
+      let d = {}; let tries = 0;
+      do {
+        d = {};
+        const usedMains = [];
+        MEAL_SPLIT.forEach(([k]) => {
+          const pool = pools[k];
+          if (!pool.length) { d[k] = pickIdx(k); return; }
+          let chosen = null;
+          for (let off = 0; off < pool.length; off++) {
+            const idx = pool[(cursor[k] + off) % pool.length];
+            const mn = MENU_DB[k][idx].main;
+            if (!mn || !usedMains.includes(mn)) { chosen = idx; cursor[k] = (cursor[k] + off + 1) % pool.length; break; }
+          }
+          if (chosen === null) { chosen = pool[cursor[k] % pool.length]; cursor[k] = (cursor[k] + 1) % pool.length; }
+          d[k] = chosen;
+          const mn = MENU_DB[k][chosen].main;
+          if (mn) usedMains.push(mn);
+        });
+        tries++;
+      } while (dayKcal(d) < piso && tries < 20);
       w[day] = d;
     });
     return w;
@@ -1738,7 +1749,7 @@ function App() {
       return { ...w, [day]: { ...w[day], [meal]: next } };
     });
   };
-  const regenDay = (day) => setWeekPlan(w=>({...w,[day]:genDay()}));
+  const regenDay = (day) => setWeekPlan(w=>({...w,[day]:genDay(targets.objetivoDeficit * 0.85)}));
   const regenWeek = () => setWeekPlan(genWeek());
   const toggleEvitar = (key) => setPrefs(p => ({ ...p, evitar: p.evitar.includes(key) ? p.evitar.filter(x=>x!==key) : [...p.evitar, key] }));
   const [level, setLevel] = useState(1);
@@ -1892,8 +1903,8 @@ function App() {
         </div>
         {!celebrated && (
           <div className="card">
-            <div className="card-h"><Sparkles size={16} color="#F2B705" /> Para cerrar tu día</div>
-            <p className="muted sm">Sugerencias que encajan en tus macros restantes.</p>
+            <div className="card-h"><Sparkles size={16} color="#F2B705" /> ¿Se te antoja algo más?</div>
+            <p className="muted sm">Registra lo que comas fuera del plan — todo suma a tu conteo del día.</p>
             {["pozole", "pechuga", "frijol", "pastor"].map((id) => { const f = FOODS.find((x) => x.id === id); return <div key={id} className="sug-row"><div><b>{f.n}</b><span className="muted sm"> · {f.kcal} kcal · {f.p}g prot</span></div><button className="add-btn" onClick={() => addFood(f)}><Plus size={18} /></button></div>; })}
           </div>
         )}
