@@ -5737,14 +5737,21 @@ function App() {
     const al = allowedIdx(k);
     return al[Math.floor(Math.random() * al.length)];
   };
-  const genDay = () => {
-    const d = {};
-    MEAL_SPLIT.forEach(([k]) => {
-      d[k] = pickIdx(k);
-    });
+  const dayKcal = d => MEAL_SPLIT.reduce((sum, [k]) => sum + (MENU_DB[k][d[k]]?.kcal || 0), 0);
+  const genDay = piso => {
+    const floor = piso || targets.objetivoDeficit * 0.85;
+    let d = {};
+    let tries = 0;
+    do {
+      MEAL_SPLIT.forEach(([k]) => {
+        d[k] = pickIdx(k);
+      });
+      tries++;
+    } while (dayKcal(d) < floor && tries < 20);
     return d;
   };
   const genWeek = () => {
+    const piso = targets.objetivoDeficit * 0.85;
     const pools = {};
     MEAL_SPLIT.forEach(([k]) => {
       const al = [...allowedIdx(k)];
@@ -5758,33 +5765,37 @@ function App() {
     MEAL_SPLIT.forEach(([k]) => cursor[k] = 0);
     const w = {};
     DIAS.forEach(day => {
-      const d = {};
-      const usedMains = [];
-      MEAL_SPLIT.forEach(([k]) => {
-        const pool = pools[k];
-        if (!pool.length) {
-          d[k] = pickIdx(k);
-          return;
-        }
-        // buscar el siguiente platillo cuyo ingrediente principal no esté ya usado hoy
-        let chosen = null;
-        for (let off = 0; off < pool.length; off++) {
-          const idx = pool[(cursor[k] + off) % pool.length];
-          const mn = MENU_DB[k][idx].main;
-          if (!mn || !usedMains.includes(mn)) {
-            chosen = idx;
-            cursor[k] = (cursor[k] + off + 1) % pool.length;
-            break;
+      let d = {};
+      let tries = 0;
+      do {
+        d = {};
+        const usedMains = [];
+        MEAL_SPLIT.forEach(([k]) => {
+          const pool = pools[k];
+          if (!pool.length) {
+            d[k] = pickIdx(k);
+            return;
           }
-        }
-        if (chosen === null) {
-          chosen = pool[cursor[k] % pool.length];
-          cursor[k] = (cursor[k] + 1) % pool.length;
-        } // relajar regla
-        d[k] = chosen;
-        const mn = MENU_DB[k][chosen].main;
-        if (mn) usedMains.push(mn);
-      });
+          let chosen = null;
+          for (let off = 0; off < pool.length; off++) {
+            const idx = pool[(cursor[k] + off) % pool.length];
+            const mn = MENU_DB[k][idx].main;
+            if (!mn || !usedMains.includes(mn)) {
+              chosen = idx;
+              cursor[k] = (cursor[k] + off + 1) % pool.length;
+              break;
+            }
+          }
+          if (chosen === null) {
+            chosen = pool[cursor[k] % pool.length];
+            cursor[k] = (cursor[k] + 1) % pool.length;
+          }
+          d[k] = chosen;
+          const mn = MENU_DB[k][chosen].main;
+          if (mn) usedMains.push(mn);
+        });
+        tries++;
+      } while (dayKcal(d) < piso && tries < 20);
       w[day] = d;
     });
     return w;
@@ -5842,7 +5853,7 @@ function App() {
   };
   const regenDay = day => setWeekPlan(w => ({
     ...w,
-    [day]: genDay()
+    [day]: genDay(targets.objetivoDeficit * 0.85)
   }));
   const regenWeek = () => setWeekPlan(genWeek());
   const toggleEvitar = key => setPrefs(p => ({
@@ -6292,9 +6303,9 @@ function App() {
   }, /*#__PURE__*/React.createElement(Sparkles, {
     size: 16,
     color: "#F2B705"
-  }), " Para cerrar tu día"), /*#__PURE__*/React.createElement("p", {
+  }), " ¿Se te antoja algo más?"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Sugerencias que encajan en tus macros restantes."), ["pozole", "pechuga", "frijol", "pastor"].map(id => {
+  }, "Registra lo que comas fuera del plan — todo suma a tu conteo del día."), ["pozole", "pechuga", "frijol", "pastor"].map(id => {
     const f = FOODS.find(x => x.id === id);
     return /*#__PURE__*/React.createElement("div", {
       key: id,
