@@ -200,12 +200,19 @@ function AuthScreen({ onAuth }) {
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
-  const handleInstall = () => {
-    if (installPrompt) {
-      installPrompt.prompt();
-      installPrompt.userChoice.then(() => setInstallPrompt(null));
-    } else if (isIos) {
-      setShowIosHint(h => !h);
+  const [installState, setInstallState] = useState("idle"); // idle | installing | done
+
+  const handleInstall = async () => {
+    if (isIos) { setShowIosHint(h => !h); return; }
+    if (!installPrompt) return;
+    setInstallState("installing");
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === "accepted") {
+      setInstallState("done");
+      setInstallPrompt(null);
+    } else {
+      setInstallState("idle");
     }
   };
 
@@ -357,11 +364,19 @@ function AuthScreen({ onAuth }) {
             ¿Olvidaste tu contraseña?
           </button>
         )}
-        {!isInStandalone && (installPrompt || isIos) && (
+        {!isInStandalone && (installPrompt || isIos || installState === "done") && (
           <div style={{ marginTop: 16 }}>
-            <button onClick={handleInstall} style={{ width: "100%", padding: "12px 0", border: "2px solid #E79FAE", borderRadius: 14, background: "#fff", color: "#E79FAE", fontFamily: "Nunito", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
-              📲 Instalar app
-            </button>
+            {installState === "done"
+              ? <div style={{ padding: "12px 14px", background: "#E8F8F2", border: "2px solid #34BC97", borderRadius: 14, textAlign: "center" }}>
+                  <p style={{ fontFamily: "Nunito", fontWeight: 700, color: "#1a7a55", fontSize: 15, margin: "0 0 10px" }}>✅ ¡App instalada!</p>
+                  <button onClick={() => window.location.reload()} style={{ width: "100%", padding: "11px 0", border: "none", borderRadius: 12, background: "#34BC97", color: "#fff", fontFamily: "Nunito", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+                    Abrir AxoloFit 🐾
+                  </button>
+                </div>
+              : <button onClick={handleInstall} disabled={installState === "installing"} style={{ width: "100%", padding: "12px 0", border: "2px solid #E79FAE", borderRadius: 14, background: installState === "installing" ? "#FCEFF1" : "#fff", color: "#E79FAE", fontFamily: "Nunito", fontWeight: 700, fontSize: 15, cursor: installState === "installing" ? "default" : "pointer", opacity: installState === "installing" ? 0.7 : 1 }}>
+                  {installState === "installing" ? "Abriendo instalador…" : "📲 Instalar app"}
+                </button>
+            }
             {showIosHint && (
               <div style={{ marginTop: 10, padding: "12px 14px", background: "#FCEFF1", borderRadius: 12, fontSize: 13, color: "#4a4f6a", lineHeight: 1.6 }}>
                 En Safari toca el botón <b>compartir</b> <span style={{ fontSize: 16 }}>⬆️</span> y luego <b>"Agregar a pantalla de inicio"</b>.
