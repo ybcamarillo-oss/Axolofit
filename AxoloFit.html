@@ -515,12 +515,24 @@ function AuthScreen({
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
-  const handleInstall = () => {
-    if (installPrompt) {
-      installPrompt.prompt();
-      installPrompt.userChoice.then(() => setInstallPrompt(null));
-    } else if (isIos) {
+  const [installState, setInstallState] = useState("idle"); // idle | installing | done
+
+  const handleInstall = async () => {
+    if (isIos) {
       setShowIosHint(h => !h);
+      return;
+    }
+    if (!installPrompt) return;
+    setInstallState("installing");
+    installPrompt.prompt();
+    const {
+      outcome
+    } = await installPrompt.userChoice;
+    if (outcome === "accepted") {
+      setInstallState("done");
+      setInstallPrompt(null);
+    } else {
+      setInstallState("idle");
     }
   };
   const inputStyle = {
@@ -824,25 +836,57 @@ function AuthScreen({
       setModo("reset");
       setError(null);
     }
-  }, "¿Olvidaste tu contraseña?"), !isInStandalone && (installPrompt || isIos) && /*#__PURE__*/React.createElement("div", {
+  }, "¿Olvidaste tu contraseña?"), !isInStandalone && (installPrompt || isIos || installState === "done") && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 16
     }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: handleInstall,
+  }, installState === "done" ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 14px",
+      background: "#E8F8F2",
+      border: "2px solid #34BC97",
+      borderRadius: 14,
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontFamily: "Nunito",
+      fontWeight: 700,
+      color: "#1a7a55",
+      fontSize: 15,
+      margin: "0 0 10px"
+    }
+  }, "✅ ¡App instalada!"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => window.location.reload(),
     style: {
       width: "100%",
-      padding: "12px 0",
-      border: "2px solid #E79FAE",
-      borderRadius: 14,
-      background: "#fff",
-      color: "#E79FAE",
+      padding: "11px 0",
+      border: "none",
+      borderRadius: 12,
+      background: "#34BC97",
+      color: "#fff",
       fontFamily: "Nunito",
       fontWeight: 700,
       fontSize: 15,
       cursor: "pointer"
     }
-  }, "📲 Instalar app"), showIosHint && /*#__PURE__*/React.createElement("div", {
+  }, "Abrir AxoloFit 🐾")) : /*#__PURE__*/React.createElement("button", {
+    onClick: handleInstall,
+    disabled: installState === "installing",
+    style: {
+      width: "100%",
+      padding: "12px 0",
+      border: "2px solid #E79FAE",
+      borderRadius: 14,
+      background: installState === "installing" ? "#FCEFF1" : "#fff",
+      color: "#E79FAE",
+      fontFamily: "Nunito",
+      fontWeight: 700,
+      fontSize: 15,
+      cursor: installState === "installing" ? "default" : "pointer",
+      opacity: installState === "installing" ? 0.7 : 1
+    }
+  }, installState === "installing" ? "Abriendo instalador…" : "📲 Instalar app"), showIosHint && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 10,
       padding: "12px 14px",
