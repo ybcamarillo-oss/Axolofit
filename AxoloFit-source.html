@@ -189,6 +189,25 @@ function AuthScreen({ onAuth }) {
   const [confirmado, setConfirmado] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [resetEnviado, setResetEnviado] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [showIosHint, setShowIosHint] = useState(false);
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInStandalone = window.navigator.standalone === true;
+
+  useEffect(() => {
+    const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstall = () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      installPrompt.userChoice.then(() => setInstallPrompt(null));
+    } else if (isIos) {
+      setShowIosHint(h => !h);
+    }
+  };
 
   const inputStyle = {
     width: "100%", padding: "13px 14px", border: "2px solid #eceff7",
@@ -337,6 +356,18 @@ function AuthScreen({ onAuth }) {
             onClick={() => { setModo("reset"); setError(null); }}>
             ¿Olvidaste tu contraseña?
           </button>
+        )}
+        {!isInStandalone && (installPrompt || isIos) && (
+          <div style={{ marginTop: 16 }}>
+            <button onClick={handleInstall} style={{ width: "100%", padding: "12px 0", border: "2px solid #E79FAE", borderRadius: 14, background: "#fff", color: "#E79FAE", fontFamily: "Nunito", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+              📲 Instalar app
+            </button>
+            {showIosHint && (
+              <div style={{ marginTop: 10, padding: "12px 14px", background: "#FCEFF1", borderRadius: 12, fontSize: 13, color: "#4a4f6a", lineHeight: 1.6 }}>
+                En Safari toca el botón <b>compartir</b> <span style={{ fontSize: 16 }}>⬆️</span> y luego <b>"Agregar a pantalla de inicio"</b>.
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
