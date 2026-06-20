@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>AxoloFit</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -78,7 +78,7 @@ html,body { height:100%; }
 .x-btn { background: none; border: none; color: #c3c8d6; cursor: pointer; padding: 4px; }
 .fab { position: absolute; right: 18px; bottom: 90px; width: 60px; height: 60px; border-radius: 20px; border: none; background: linear-gradient(180deg,#F7CCD4,#E79FAE); color: #5E4334; display: grid; place-items: center; cursor: pointer; box-shadow: 0 10px 26px #e79fae66; }
 .fab:active { transform: scale(.94); }
-.navbar { position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; background: #fff; border-top: 1px solid #f0f1f6; padding: 8px 4px; z-index: 20; }
+.navbar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; background: #fff; border-top: 2px solid #f0f1f6; padding: 10px 4px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 20; box-shadow: 0 -4px 16px rgba(0,0,0,0.07); }
 .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #b6bccb; cursor: pointer; font-family: 'Nunito'; font-weight: 700; }
 .nav-btn small { font-size: 10px; } .nav-btn.on { color: #E79FAE; }
 .methods { display: flex; gap: 10px; margin-bottom: 12px; }
@@ -399,6 +399,7 @@ function Icon({ name, size = 24, color = "currentColor", fill = "none", classNam
     check: <path d="M5 12l5 5 9-11" />,
     eye: <g><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></g>,
     eyeOff: <g><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></g>,
+    settings: <g><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></g>,
   };
   return <svg {...c}>{P[name]}</svg>;
 }
@@ -421,6 +422,7 @@ const Trophy = (p) => <Icon name="trophy" {...p} />;
 const MessageCircle = (p) => <Icon name="msg" {...p} />;
 const Check = (p) => <Icon name="check" {...p} />;
 const Crown = (p) => <Icon name="crown" {...p} />;
+const Settings = (p) => <Icon name="settings" {...p} />;
 
 /* ---------- DATA ---------- */
 const FOODS = [
@@ -2072,7 +2074,7 @@ function App() {
 
   const MoreScreen = () => (
     <div className="screen">
-      <Header title="Más" back={() => setScreen("home")} />
+      <Header title="Ajustes" back={() => setScreen("home")} />
       <div className="scroll" ref={sRef("more")} onScroll={sSave("more")}>
         <div className="card upsell"><div className="card-h"><Crown size={18} color="#F2B705" /> AxoloFit Premium</div><p className="muted sm">IA por foto ilimitada · recetas infinitas · skins y especies raras · informes avanzados · minijuegos exclusivos.</p><button className="btn primary" onClick={() => setOverlay("paywall")}>Ver planes</button></div>
         <button className="list-row" onClick={() => setOverlay("prefs")}>🥗 Preferencias y alergias</button>
@@ -2313,7 +2315,7 @@ function App() {
   };
 
   const Nav = () => (
-    <div className="navbar">{[["home", <HomeIcon size={22} />, "Inicio"], ["semana", <Icon name="chart" size={22} />, "Semana"], ["stats", <BarChart2 size={22} />, "Progreso"], ["pet", <Sparkles size={22} />, petName], ["more", <Heart size={22} />, "Más"]].map(([s, ic, l]) => <button key={s} className={"nav-btn " + (screen === s ? "on" : "")} onClick={() => setScreen(s)}>{ic}<small>{l}</small></button>)}</div>
+    <div className="navbar">{[["home", <HomeIcon size={22} />, "Inicio"], ["semana", <Icon name="chart" size={22} />, "Semana"], ["stats", <BarChart2 size={22} />, "Progreso"], ["pet", <Sparkles size={22} />, petName], ["more", <Settings size={22} />, "Ajustes"]].map(([s, ic, l]) => <button key={s} className={"nav-btn " + (screen === s ? "on" : "")} onClick={() => setScreen(s)}>{ic}<small>{l}</small></button>)}</div>
   );
 
   return (
