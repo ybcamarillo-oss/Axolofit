@@ -1,5 +1,5 @@
 // Service Worker para AxoloFit PWA
-const CACHE_NAME = 'axolofit-v5';
+const CACHE_NAME = 'axolofit-v6';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -17,7 +17,16 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const req = event.request;
+
+  // Solo manejamos GET de nuestro mismo origen.
+  // Todo lo demás (POST al proxy de Gemini, llamadas a Supabase, etc.)
+  // pasa de largo sin que el SW lo toque.
+  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) {
+    return;
+  }
+
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(req).catch(() => caches.match(req))
   );
 });
