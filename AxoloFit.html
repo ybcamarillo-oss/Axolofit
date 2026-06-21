@@ -6157,16 +6157,21 @@ function App() {
   const [reflexionPicked, setReflexionPicked] = useState(null);
   const [selDay, setSelDay] = useState("L");
   const [searchQ, setSearchQ] = useState("");
-  const [voiceStage, setVoiceStage] = useState("listen");
+  const [voiceTexto, setVoiceTexto] = useState("");
+  const [voiceEtapa, setVoiceEtapa] = useState("escribir");
+  const [voiceResultado, setVoiceResultado] = useState(null);
+  const [voiceExtras, setVoiceExtras] = useState("");
+  const [voiceError, setVoiceError] = useState(null);
   const [recipeItem, setRecipeItem] = useState(null);
   const [menuSwaps, setMenuSwaps] = useState({});
   const [coachOpenMap, setCoachOpenMap] = useState({});
   React.useEffect(() => {
-    let t;
-    if (overlay === "voice") {
-      t = setTimeout(() => setVoiceStage("parsed"), 1700);
-    } else {
-      setVoiceStage("listen");
+    if (overlay !== "voice") {
+      setVoiceTexto("");
+      setVoiceEtapa("escribir");
+      setVoiceResultado(null);
+      setVoiceExtras("");
+      setVoiceError(null);
     }
     if (overlay !== "recipe") setRecipeItem(null);
     if (overlay !== "menu") setMenuSwaps({});
@@ -7255,11 +7260,16 @@ function App() {
     }, COACH_QA[q]));
   };
   const Voice = () => {
-    const [texto, setTexto] = React.useState("");
-    const [etapa, setEtapa] = React.useState("escribir");
-    const [resultado, setResultado] = React.useState(null);
-    const [extras, setExtras] = React.useState("");
-    const [error, setError] = React.useState(null);
+    const texto = voiceTexto;
+    const setTexto = setVoiceTexto;
+    const etapa = voiceEtapa;
+    const setEtapa = setVoiceEtapa;
+    const resultado = voiceResultado;
+    const setResultado = setVoiceResultado;
+    const extras = voiceExtras;
+    const setExtras = setVoiceExtras;
+    const error = voiceError;
+    const setError = setVoiceError;
     const analizar = async descripcion => {
       setEtapa("cargando");
       setError(null);
