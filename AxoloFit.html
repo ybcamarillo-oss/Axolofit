@@ -499,6 +499,7 @@ const {
 const SUPABASE_URL = "https://lxenslqgcmkonkhbvfhl.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4ZW5zbHFnY21rb25raGJ2ZmhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MDcyMjQsImV4cCI6MjA5Njk4MzIyNH0.w062y4j9GPUdAGAIh8x8vXX6EYBTKknY0c5_MhyP5OI";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const GEMINI_PROXY = "https://axolofit.vercel.app/api/gemini";
 
 /* ---------- AUTH SCREEN ---------- */
 function AuthScreen({
@@ -6731,8 +6732,8 @@ function App() {
       icon: /*#__PURE__*/React.createElement(Mic, {
         size: 20
       }),
-      t: "Voz",
-      dsc: "Dilo en una frase",
+      t: "Describir",
+      dsc: "Escribe lo que comiste",
       onClick: () => setOverlay("voice")
     })), /*#__PURE__*/React.createElement("div", {
       className: "searchbar"
@@ -7254,14 +7255,83 @@ function App() {
     }, COACH_QA[q]));
   };
   const Voice = () => {
-    const stage = voiceStage;
-    const parsed = [{
-      ...FOODS.find(f => f.id === "pastor"),
-      qty: 3
-    }, {
-      ...FOODS.find(f => f.id === "coca0"),
-      qty: 1
-    }];
+    const [texto, setTexto] = React.useState("");
+    const [etapa, setEtapa] = React.useState("escribir");
+    const [resultado, setResultado] = React.useState(null);
+    const [extras, setExtras] = React.useState("");
+    const [error, setError] = React.useState(null);
+    const analizar = async descripcion => {
+      setEtapa("cargando");
+      setError(null);
+      try {
+        const prompt1 = "Eres un nutri\u00f3logo mexicano. El usuario dice que comi\u00f3: \"" + descripcion + "\".\n\nEstima los macronutrientes de forma precisa. Responde SOLO con JSON v\u00e1lido, sin texto adicional, sin backticks:\n{\n  \"nombre\": \"nombre descriptivo del platillo\",\n  \"kcal\": n\u00famero,\n  \"proteina\": n\u00famero en gramos,\n  \"carbos\": n\u00famero en gramos,\n  \"grasa\": n\u00famero en gramos,\n  \"porcion\": \"descripci\u00f3n de la porci\u00f3n estimada\",\n  \"pregunta_extras\": \"pregunta corta sobre si hubo extras relevantes (aceite, az\u00facar, extras, etc.) que puedan cambiar los macros. Si no aplica, pon null\"\n}";
+        const res = await fetch(GEMINI_PROXY, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: prompt1
+          })
+        });
+        const data = await res.json();
+        const txt = data.text || "";
+        const parsed = JSON.parse(txt.replace(/```json|```/g, "").trim());
+        setResultado(parsed);
+        if (parsed.pregunta_extras) {
+          setEtapa("extras");
+        } else {
+          setEtapa("resultado");
+        }
+      } catch (e) {
+        setError("No pude analizar eso. Intenta describir diferente.");
+        setEtapa("escribir");
+      }
+    };
+    const analizarConExtras = async () => {
+      if (!extras.trim()) {
+        setEtapa("resultado");
+        return;
+      }
+      setEtapa("cargando");
+      try {
+        const prompt2 = "El usuario comi\u00f3: \"" + texto + "\". Los macros base son: " + resultado.kcal + " kcal, " + resultado.proteina + "g prote\u00edna, " + resultado.carbos + "g carbos, " + resultado.grasa + "g grasa.\nAhora dice que adem\u00e1s tuvo: \"" + extras + "\".\nAjusta los macros sumando los extras. Responde SOLO con JSON v\u00e1lido:\n{\n  \"kcal\": n\u00famero total,\n  \"proteina\": n\u00famero total,\n  \"carbos\": n\u00famero total,\n  \"grasa\": n\u00famero total\n}";
+        const res = await fetch(GEMINI_PROXY, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: prompt2
+          })
+        });
+        const data = await res.json();
+        const txt = data.text || "";
+        const ajuste = JSON.parse(txt.replace(/```json|```/g, "").trim());
+        setResultado(r => ({
+          ...r,
+          ...ajuste
+        }));
+        setEtapa("resultado");
+      } catch (e) {
+        setEtapa("resultado");
+      }
+    };
+    const confirmar = () => {
+      if (!resultado) return;
+      addFood({
+        id: "ai_" + Date.now(),
+        n: resultado.nombre,
+        u: resultado.porcion,
+        kcal: resultado.kcal,
+        p: resultado.proteina,
+        c: resultado.carbos,
+        g: resultado.grasa
+      });
+      setOverlay(null);
+      setScreen("home");
+      showToast("\u2705 " + resultado.nombre + " registrado");
+    };
     return /*#__PURE__*/React.createElement("div", {
       className: "overlay",
       onClick: () => setOverlay(null)
@@ -7273,36 +7343,207 @@ function App() {
       onClick: () => setOverlay(null)
     }, /*#__PURE__*/React.createElement(X, {
       size: 20
-    })), stage === "listen" ? /*#__PURE__*/React.createElement("div", {
+    })), etapa === "escribir" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("p", {
+      className: "detect-h"
+    }, /*#__PURE__*/React.createElement(Sparkles, {
+      size: 15,
+      color: "#F2B705"
+    }), " \\u00bfQu\\u00e9 comiste?"), /*#__PURE__*/React.createElement("p", {
+      className: "muted sm",
+      style: {
+        marginBottom: 12
+      }
+    }, "Desc\\u00edbelo como quieras: \"una taza de papaya con yogurt\", \"dos tacos de canasta con agua de jamaica\"\\u2026"), /*#__PURE__*/React.createElement("textarea", {
+      value: texto,
+      onChange: e => setTexto(e.target.value),
+      placeholder: "Escribe aqu\\u00ed lo que comiste\\u2026",
+      style: {
+        width: "100%",
+        minHeight: 90,
+        borderRadius: 12,
+        border: "1.5px solid #e8eaf0",
+        padding: "10px 12px",
+        fontFamily: "Nunito",
+        fontSize: 15,
+        resize: "none",
+        boxSizing: "border-box",
+        outline: "none"
+      },
+      autoFocus: true
+    }), error && /*#__PURE__*/React.createElement("p", {
+      style: {
+        color: "#E05C5C",
+        fontSize: 13,
+        marginTop: 6
+      }
+    }, error), /*#__PURE__*/React.createElement("button", {
+      className: "btn primary big",
+      style: {
+        marginTop: 10
+      },
+      onClick: () => texto.trim() && analizar(texto),
+      disabled: !texto.trim()
+    }, "Analizar con IA \\u2728")), etapa === "cargando" && /*#__PURE__*/React.createElement("div", {
       className: "center",
       style: {
-        padding: "16px 0"
+        padding: "32px 0"
       }
     }, /*#__PURE__*/React.createElement("div", {
-      className: "mic-pulse"
-    }, /*#__PURE__*/React.createElement(Mic, {
-      size: 30,
-      color: "#fff"
-    })), /*#__PURE__*/React.createElement("p", {
-      className: "muted",
       style: {
-        marginTop: 14
+        fontSize: 36,
+        marginBottom: 12
       }
-    }, "Escuchando… di lo que comiste")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
-      className: "transcript"
-    }, "“Me comí tres tacos al pastor y una coca sin azúcar”"), parsed.map((f, i) => /*#__PURE__*/React.createElement("div", {
-      key: i,
-      className: "log-row"
-    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, f.qty, "× ", f.n)), /*#__PURE__*/React.createElement("span", {
-      className: "muted sm"
-    }, f.kcal * f.qty, " kcal"))), /*#__PURE__*/React.createElement("button", {
+    }, "\\U0001f9e0"), /*#__PURE__*/React.createElement("p", {
+      className: "muted"
+    }, "Calculando macros\\u2026")), etapa === "extras" && resultado && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("p", {
+      className: "detect-h"
+    }, /*#__PURE__*/React.createElement(Sparkles, {
+      size: 15,
+      color: "#F2B705"
+    }), " Una pregunta"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#f6f7fb",
+        borderRadius: 12,
+        padding: "10px 13px",
+        marginBottom: 12
+      }
+    }, /*#__PURE__*/React.createElement("b", {
+      style: {
+        fontSize: 15
+      }
+    }, resultado.nombre), /*#__PURE__*/React.createElement("div", {
+      className: "muted sm",
+      style: {
+        marginTop: 3
+      }
+    }, resultado.kcal, " kcal \\u00b7 P ", resultado.proteina, "g \\u00b7 C ", resultado.carbos, "g \\u00b7 G ", resultado.grasa, "g")), /*#__PURE__*/React.createElement("p", {
+      style: {
+        fontSize: 14,
+        color: "#4a4f6a",
+        marginBottom: 8
+      }
+    }, resultado.pregunta_extras), /*#__PURE__*/React.createElement("textarea", {
+      value: extras,
+      onChange: e => setExtras(e.target.value),
+      placeholder: "Ej: s\\u00ed, con una cucharada de aceite y salsa",
+      style: {
+        width: "100%",
+        minHeight: 70,
+        borderRadius: 12,
+        border: "1.5px solid #e8eaf0",
+        padding: "10px 12px",
+        fontFamily: "Nunito",
+        fontSize: 14,
+        resize: "none",
+        boxSizing: "border-box",
+        outline: "none"
+      }
+    }), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
-      onClick: () => {
-        parsed.forEach(f => addFood(f, f.qty));
-        setOverlay(null);
-        setScreen("home");
+      style: {
+        marginTop: 10
+      },
+      onClick: analizarConExtras
+    }, "Actualizar macros"), /*#__PURE__*/React.createElement("button", {
+      className: "btn ghost",
+      style: {
+        width: "100%",
+        marginTop: 4
+      },
+      onClick: () => setEtapa("resultado")
+    }, "No hubo extras")), etapa === "resultado" && resultado && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("p", {
+      className: "detect-h"
+    }, /*#__PURE__*/React.createElement(Sparkles, {
+      size: 15,
+      color: "#F2B705"
+    }), " Esto es lo que detect\\u00e9"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#f6f7fb",
+        borderRadius: 14,
+        padding: "12px 14px",
+        marginBottom: 12
       }
-    }, "Confirmar y registrar"))));
+    }, /*#__PURE__*/React.createElement("b", {
+      style: {
+        fontSize: 16,
+        display: "block",
+        marginBottom: 4
+      }
+    }, resultado.nombre), /*#__PURE__*/React.createElement("span", {
+      className: "muted sm"
+    }, resultado.porcion), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10,
+        marginTop: 10,
+        flexWrap: "wrap"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center",
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("b", {
+      style: {
+        fontFamily: "Fredoka",
+        fontSize: 20,
+        color: "#E79FAE"
+      }
+    }, resultado.kcal), /*#__PURE__*/React.createElement("div", {
+      className: "muted sm"
+    }, "kcal")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center",
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("b", {
+      style: {
+        fontFamily: "Fredoka",
+        fontSize: 20,
+        color: "#7C5CFF"
+      }
+    }, resultado.proteina, "g"), /*#__PURE__*/React.createElement("div", {
+      className: "muted sm"
+    }, "prote\\u00edna")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center",
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("b", {
+      style: {
+        fontFamily: "Fredoka",
+        fontSize: 20,
+        color: "#F2B705"
+      }
+    }, resultado.carbos, "g"), /*#__PURE__*/React.createElement("div", {
+      className: "muted sm"
+    }, "carbos")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center",
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("b", {
+      style: {
+        fontFamily: "Fredoka",
+        fontSize: 20,
+        color: "#34BC97"
+      }
+    }, resultado.grasa, "g"), /*#__PURE__*/React.createElement("div", {
+      className: "muted sm"
+    }, "grasa")))), /*#__PURE__*/React.createElement("button", {
+      className: "btn primary big",
+      onClick: confirmar
+    }, "\\u2705 Confirmar y registrar"), /*#__PURE__*/React.createElement("button", {
+      className: "btn ghost",
+      style: {
+        width: "100%",
+        marginTop: 6
+      },
+      onClick: () => {
+        setEtapa("escribir");
+        setResultado(null);
+      }
+    }, "Corregir descripci\\u00f3n"))));
   };
   const Photo = () => {
     const detected = [{
