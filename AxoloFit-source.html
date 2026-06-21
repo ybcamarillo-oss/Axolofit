@@ -76,7 +76,7 @@ html,body { height:100%; }
 .sug-row b, .log-row b { font-size: 14px; }
 .add-btn { width: 34px; height: 34px; border-radius: 11px; border: none; background: #FCEFF1; color: #E79FAE; display: grid; place-items: center; cursor: pointer; }
 .x-btn { background: none; border: none; color: #c3c8d6; cursor: pointer; padding: 4px; }
-.fab { position: absolute; right: 18px; bottom: 90px; width: 60px; height: 60px; border-radius: 20px; border: none; background: linear-gradient(180deg,#F7CCD4,#E79FAE); color: #5E4334; display: grid; place-items: center; cursor: pointer; box-shadow: 0 10px 26px #e79fae66; }
+.fab { position: fixed; right: 18px; bottom: 90px; height: 54px; padding: 0 20px; border-radius: 27px; border: none; background: linear-gradient(180deg,#F7CCD4,#E79FAE); color: #5E4334; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 26px #e79fae66; }
 .fab:active { transform: scale(.94); }
 .navbar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; background: #fff; border-top: 2px solid #f0f1f6; padding: 10px 4px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 20; box-shadow: 0 -4px 16px rgba(0,0,0,0.07); }
 .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #b6bccb; cursor: pointer; font-family: 'Nunito'; font-weight: 700; }
@@ -178,6 +178,8 @@ const SUPABASE_URL = "https://lxenslqgcmkonkhbvfhl.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4ZW5zbHFnY21rb25raGJ2ZmhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MDcyMjQsImV4cCI6MjA5Njk4MzIyNH0.w062y4j9GPUdAGAIh8x8vXX6EYBTKknY0c5_MhyP5OI";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 const GEMINI_PROXY = "https://axolofit.vercel.app/api/gemini";
+// Muestra un estimado como rango (la IA estima, no mide) — más honesto y menos ansiógeno
+const rango = (v) => { const lo = Math.round(v * 0.85 / 5) * 5; const hi = Math.round(v * 1.15 / 5) * 5; return lo + "–" + hi; };
 
 /* ---------- AUTH SCREEN ---------- */
 function AuthScreen({ onAuth }) {
@@ -1932,8 +1934,8 @@ function App() {
     }
     if (!nuevaSkin && userId) guardarAxo(userId, { variedad: pet.palette, accesorio: pet.accessory, outfit: pet.outfit, nivel: level, xp: xp, racha: nuevaRacha, ultimo_dia: hoyStr, skins: skinsUnlocked.join(",") });
     if (nuevaSkin) { setRegaloSkin(nuevaSkin); setOverlay("regalo"); }
-    else if (ultimoDia === hoyStr) showToast("+50 XP · ¡Bien hecho hoy! 🎁");
-    else showToast("+50 XP · 🔥 ¡Racha de " + nuevaRacha + (nuevaRacha === 1 ? " día!" : " días!"));
+    else if (ultimoDia === hoyStr) showToast("¡Gracias por cuidarte hoy! 💗");
+    else showToast("🔥 Día " + nuevaRacha + " cuidándote · ¡bien hecho!");
   };
   const tryPremium = (e) => { e && e.stopPropagation(); setOverlay("paywall"); };
   const bg = BACKGROUNDS[pet.bg], darkBg = pet.bg === "noche";
@@ -2025,7 +2027,7 @@ function App() {
         </div>
         <div style={{ height: 90 }} />
       </div>
-      <button className="fab" onClick={() => setScreen("log")}><Plus size={26} /></button>
+      <button className="fab" onClick={() => setScreen("log")}><Plus size={22} /><span style={{fontFamily:"Fredoka",fontWeight:600,fontSize:13,marginLeft:2}}>Registrar</span></button>
     </div>
   );
 
@@ -2160,7 +2162,7 @@ function App() {
       setEtapa("cargando");
       setError(null);
       try {
-        const prompt1 = "Eres un nutri\u00f3logo mexicano. El usuario dice que comi\u00f3: \"" + descripcion + "\".\n\nEstima los macronutrientes de forma precisa. Responde SOLO con JSON v\u00e1lido, sin texto adicional, sin backticks:\n{\n  \"nombre\": \"nombre descriptivo del platillo\",\n  \"kcal\": n\u00famero,\n  \"proteina\": n\u00famero en gramos,\n  \"carbos\": n\u00famero en gramos,\n  \"grasa\": n\u00famero en gramos,\n  \"porcion\": \"descripci\u00f3n de la porci\u00f3n estimada\",\n  \"pregunta_extras\": \"pregunta corta sobre si hubo extras relevantes (aceite, az\u00facar, extras, etc.) que puedan cambiar los macros. Si no aplica, pon null\"\n}";
+        const prompt1 = "Eres un nutriólogo mexicano. El usuario dice que comió: \"" + descripcion + "\".\n\nEstima los macronutrientes de forma precisa. Responde SOLO con JSON válido, sin texto adicional, sin backticks:\n{\n  \"nombre\": \"nombre descriptivo del platillo\",\n  \"kcal\": número,\n  \"proteina\": número en gramos,\n  \"carbos\": número en gramos,\n  \"grasa\": número en gramos,\n  \"porcion\": \"descripción de la porción estimada\",\n  \"pregunta_extras\": \"pregunta corta sobre si hubo extras relevantes (aceite, azúcar, extras, etc.) que puedan cambiar los macros. Si no aplica, pon null\"\n}";
         const res = await fetch(GEMINI_PROXY, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -2168,7 +2170,9 @@ function App() {
         });
         const data = await res.json();
         const txt = data.text || "";
-        const parsed = JSON.parse(txt.replace(/```json|```/g, "").trim());
+        const limpio = txt.replace(/```json|```/g, "").trim();
+        const jsonMatch = limpio.match(/\{[\s\S]*\}/);
+        const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : limpio);
         setResultado(parsed);
         if (parsed.pregunta_extras) { setEtapa("extras"); } else { setEtapa("resultado"); }
       } catch(e) {
@@ -2181,7 +2185,7 @@ function App() {
       if (!extras.trim()) { setEtapa("resultado"); return; }
       setEtapa("cargando");
       try {
-        const prompt2 = "El usuario comi\u00f3: \"" + texto + "\". Los macros base son: " + resultado.kcal + " kcal, " + resultado.proteina + "g prote\u00edna, " + resultado.carbos + "g carbos, " + resultado.grasa + "g grasa.\nAhora dice que adem\u00e1s tuvo: \"" + extras + "\".\nAjusta los macros sumando los extras. Responde SOLO con JSON v\u00e1lido:\n{\n  \"kcal\": n\u00famero total,\n  \"proteina\": n\u00famero total,\n  \"carbos\": n\u00famero total,\n  \"grasa\": n\u00famero total\n}";
+        const prompt2 = "El usuario comió: \"" + texto + "\". Los macros base son: " + resultado.kcal + " kcal, " + resultado.proteina + "g proteína, " + resultado.carbos + "g carbos, " + resultado.grasa + "g grasa.\nAhora dice que además tuvo: \"" + extras + "\".\nAjusta los macros sumando los extras. Responde SOLO con JSON válido:\n{\n  \"kcal\": número total,\n  \"proteina\": número total,\n  \"carbos\": número total,\n  \"grasa\": número total\n}";
         const res = await fetch(GEMINI_PROXY, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -2199,7 +2203,7 @@ function App() {
       if (!resultado) return;
       addFood({ id: "ai_" + Date.now(), n: resultado.nombre, u: resultado.porcion, kcal: resultado.kcal, p: resultado.proteina, c: resultado.carbos, g: resultado.grasa });
       setOverlay(null); setScreen("home");
-      showToast("\u2705 " + resultado.nombre + " registrado");
+      showToast("✅ " + resultado.nombre + " registrado");
     };
 
     return (
@@ -2207,16 +2211,16 @@ function App() {
         <div className="sheet" onClick={(e) => e.stopPropagation()}>
           <button className="sheet-x" onClick={() => setOverlay(null)}><X size={20} /></button>
           {etapa === "escribir" && (<>
-            <p className="detect-h"><Sparkles size={15} color="#F2B705" /> \u00bfQu\u00e9 comiste?</p>
-            <p className="muted sm" style={{marginBottom:12}}>Desc\u00edbelo como quieras: "una taza de papaya con yogurt", "dos tacos de canasta con agua de jamaica"\u2026</p>
-            <textarea value={texto} onChange={e => setTexto(e.target.value)} placeholder="Escribe aqu\u00ed lo que comiste\u2026" style={{width:"100%",minHeight:90,borderRadius:12,border:"1.5px solid #e8eaf0",padding:"10px 12px",fontFamily:"Nunito",fontSize:15,resize:"none",boxSizing:"border-box",outline:"none"}} autoFocus />
+            <p className="detect-h"><Sparkles size={15} color="#F2B705" /> ¿Qué comiste?</p>
+            <p className="muted sm" style={{marginBottom:12}}>Descíbelo como quieras: "una taza de papaya con yogurt", "dos tacos de canasta con agua de jamaica"…</p>
+            <textarea value={texto} onChange={e => setTexto(e.target.value)} placeholder="Escribe aquí lo que comiste…" style={{width:"100%",minHeight:90,borderRadius:12,border:"1.5px solid #e8eaf0",padding:"10px 12px",fontFamily:"Nunito",fontSize:15,resize:"none",boxSizing:"border-box",outline:"none"}} autoFocus />
             {error && <p style={{color:"#E05C5C",fontSize:13,marginTop:6}}>{error}</p>}
-            <button className="btn primary big" style={{marginTop:10}} onClick={() => texto.trim() && analizar(texto)} disabled={!texto.trim()}>Analizar con IA \u2728</button>
+            <button className="btn primary big" style={{marginTop:10}} onClick={() => texto.trim() && analizar(texto)} disabled={!texto.trim()}>Analizar con IA ✨</button>
           </>)}
           {etapa === "cargando" && (
             <div className="center" style={{padding:"32px 0"}}>
               <div style={{fontSize:36,marginBottom:12}}>\U0001f9e0</div>
-              <p className="muted">Calculando macros\u2026</p>
+              <p className="muted">Calculando macros…</p>
             </div>
           )}
           {etapa === "extras" && resultado && (<>
@@ -2226,24 +2230,24 @@ function App() {
               <div className="muted sm" style={{marginTop:3}}>{resultado.kcal} kcal \u00b7 P {resultado.proteina}g \u00b7 C {resultado.carbos}g \u00b7 G {resultado.grasa}g</div>
             </div>
             <p style={{fontSize:14,color:"#4a4f6a",marginBottom:8}}>{resultado.pregunta_extras}</p>
-            <textarea value={extras} onChange={e => setExtras(e.target.value)} placeholder="Ej: s\u00ed, con una cucharada de aceite y salsa" style={{width:"100%",minHeight:70,borderRadius:12,border:"1.5px solid #e8eaf0",padding:"10px 12px",fontFamily:"Nunito",fontSize:14,resize:"none",boxSizing:"border-box",outline:"none"}} />
+            <textarea value={extras} onChange={e => setExtras(e.target.value)} placeholder="Ej: sí, con una cucharada de aceite y salsa" style={{width:"100%",minHeight:70,borderRadius:12,border:"1.5px solid #e8eaf0",padding:"10px 12px",fontFamily:"Nunito",fontSize:14,resize:"none",boxSizing:"border-box",outline:"none"}} />
             <button className="btn primary big" style={{marginTop:10}} onClick={analizarConExtras}>Actualizar macros</button>
             <button className="btn ghost" style={{width:"100%",marginTop:4}} onClick={() => setEtapa("resultado")}>No hubo extras</button>
           </>)}
           {etapa === "resultado" && resultado && (<>
-            <p className="detect-h"><Sparkles size={15} color="#F2B705" /> Esto es lo que detect\u00e9</p>
+            <p className="detect-h"><Sparkles size={15} color="#F2B705" /> Esto es lo que detecté</p>
             <div style={{background:"#f6f7fb",borderRadius:14,padding:"12px 14px",marginBottom:12}}>
               <b style={{fontSize:16,display:"block",marginBottom:4}}>{resultado.nombre}</b>
               <span className="muted sm">{resultado.porcion}</span>
               <div style={{display:"flex",gap:10,marginTop:10,flexWrap:"wrap"}}>
-                <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#E79FAE"}}>{resultado.kcal}</b><div className="muted sm">kcal</div></div>
-                <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#7C5CFF"}}>{resultado.proteina}g</b><div className="muted sm">prote\u00edna</div></div>
+                <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:18,color:"#E79FAE"}}>{rango(resultado.kcal)}</b><div className="muted sm">kcal aprox.</div></div>
+                <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#7C5CFF"}}>{resultado.proteina}g</b><div className="muted sm">proteína</div></div>
                 <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#F2B705"}}>{resultado.carbos}g</b><div className="muted sm">carbos</div></div>
                 <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#34BC97"}}>{resultado.grasa}g</b><div className="muted sm">grasa</div></div>
               </div>
             </div>
-            <button className="btn primary big" onClick={confirmar}>\u2705 Confirmar y registrar</button>
-            <button className="btn ghost" style={{width:"100%",marginTop:6}} onClick={() => { setEtapa("escribir"); setResultado(null); }}>Corregir descripci\u00f3n</button>
+            <button className="btn primary big" onClick={confirmar}>✅ Confirmar y registrar</button>
+            <button className="btn ghost" style={{width:"100%",marginTop:6}} onClick={() => { setEtapa("escribir"); setResultado(null); }}>Corregir descripción</button>
           </>)}
         </div>
       </div>
@@ -2271,7 +2275,9 @@ function App() {
         const res = await fetch(GEMINI_PROXY, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt, image: base64 }) });
         const data = await res.json();
         const txt = data.text || "";
-        const parsed = JSON.parse(txt.replace(/```json|```/g, "").trim());
+        const limpio = txt.replace(/```json|```/g, "").trim();
+        const jsonMatch = limpio.match(/\{[\s\S]*\}/);
+        const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : limpio);
         setResultado(parsed); setEtapa("resultado");
       } catch(e) {
         setError("No pude analizar la foto. Intenta con otra o usa Describir."); setEtapa("inicial");
@@ -2292,7 +2298,7 @@ function App() {
           {etapa === "inicial" && (<>
             <p className="detect-h"><Sparkles size={15} color="#F2B705" /> Foto de tu plato</p>
             <p className="muted sm" style={{marginBottom:12}}>Toma o sube una foto de tu comida y la IA estima los macros.</p>
-            <label className="btn primary big" style={{display:"block",textAlign:"center",cursor:"pointer"}}>\ud83d\udcf7 Tomar o subir foto<input type="file" accept="image/*" capture="environment" onChange={onFile} style={{display:"none"}} /></label>
+            <label className="btn primary big" style={{display:"block",textAlign:"center",cursor:"pointer"}}>📷 Tomar o subir foto<input type="file" accept="image/*" capture="environment" onChange={onFile} style={{display:"none"}} /></label>
             {error && <p style={{color:"#E05C5C",fontSize:13,marginTop:8}}>{error}</p>}
           </>)}
           {etapa === "cargando" && (
@@ -2308,7 +2314,7 @@ function App() {
               <b style={{fontSize:16,display:"block",marginBottom:4}}>{resultado.nombre}</b>
               <span className="muted sm">{resultado.porcion}</span>
               <div style={{display:"flex",gap:10,marginTop:10,flexWrap:"wrap"}}>
-                <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#E79FAE"}}>{resultado.kcal}</b><div className="muted sm">kcal</div></div>
+                <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:18,color:"#E79FAE"}}>{rango(resultado.kcal)}</b><div className="muted sm">kcal aprox.</div></div>
                 <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#7C5CFF"}}>{resultado.proteina}g</b><div className="muted sm">proteína</div></div>
                 <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#F2B705"}}>{resultado.carbos}g</b><div className="muted sm">carbos</div></div>
                 <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#34BC97"}}>{resultado.grasa}g</b><div className="muted sm">grasa</div></div>
