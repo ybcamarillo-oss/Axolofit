@@ -30,8 +30,16 @@ export default async function handler(req, res) {
     );
     const data = await geminiRes.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    // DIAGNÓSTICO: si Gemini no devolvió texto, mostramos la respuesta cruda
+    // para ver el error real (key, modelo, API no habilitada, etc.)
+    if (!text) {
+      res.status(200).json({ text: "", debug: data, status: geminiRes.status });
+      return;
+    }
+
     res.status(200).json({ text });
   } catch (e) {
     res.status(500).json({ error: "Error al llamar a Gemini: " + e.message });
   }
-}
+}}
