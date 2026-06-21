@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // CORS para que el HTML de GitHub Pages pueda llamar a este proxy
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -7,11 +6,18 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") { res.status(200).end(); return; }
   if (req.method !== "POST") { res.status(405).json({ error: "Method not allowed" }); return; }
 
-  const { prompt } = req.body;
+  const { prompt, image } = req.body;
   if (!prompt) { res.status(400).json({ error: "Falta el prompt" }); return; }
 
   const key = process.env.GEMINI_API_KEY;
   if (!key) { res.status(500).json({ error: "Key no configurada" }); return; }
+
+  // Construir las partes: texto + imagen opcional
+  const parts = [{ text: prompt }];
+  if (image) {
+    // image debe venir como base64 puro (sin el prefijo data:image/...)
+    parts.push({ inline_data: { mime_type: "image/jpeg", data: image } });
+  }
 
   try {
     const geminiRes = await fetch(
@@ -19,7 +25,7 @@ export default async function handler(req, res) {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        body: JSON.stringify({ contents: [{ parts }] })
       }
     );
     const data = await geminiRes.json();
