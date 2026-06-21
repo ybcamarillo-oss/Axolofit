@@ -611,6 +611,17 @@ const MENU_DB = {
     { n: "Agua de horchata de avena AxoloFit", d: "1 vaso de avena con leche de almendras sin azúcar, endulzante y canela", kcal: 40, p: 1, c: 8, g: 1, veg: true, con: [], main: "avena" },
   ],
 };
+// Frutas para acompañar el desayuno cuando el día queda corto en calorías
+const FRUTAS = [
+  { n: "Plátano", d: "1 pieza mediana", kcal: 105, p: 1, c: 27, g: 0, con: [] },
+  { n: "Manzana", d: "1 pieza mediana", kcal: 95, p: 0, c: 25, g: 0, con: [] },
+  { n: "Pera", d: "1 pieza mediana", kcal: 100, p: 1, c: 27, g: 0, con: [] },
+  { n: "Plato de papaya", d: "1 taza en cubos", kcal: 62, p: 1, c: 16, g: 0, con: [] },
+  { n: "Tazón de fresas", d: "1 taza de fresas frescas", kcal: 50, p: 1, c: 12, g: 0, con: [] },
+  { n: "Mango", d: "1 taza en cubos", kcal: 99, p: 1, c: 25, g: 0, con: [] },
+  { n: "Plato de melón", d: "1 taza en cubos", kcal: 54, p: 1, c: 13, g: 0, con: [] },
+  { n: "Uvas", d: "1 taza", kcal: 104, p: 1, c: 27, g: 0, con: [] },
+];
 const ALERGENOS = [["lacteo", "Lácteos"], ["gluten", "Gluten"], ["huevo", "Huevo"], ["pescado", "Pescado / mariscos"], ["cerdo", "Cerdo"], ["nuez", "Frutos secos"], ["otros", "Otros"]];
 const MEAL_SPLIT = [["desayuno", "Desayuno", 0.25], ["comida", "Comida", 0.35], ["cena", "Cena", 0.30], ["snack", "Snack", 0.10]];
 
@@ -1728,16 +1739,40 @@ function App() {
   const [prefs, setPrefs] = useState({ veg: false, evitar: [], lowcarb: false });
   const allowedIdx = (k) => { const arr = MENU_DB[k].map((it, idx) => ({ it, idx })).filter(({ it }) => (!prefs.veg || it.veg) && (prefs.lowcarb ? it.c <= 16 : !it.lc) && !it.con.some((c) => prefs.evitar.includes(c))).map((o) => o.idx); return arr.length ? arr : MENU_DB[k].map((_, i) => i); };
   const pickIdx = (k) => { const al = allowedIdx(k); return al[Math.floor(Math.random() * al.length)]; };
-  const dayKcal = (d) => MEAL_SPLIT.reduce((sum, [k]) => sum + (MENU_DB[k][d[k]]?.kcal || 0), 0);
-  const genDay = (piso) => {
-    const floor = piso || targets.objetivoDeficit * 0.85;
-    let d = {}; let tries = 0;
-    do { MEAL_SPLIT.forEach(([k]) => { d[k] = pickIdx(k); }); tries++; }
-    while (dayKcal(d) < floor && tries < 20);
+  const dayKcal = (d) => MEAL_SPLIT.reduce((sum, [k]) => sum + (MENU_DB[k][d[k]]?.kcal || 0), 0)
+    + (d.fruta != null ? FRUTAS[d.fruta].kcal : 0)
+    + (d.snack2 != null ? MENU_DB.snack[d.snack2].kcal : 0);
+  // factor de escala del día para cuadrar con el objetivo (limitado 0.8x–1.4x para que siga siendo realista)
+  const dayFactor = (d) => { const base = dayKcal(d); if (!base) return 1; return Math.max(0.8, Math.min(1.4, targets.objetivoDeficit / base)); };
+  const scaleMeal = (dish, f) => ({ ...dish, kcal: Math.round(dish.kcal * f), p: Math.round(dish.p * f), c: Math.round(dish.c * f), g: Math.round(dish.g * f) });
+  // frutas permitidas según alergias
+  const frutasOk = () => { const arr = FRUTAS.map((f, i) => ({ f, i })).filter(({ f }) => !f.con.some((c) => prefs.evitar.includes(c))).map((o) => o.i); return arr.length ? arr : FRUTAS.map((_, i) => i); };
+  // agrega fruta al desayuno y/o 2o snack si el día base queda corto del objetivo
+  const addExtras = (d) => {
+    const obj = targets.objetivoDeficit;
+    delete d.fruta; delete d.snack2;
+    let falta = obj - dayKcal(d);
+    if (falta > 60) { const fo = frutasOk(); d.fruta = fo[Math.floor(Math.random() * fo.length)]; }
+    falta = obj - dayKcal(d);
+    if (falta > 120) {
+      const usados = [d.snack];
+      const al = allowedIdx("snack").filter(i => !usados.includes(i));
+      if (al.length) d.snack2 = al[Math.floor(Math.random() * al.length)];
+    }
     return d;
   };
+  const PISO_SEGURO = 1100; // el plan base nunca baja de aquí; el resto se completa con antojos del día
+  const genDay = () => {
+    let d = {}; let best = null; let bestK = 0; let tries = 0;
+    do {
+      MEAL_SPLIT.forEach(([k]) => { d[k] = pickIdx(k); });
+      const kc = dayKcal(d);
+      if (kc > bestK) { bestK = kc; best = { ...d }; }
+      tries++;
+    } while (dayKcal(d) < PISO_SEGURO && tries < 30);
+    return addExtras(dayKcal(d) >= PISO_SEGURO ? d : best);
+  };
   const genWeek = () => {
-    const piso = targets.objetivoDeficit * 0.85;
     const pools = {};
     MEAL_SPLIT.forEach(([k]) => {
       const al = [...allowedIdx(k)];
@@ -1747,7 +1782,7 @@ function App() {
     const cursor = {}; MEAL_SPLIT.forEach(([k]) => cursor[k] = 0);
     const w = {};
     DIAS.forEach((day) => {
-      let d = {}; let tries = 0;
+      let d = {}; let best = null; let bestK = 0; let tries = 0;
       do {
         d = {};
         const usedMains = [];
@@ -1765,9 +1800,11 @@ function App() {
           const mn = MENU_DB[k][chosen].main;
           if (mn) usedMains.push(mn);
         });
+        const kc = dayKcal(d);
+        if (kc > bestK) { bestK = kc; best = { ...d }; }
         tries++;
-      } while (dayKcal(d) < piso && tries < 20);
-      w[day] = d;
+      } while (dayKcal(d) < PISO_SEGURO && tries < 30);
+      w[day] = addExtras(dayKcal(d) >= PISO_SEGURO ? d : best);
     });
     return w;
   };
@@ -1802,7 +1839,7 @@ function App() {
       return { ...w, [day]: { ...w[day], [meal]: next } };
     });
   };
-  const regenDay = (day) => setWeekPlan(w=>({...w,[day]:genDay(targets.objetivoDeficit * 0.85)}));
+  const regenDay = (day) => setWeekPlan(w=>({...w,[day]:genDay()}));
   const regenWeek = () => setWeekPlan(genWeek());
   const toggleEvitar = (key) => setPrefs(p => ({ ...p, evitar: p.evitar.includes(key) ? p.evitar.filter(x=>x!==key) : [...p.evitar, key] }));
   const [level, setLevel] = useState(1);
@@ -2215,7 +2252,8 @@ function App() {
 
   const SemanaScreen = () => {
     const plan = weekPlan[selDay];
-    const dayTot = MEAL_SPLIT.reduce((a,[k])=>a+MENU_DB[k][plan[k]].kcal,0);
+    const dayF = dayFactor(plan);
+    const dayTot = Math.round(dayKcal(plan) * dayF);
     const mealIcons = { desayuno:"☀️", comida:"🍽️", cena:"🌙", snack:"🍎" };
     return (
       <div className="screen">
@@ -2239,31 +2277,47 @@ function App() {
             <span className="muted">{DIAS_FULL[DIAS.indexOf(selDay)]} · total del día</span>
             <div className="big-num">{dayTot}<small> kcal</small></div>
             <div className="macro-row">
-              {MEAL_SPLIT.map(([k])=>{const d=MENU_DB[k][plan[k]];return <span key={k} style={{color:"#7C5CFF"}}>P{d.p}g</span>;})}
+              {MEAL_SPLIT.map(([k])=>{const d=MENU_DB[k][plan[k]];return <span key={k} style={{color:"#7C5CFF"}}>P{Math.round(d.p*dayF)}g</span>;})}
             </div>
             <p className="muted sm" style={{marginTop:6,lineHeight:1.4}}>💡 Las calorías varían por día porque cada platillo tiene diferente aporte. Todos los menús están diseñados dentro de tu rango objetivo personalizado.</p>
           </div>
           {MEAL_SPLIT.map(([k,label])=>{
             const dish=MENU_DB[k][plan[k]];
+            const sd=scaleMeal(dish,dayF);
             const ek=selDay+"_"+k; const done=weekEaten[ek];
+            const porcion = dayF>=1.15 ? (" · porción x"+dayF.toFixed(1)) : (dayF<=0.9 ? " · porción reducida" : "");
             return <div key={k} className="card" style={{marginBottom:8,opacity:done?0.65:1}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
                 <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:"#9aa0b4"}}>{mealIcons[k]} {label}</span>
                 <div style={{display:"flex",gap:6}}>
                   <button onClick={()=>swapMeal(selDay,k)} style={{background:"#f4f6fb",border:"none",borderRadius:10,padding:"5px 10px",fontSize:12,fontFamily:"Fredoka",cursor:"pointer",color:"#7a8099"}}>Cambiar</button>
-                  <button onClick={()=>toggleEaten(selDay,k,dish)} style={{background:done?"#EAF7F2":"#f4f6fb",border:"none",borderRadius:10,padding:"5px 10px",fontSize:12,fontFamily:"Fredoka",cursor:"pointer",color:done?"#34BC97":"#9aa0b4"}}>{done?"✓ Comido":"Palomear"}</button>
+                  <button onClick={()=>toggleEaten(selDay,k,sd)} style={{background:done?"#EAF7F2":"#f4f6fb",border:"none",borderRadius:10,padding:"5px 10px",fontSize:12,fontFamily:"Fredoka",cursor:"pointer",color:done?"#34BC97":"#9aa0b4"}}>{done?"✓ Comido":"Palomear"}</button>
                 </div>
               </div>
               <b style={{fontSize:15,textDecoration:done?"line-through":"none"}}>{dish.n}</b>
-              <div className="muted sm" style={{marginTop:2}}>{dish.d}</div>
-              <div className="muted sm" style={{marginTop:3,fontFamily:"Fredoka",fontWeight:600,color:"#7a8099"}}>{dish.kcal} kcal · Prot {dish.p}g · Carbos {dish.c}g · Grasa {dish.g}g</div>
+              <div className="muted sm" style={{marginTop:2}}>{dish.d}{porcion && <span style={{color:"#E79FAE",fontWeight:600}}>{porcion}</span>}</div>
+              <div className="muted sm" style={{marginTop:3,fontFamily:"Fredoka",fontWeight:600,color:"#7a8099"}}>{sd.kcal} kcal · Prot {sd.p}g · Carbos {sd.c}g · Grasa {sd.g}g</div>
             </div>;
           })}
+          {plan.fruta != null && (() => { const fr=scaleMeal(FRUTAS[plan.fruta],dayF); return (
+            <div className="card" style={{marginBottom:8,background:"#FFF9F0",border:"1.5px dashed #FFD79E"}}>
+              <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:"#C58A2E"}}>🍓 Fruta del desayuno</span>
+              <b style={{fontSize:15,display:"block",marginTop:2}}>{FRUTAS[plan.fruta].n}</b>
+              <div className="muted sm" style={{marginTop:2}}>{FRUTAS[plan.fruta].d}</div>
+              <div className="muted sm" style={{marginTop:3,fontFamily:"Fredoka",fontWeight:600,color:"#7a8099"}}>{fr.kcal} kcal · Prot {fr.p}g · Carbos {fr.c}g · Grasa {fr.g}g</div>
+            </div>); })()}
+          {plan.snack2 != null && (() => { const s2=scaleMeal(MENU_DB.snack[plan.snack2],dayF); return (
+            <div className="card" style={{marginBottom:8,background:"#FFF9F0",border:"1.5px dashed #FFD79E"}}>
+              <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:"#C58A2E"}}>🍎 Snack extra</span>
+              <b style={{fontSize:15,display:"block",marginTop:2}}>{MENU_DB.snack[plan.snack2].n}</b>
+              <div className="muted sm" style={{marginTop:2}}>{MENU_DB.snack[plan.snack2].d}</div>
+              <div className="muted sm" style={{marginTop:3,fontFamily:"Fredoka",fontWeight:600,color:"#7a8099"}}>{s2.kcal} kcal · Prot {s2.p}g · Carbos {s2.c}g · Grasa {s2.g}g</div>
+            </div>); })()}
           <button className="btn primary big" style={{marginTop:4}} onClick={()=>regenDay(selDay)}>🔄 Regenerar {DIAS_FULL[DIAS.indexOf(selDay)]}</button>
           <div style={{marginTop:10,background:"#f6f7fb",borderRadius:16,padding:"10px 12px"}}>
             <p style={{fontFamily:"Fredoka",fontWeight:600,fontSize:14,marginBottom:6}}>Resumen semanal</p>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              {DIAS.map(d=>{const tot=MEAL_SPLIT.reduce((a,[k])=>a+MENU_DB[k][weekPlan[d][k]].kcal,0);const eaten=MEAL_SPLIT.filter(([k])=>weekEaten[d+"_"+k]).length;return <div key={d} style={{flex:"1 1 40px",textAlign:"center",background:"#fff",borderRadius:10,padding:"6px 4px"}}>
+              {DIAS.map(d=>{const f=dayFactor(weekPlan[d]);const tot=Math.round(dayKcal(weekPlan[d])*f);const eaten=MEAL_SPLIT.filter(([k])=>weekEaten[d+"_"+k]).length;return <div key={d} style={{flex:"1 1 40px",textAlign:"center",background:"#fff",borderRadius:10,padding:"6px 4px"}}>
                 <b style={{fontFamily:"Fredoka",fontSize:13,display:"block"}}>{DIAS_LABEL[DIAS.indexOf(d)]}</b>
                 <span style={{fontSize:11,color:"#9aa0b4"}}>{tot}</span>
                 <div style={{marginTop:2,display:"flex",justifyContent:"center",gap:1}}>{[0,1,2,3].map(i=><span key={i} style={{width:6,height:6,borderRadius:"50%",background:i<eaten?"#34BC97":"#eef0f6",display:"block"}} />)}</div>
