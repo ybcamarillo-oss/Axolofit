@@ -6185,9 +6185,6 @@ function App() {
     }
     if (overlay !== "recipe") setRecipeItem(null);
     if (overlay !== "menu") setMenuSwaps({});
-    return () => {
-      if (t) clearTimeout(t);
-    };
   }, [overlay]);
   const totals = useMemo(() => log.reduce((a, f) => ({
     kcal: a.kcal + f.kcal * f.qty,
