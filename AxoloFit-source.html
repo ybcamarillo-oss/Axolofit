@@ -1882,7 +1882,6 @@ function App() {
     if (overlay !== "photo") { setPhotoEtapa("inicial"); setPhotoImg(null); setPhotoResultado(null); setPhotoError(null); }
     if (overlay !== "recipe") setRecipeItem(null);
     if (overlay !== "menu") setMenuSwaps({});
-    return () => { if (t) clearTimeout(t); };
   }, [overlay]);
 
   const totals = useMemo(() => log.reduce((a, f) => ({ kcal: a.kcal + f.kcal * f.qty, p: a.p + f.p * f.qty, c: a.c + f.c * f.qty, g: a.g + f.g * f.qty }), { kcal: 0, p: 0, c: 0, g: 0 }), [log]);
