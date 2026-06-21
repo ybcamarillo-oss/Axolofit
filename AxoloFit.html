@@ -7749,6 +7749,8 @@ function App() {
       const ek = selDay + "_" + k;
       const done = weekEaten[ek];
       const porcion = dayF >= 1.15 ? " · porción x" + dayF.toFixed(1) : dayF <= 0.9 ? " · porción reducida" : "";
+      const fruta = k === "desayuno" && plan.fruta != null ? scaleMeal(FRUTAS[plan.fruta], dayF) : null;
+      const snackEx = k === "snack" && plan.snack2 != null ? scaleMeal(MENU_DB.snack[plan.snack2], dayF) : null;
       return /*#__PURE__*/React.createElement("div", {
         key: k,
         className: "card",
@@ -7822,80 +7824,73 @@ function App() {
           fontWeight: 600,
           color: "#7a8099"
         }
-      }, sd.kcal, " kcal · Prot ", sd.p, "g · Carbos ", sd.c, "g · Grasa ", sd.g, "g"));
-    }), plan.fruta != null && (() => {
-      const fr = scaleMeal(FRUTAS[plan.fruta], dayF);
-      return /*#__PURE__*/React.createElement("div", {
-        className: "card",
+      }, sd.kcal, " kcal · Prot ", sd.p, "g · Carbos ", sd.c, "g · Grasa ", sd.g, "g"), fruta && /*#__PURE__*/React.createElement("div", {
         style: {
-          marginBottom: 8,
-          background: "#FFF9F0",
-          border: "1.5px dashed #FFD79E"
+          marginTop: 8,
+          paddingTop: 8,
+          borderTop: "1px dashed #f0d9b8"
         }
       }, /*#__PURE__*/React.createElement("span", {
         style: {
           fontFamily: "Fredoka",
-          fontWeight: 700,
-          fontSize: 15,
+          fontWeight: 600,
+          fontSize: 13,
           color: "#C58A2E"
         }
-      }, "🍓 Fruta del desayuno"), /*#__PURE__*/React.createElement("b", {
+      }, "➕ Acompaña con una fruta"), /*#__PURE__*/React.createElement("b", {
         style: {
-          fontSize: 15,
+          fontSize: 14,
           display: "block",
-          marginTop: 2
+          marginTop: 1
         }
-      }, FRUTAS[plan.fruta].n), /*#__PURE__*/React.createElement("div", {
+      }, FRUTAS[plan.fruta].n, " ", /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontWeight: 400,
+          color: "#9aa0b4",
+          fontSize: 12
+        }
+      }, "· ", FRUTAS[plan.fruta].d)), /*#__PURE__*/React.createElement("div", {
         className: "muted sm",
         style: {
-          marginTop: 2
-        }
-      }, FRUTAS[plan.fruta].d), /*#__PURE__*/React.createElement("div", {
-        className: "muted sm",
-        style: {
-          marginTop: 3,
+          marginTop: 2,
           fontFamily: "Fredoka",
           fontWeight: 600,
           color: "#7a8099"
         }
-      }, fr.kcal, " kcal · Prot ", fr.p, "g · Carbos ", fr.c, "g · Grasa ", fr.g, "g"));
-    })(), plan.snack2 != null && (() => {
-      const s2 = scaleMeal(MENU_DB.snack[plan.snack2], dayF);
-      return /*#__PURE__*/React.createElement("div", {
-        className: "card",
+      }, fruta.kcal, " kcal · Carbos ", fruta.c, "g")), snackEx && /*#__PURE__*/React.createElement("div", {
         style: {
-          marginBottom: 8,
-          background: "#FFF9F0",
-          border: "1.5px dashed #FFD79E"
+          marginTop: 8,
+          paddingTop: 8,
+          borderTop: "1px dashed #f0d9b8"
         }
       }, /*#__PURE__*/React.createElement("span", {
         style: {
           fontFamily: "Fredoka",
-          fontWeight: 700,
-          fontSize: 15,
+          fontWeight: 600,
+          fontSize: 13,
           color: "#C58A2E"
         }
-      }, "🍎 Snack extra"), /*#__PURE__*/React.createElement("b", {
+      }, "➕ Segundo snack del día"), /*#__PURE__*/React.createElement("b", {
         style: {
-          fontSize: 15,
+          fontSize: 14,
           display: "block",
-          marginTop: 2
+          marginTop: 1
         }
       }, MENU_DB.snack[plan.snack2].n), /*#__PURE__*/React.createElement("div", {
         className: "muted sm",
         style: {
-          marginTop: 2
+          marginTop: 1
         }
       }, MENU_DB.snack[plan.snack2].d), /*#__PURE__*/React.createElement("div", {
         className: "muted sm",
         style: {
-          marginTop: 3,
+          marginTop: 2,
           fontFamily: "Fredoka",
           fontWeight: 600,
           color: "#7a8099"
         }
-      }, s2.kcal, " kcal · Prot ", s2.p, "g · Carbos ", s2.c, "g · Grasa ", s2.g, "g"));
-    })(), /*#__PURE__*/React.createElement("button", {
+      }, snackEx.kcal, " kcal · Prot ", snackEx.p, "g · Carbos ", snackEx.c, "g · Grasa ", snackEx.g, "g")));
+    }), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       style: {
         marginTop: 4
