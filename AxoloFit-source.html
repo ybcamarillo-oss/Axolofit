@@ -1870,11 +1870,16 @@ function App() {
   const [voiceResultado, setVoiceResultado] = useState(null);
   const [voiceExtras, setVoiceExtras] = useState("");
   const [voiceError, setVoiceError] = useState(null);
+  const [photoEtapa, setPhotoEtapa] = useState("inicial");
+  const [photoImg, setPhotoImg] = useState(null);
+  const [photoResultado, setPhotoResultado] = useState(null);
+  const [photoError, setPhotoError] = useState(null);
   const [recipeItem, setRecipeItem] = useState(null);
   const [menuSwaps, setMenuSwaps] = useState({});
   const [coachOpenMap, setCoachOpenMap] = useState({});
   React.useEffect(() => {
     if (overlay !== "voice") { setVoiceTexto(""); setVoiceEtapa("escribir"); setVoiceResultado(null); setVoiceExtras(""); setVoiceError(null); }
+    if (overlay !== "photo") { setPhotoEtapa("inicial"); setPhotoImg(null); setPhotoResultado(null); setPhotoError(null); }
     if (overlay !== "recipe") setRecipeItem(null);
     if (overlay !== "menu") setMenuSwaps({});
     return () => { if (t) clearTimeout(t); };
@@ -2247,16 +2252,72 @@ function App() {
   };
 
   const Photo = () => {
-    const detected = [{ ...FOODS.find((f) => f.id === "chila"), qty: 1 }, { ...FOODS.find((f) => f.id === "frijol"), qty: 1 }];
+    const etapa = photoEtapa; const setEtapa = setPhotoEtapa;
+    const img = photoImg; const setImg = setPhotoImg;
+    const resultado = photoResultado; const setResultado = setPhotoResultado;
+    const error = photoError; const setError = setPhotoError;
+
+    const onFile = (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => { const dataUrl = reader.result; setImg(dataUrl); analizarFoto(dataUrl.split(",")[1]); };
+      reader.readAsDataURL(file);
+    };
+
+    const analizarFoto = async (base64) => {
+      setEtapa("cargando"); setError(null);
+      try {
+        const prompt = "Eres un nutriólogo mexicano. Analiza la foto de este plato de comida. Identifica los alimentos y estima los macronutrientes totales del plato. Responde SOLO con JSON válido, sin texto adicional, sin backticks:\n{\n  \"nombre\": \"descripción de lo que ves en el plato\",\n  \"kcal\": número,\n  \"proteina\": número en gramos,\n  \"carbos\": número en gramos,\n  \"grasa\": número en gramos,\n  \"porcion\": \"descripción de la porción estimada\"\n}";
+        const res = await fetch(GEMINI_PROXY, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt, image: base64 }) });
+        const data = await res.json();
+        const txt = data.text || "";
+        const parsed = JSON.parse(txt.replace(/```json|```/g, "").trim());
+        setResultado(parsed); setEtapa("resultado");
+      } catch(e) {
+        setError("No pude analizar la foto. Intenta con otra o usa Describir."); setEtapa("inicial");
+      }
+    };
+
+    const confirmar = () => {
+      if (!resultado) return;
+      addFood({ id: "ai_" + Date.now(), n: resultado.nombre, u: resultado.porcion, kcal: resultado.kcal, p: resultado.proteina, c: resultado.carbos, g: resultado.grasa });
+      setOverlay(null); setScreen("home");
+      showToast("✅ " + resultado.nombre + " registrado");
+    };
+
     return (
       <div className="overlay" onClick={() => setOverlay(null)}>
         <div className="sheet" onClick={(e) => e.stopPropagation()}>
           <button className="sheet-x" onClick={() => setOverlay(null)}><X size={20} /></button>
-          <div className="photo-frame"><Camera size={30} color="#9aa0b4" /><span className="muted sm">Foto del plato (demo)</span></div>
-          <p className="detect-h"><Sparkles size={15} color="#F2B705" /> Detectamos en tu plato</p>
-          {detected.map((f, i) => <div key={i} className="log-row"><div><b>{f.n}</b><span className="muted sm"> · ~{f.kcal} kcal · 92% seguro</span></div></div>)}
-          <p className="muted sm">Toca un alimento para corregir la porción.</p>
-          <button className="btn primary big" onClick={() => { detected.forEach((f) => addFood(f, f.qty)); setOverlay(null); setScreen("home"); }}>Confirmar y registrar</button>
+          {etapa === "inicial" && (<>
+            <p className="detect-h"><Sparkles size={15} color="#F2B705" /> Foto de tu plato</p>
+            <p className="muted sm" style={{marginBottom:12}}>Toma o sube una foto de tu comida y la IA estima los macros.</p>
+            <label className="btn primary big" style={{display:"block",textAlign:"center",cursor:"pointer"}}>\ud83d\udcf7 Tomar o subir foto<input type="file" accept="image/*" capture="environment" onChange={onFile} style={{display:"none"}} /></label>
+            {error && <p style={{color:"#E05C5C",fontSize:13,marginTop:8}}>{error}</p>}
+          </>)}
+          {etapa === "cargando" && (
+            <div className="center" style={{padding:"32px 0"}}>
+              {img && <img src={img} alt="plato" style={{width:120,height:120,objectFit:"cover",borderRadius:16,marginBottom:14}} />}
+              <p className="muted">Analizando tu plato…</p>
+            </div>
+          )}
+          {etapa === "resultado" && resultado && (<>
+            {img && <img src={img} alt="plato" style={{width:"100%",maxHeight:160,objectFit:"cover",borderRadius:14,marginBottom:10}} />}
+            <p className="detect-h"><Sparkles size={15} color="#F2B705" /> Esto detecté en tu plato</p>
+            <div style={{background:"#f6f7fb",borderRadius:14,padding:"12px 14px",marginBottom:12}}>
+              <b style={{fontSize:16,display:"block",marginBottom:4}}>{resultado.nombre}</b>
+              <span className="muted sm">{resultado.porcion}</span>
+              <div style={{display:"flex",gap:10,marginTop:10,flexWrap:"wrap"}}>
+                <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#E79FAE"}}>{resultado.kcal}</b><div className="muted sm">kcal</div></div>
+                <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#7C5CFF"}}>{resultado.proteina}g</b><div className="muted sm">proteína</div></div>
+                <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#F2B705"}}>{resultado.carbos}g</b><div className="muted sm">carbos</div></div>
+                <div style={{textAlign:"center",flex:1}}><b style={{fontFamily:"Fredoka",fontSize:20,color:"#34BC97"}}>{resultado.grasa}g</b><div className="muted sm">grasa</div></div>
+              </div>
+            </div>
+            <button className="btn primary big" onClick={confirmar}>✅ Confirmar y registrar</button>
+            <button className="btn ghost" style={{width:"100%",marginTop:6}} onClick={() => { setEtapa("inicial"); setResultado(null); setImg(null); }}>Tomar otra foto</button>
+          </>)}
         </div>
       </div>
     );
