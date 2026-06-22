@@ -734,10 +734,6 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
         {/* torso */}
         <ellipse cx="100" cy="142" rx={tRx} ry="46" fill={bodyFill} />
         {/* cabeza */}
-        {(accessory === "conejo" || accessory === "gato") && (
-          <ellipse cx="100" cy="90" rx="64" ry="58"
-            fill={accessory === "conejo" ? "#F0EDE8" : "#CAC3B2"} />
-        )}
         <ellipse cx="100" cy="86" rx="54" ry="46" fill={bodyFill} />
         <ellipse cx="100" cy="150" rx={bRx} ry="30" fill="#ffffff" opacity="0.4" />
         {/* bracitos */}
@@ -842,33 +838,38 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
         {/* gorritos: frente tapada + orejas encima de todo */}
         {accessory === "conejo" && (
           <g>
-            {/* franja superior que tapa la frente */}
-            <path d="M42 92 Q42 32 100 32 Q158 32 158 92 L148 92 Q148 48 100 48 Q52 48 52 92 Z" fill="#F0EDE8" />
-            {/* orejas — solo salen por arriba */}
-            <ellipse cx="76" cy="36" rx="12" ry="30" fill="#F0EDE8" stroke="#D8D2C8" strokeWidth="2" transform="rotate(-8 76 36)" />
-            <ellipse cx="76" cy="36" rx="5.5" ry="20" fill="#F4AABF" transform="rotate(-8 76 36)" />
-            <ellipse cx="124" cy="36" rx="12" ry="30" fill="#F0EDE8" stroke="#D8D2C8" strokeWidth="2" transform="rotate(8 124 36)" />
-            <ellipse cx="124" cy="36" rx="5.5" ry="20" fill="#F4AABF" transform="rotate(8 124 36)" />
+            {/* capucha lavanda con borde mullido */}
+            <path d="M40 70 C 38 34 64 20 100 20 C 136 20 162 34 160 70 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 Z" fill="#C9B6F2" stroke="#B19CE4" strokeWidth="2" />
+            {/* orejas largas con interior rosa */}
+            <ellipse cx="74" cy="16" rx="12.5" ry="33" fill="#C9B6F2" stroke="#B19CE4" strokeWidth="2" transform="rotate(-12 74 16)" />
+            <ellipse cx="74" cy="18" rx="5.5" ry="22" fill="#F7AFC5" transform="rotate(-12 74 18)" />
+            <ellipse cx="126" cy="16" rx="12.5" ry="33" fill="#C9B6F2" stroke="#B19CE4" strokeWidth="2" transform="rotate(12 126 16)" />
+            <ellipse cx="126" cy="18" rx="5.5" ry="22" fill="#F7AFC5" transform="rotate(12 126 18)" />
+            {/* carita: ojitos, naricita y bigotes */}
+            <circle cx="88" cy="50" r="3.2" fill="#5B4636" />
+            <circle cx="112" cy="50" r="3.2" fill="#5B4636" />
+            <path d="M96 57 L104 57 L100 62 Z" fill="#EE8AA6" />
+            <path d="M94 59 Q84 56 78 56 M94 61 Q85 62 79 64" stroke="#A98FD0" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+            <path d="M106 59 Q116 56 122 56 M106 61 Q115 62 121 64" stroke="#A98FD0" strokeWidth="1.3" fill="none" strokeLinecap="round" />
           </g>
         )}
         {accessory === "gato" && (
           <g>
-            {/* franja superior que tapa la frente */}
-            <path d="M42 92 Q42 32 100 32 Q158 32 158 92 L148 92 Q148 48 100 48 Q52 48 52 92 Z" fill="#CAC3B2" />
-            {/* orejas de gato */}
-            <path d="M70 54 L 56 24 L 92 48 Z" fill="#CAC3B2" stroke="#B0A892" strokeWidth="2" strokeLinejoin="round" />
-            <path d="M70 54 L 62 30 L 88 48 Z" fill="#E8D5C8" />
-            <path d="M130 54 L 144 24 L 108 48 Z" fill="#CAC3B2" stroke="#B0A892" strokeWidth="2" strokeLinejoin="round" />
-            <path d="M130 54 L 138 30 L 112 48 Z" fill="#E8D5C8" />
-            {/* rayitas Pusheen en la frente */}
-            <line x1="89" y1="44" x2="89" y2="54" stroke="#7A6A52" strokeWidth="2.2" strokeLinecap="round" />
-            <line x1="100" y1="42" x2="100" y2="52" stroke="#7A6A52" strokeWidth="2.2" strokeLinecap="round" />
-            <line x1="111" y1="44" x2="111" y2="54" stroke="#7A6A52" strokeWidth="2.2" strokeLinecap="round" />
-            {/* pompones */}
-            <line x1="44" y1="114" x2="38" y2="134" stroke="#B0A892" strokeWidth="2.5" strokeLinecap="round" />
-            <circle cx="37" cy="138" r="6" fill="#CAC3B2" stroke="#B0A892" strokeWidth="1.5" />
-            <line x1="156" y1="114" x2="162" y2="134" stroke="#B0A892" strokeWidth="2.5" strokeLinecap="round" />
-            <circle cx="163" cy="138" r="6" fill="#CAC3B2" stroke="#B0A892" strokeWidth="1.5" />
+            {/* gorro blanco */}
+            <path d="M40 70 C 38 34 64 20 100 20 C 136 20 162 34 160 70 Z" fill="#FFFFFF" stroke="#D9D0EA" strokeWidth="2" />
+            {/* orejas triangulares grandes */}
+            <path d="M46 40 L58 6 L86 38 Z" fill="#FFFFFF" stroke="#D9D0EA" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M56 35 L62 17 L76 34 Z" fill="#F7AFC5" />
+            <path d="M154 40 L142 6 L114 38 Z" fill="#FFFFFF" stroke="#D9D0EA" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M144 35 L138 17 L124 34 Z" fill="#F7AFC5" />
+            {/* doblez del gorro */}
+            <path d="M36 58 Q100 52 164 58 L164 74 Q100 80 36 74 Z" fill="#FFFFFF" stroke="#D9D0EA" strokeWidth="2" strokeLinejoin="round" />
+            {/* carita: ojitos, naricita y bigotes */}
+            <circle cx="88" cy="50" r="3.2" fill="#5B4636" />
+            <circle cx="112" cy="50" r="3.2" fill="#5B4636" />
+            <ellipse cx="100" cy="60" rx="4" ry="3" fill="#EE8AA6" />
+            <path d="M94 59 L78 55 M94 61 L77 61 M94 63 L78 67" stroke="#BCB2D2" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+            <path d="M106 59 L122 55 M106 61 L123 61 M106 63 L122 67" stroke="#BCB2D2" strokeWidth="1.3" fill="none" strokeLinecap="round" />
           </g>
         )}
         {outfit === "jersey" && (() => { const jw = tRx * 1.28; const cx = 100; return (
