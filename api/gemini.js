@@ -1,5 +1,5 @@
 // Modelo de Gemini a usar. Fácil de cambiar aquí arriba.
-const MODEL = "gemini-2.0-flash";
+const MODEL = "gemini-2.5-flash";
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
