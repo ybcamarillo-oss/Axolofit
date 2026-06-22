@@ -12,25 +12,6 @@ export default async function handler(req, res) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) { res.status(500).json({ error: "Key no configurada" }); return; }
 
-  // DIAGNÓSTICO: lista los modelos disponibles para este proyecto.
-  // Se activa enviando { "listModels": true } en el body.
-  if (req.body && req.body.listModels === true) {
-    try {
-      const r = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`
-      );
-      const data = await r.json();
-      const modelos = (data.models || [])
-        .filter((m) => (m.supportedGenerationMethods || []).includes("generateContent"))
-        .map((m) => m.name);
-      res.status(200).json({ modelos });
-      return;
-    } catch (e) {
-      res.status(500).json({ error: "Error al listar modelos: " + e.message });
-      return;
-    }
-  }
-
   const { prompt, image } = req.body;
   if (!prompt) { res.status(400).json({ error: "Falta el prompt" }); return; }
 
@@ -53,10 +34,10 @@ export default async function handler(req, res) {
     const data = await geminiRes.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    // DIAGNÓSTICO: si Gemini no devolvió texto, mostramos la respuesta cruda
+    // Si Gemini no devuelve texto, lo dejamos en los logs de Vercel para
+    // poder diagnosticar, sin exponer la respuesta cruda al usuario.
     if (!text) {
-      res.status(200).json({ text: "", debug: data, status: geminiRes.status });
-      return;
+      console.error("Gemini sin texto:", JSON.stringify(data));
     }
 
     res.status(200).json({ text });
