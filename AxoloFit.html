@@ -175,9 +175,21 @@ html,body { height:100%; }
 @keyframes kiss { 0% { transform: translate(0,0) scale(.6); opacity: 0 } 30% { opacity: 1 } 100% { transform: translate(40px,-90px) scale(1.2); opacity: 0 } }
 @keyframes fall { 0% { transform: translateY(0) rotate(0); opacity: 1 } 100% { transform: translateY(900px) rotate(360deg); opacity: .3 } }
 @keyframes eggWiggle { 0%,100%{transform:rotate(0) scale(1)} 20%{transform:rotate(-13deg) scale(1.07)} 50%{transform:rotate(15deg) scale(1.11)} 80%{transform:rotate(-11deg) scale(1.08)} }
-@keyframes eggHatch { 0%{transform:scale(1) rotate(0);opacity:1} 25%{transform:scale(1.18) rotate(-14deg)} 50%{transform:scale(1.24) rotate(16deg)} 75%{transform:scale(1.2) rotate(-10deg)} 100%{transform:scale(0) rotate(22deg);opacity:0} }
 .egg-wiggle { animation: eggWiggle 0.35s ease-in-out infinite; transform-origin: center bottom; }
-.egg-hatch { animation: eggHatch 0.9s cubic-bezier(.4,0,.2,1) forwards; transform-origin: center bottom; }
+@keyframes eggTremble { 0%,100%{transform:translate(0,0) rotate(0)} 10%{transform:translate(-2px,0) rotate(-6deg)} 20%{transform:translate(2px,0) rotate(6deg)} 30%{transform:translate(-2px,0) rotate(-7deg) scale(1.03)} 40%{transform:translate(2px,0) rotate(7deg)} 50%{transform:translate(-1px,0) rotate(-5deg) scale(1.04)} 60%{transform:translate(2px,0) rotate(6deg)} 70%{transform:translate(-2px,0) rotate(-6deg)} 80%{transform:translate(1px,0) rotate(4deg)} 90%{transform:translate(-1px,0) rotate(-3deg)} }
+.egg-tremble { animation: eggTremble 0.5s ease-in-out infinite; transform-origin:center bottom; }
+@keyframes shellShake { 0%{transform:rotate(0)} 8%{transform:rotate(-9deg)} 16%{transform:rotate(10deg)} 24%{transform:rotate(-10deg)} 32%{transform:rotate(9deg)} 40%{transform:rotate(-7deg)} 46%{transform:rotate(0)} 100%{transform:rotate(0)} }
+.shell-shake { animation: shellShake 0.9s ease-in-out forwards; transform-box:fill-box; transform-origin:center bottom; }
+@keyframes pieceTop { 0%,44%{transform:translate(0,0) rotate(0);opacity:1} 100%{transform:translate(-30px,-82px) rotate(-42deg);opacity:0} }
+.piece-top { animation: pieceTop 0.9s cubic-bezier(.3,0,.3,1) forwards; transform-box:fill-box; transform-origin:center; }
+@keyframes pieceBottom { 0%,44%{transform:translate(0,0) rotate(0);opacity:1} 64%{transform:translate(-2px,4px) rotate(-3deg);opacity:1} 100%{transform:translate(-26px,44px) rotate(-14deg);opacity:0} }
+.piece-bottom { animation: pieceBottom 0.9s cubic-bezier(.3,0,.3,1) forwards; transform-box:fill-box; transform-origin:center; }
+@keyframes crackReveal { 0%,24%{opacity:0} 36%{opacity:.9} 52%{opacity:.9} 100%{opacity:0} }
+.crackline { animation: crackReveal 0.9s ease-out forwards; }
+@keyframes babyEmerge { 0%,42%{transform:translateY(16px) scale(0.2);opacity:0} 54%{opacity:1} 72%{transform:translateY(-7px) scale(1.08)} 88%{transform:translateY(2px) scale(0.97)} 100%{transform:translateY(0) scale(1);opacity:1} }
+.baby-emerge { animation: babyEmerge 0.9s cubic-bezier(.3,0,.3,1) forwards; transform-box:fill-box; transform-origin:center bottom; }
+@keyframes eggSparkle { 0%,46%{opacity:0;transform:scale(0)} 64%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(1.5)} }
+.egg-spark { animation: eggSparkle 0.9s ease-out forwards; transform-box:fill-box; transform-origin:center; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -2729,7 +2741,8 @@ function Axo({
   size = 200,
   evo = "joven",
   rubbing = false,
-  hatching = false
+  hatching = false,
+  trembling = false
 }) {
   const pal = PALETTES[paletteKey] || PALETTES.durazno;
   const bodyFill = paletteKey === "dorado" ? "url(#axoGold)" : paletteKey === "galaxia" ? "url(#axoGalaxy)" : paletteKey === "arcoiris" ? "url(#axoRainbow)" : pal.body;
@@ -2747,11 +2760,211 @@ function Axo({
     fill: gillFill
   }));
   if (evo === "huevo") {
+    if (hatching) {
+      return /*#__PURE__*/React.createElement("svg", {
+        viewBox: "0 0 200 240",
+        width: size,
+        height: size * 1.2
+      }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("radialGradient", {
+        id: "eggShine",
+        cx: "0.35",
+        cy: "0.25",
+        r: "0.6"
+      }, /*#__PURE__*/React.createElement("stop", {
+        offset: "0",
+        stopColor: "#ffffff",
+        stopOpacity: "0.6"
+      }), /*#__PURE__*/React.createElement("stop", {
+        offset: "1",
+        stopColor: "#ffffff",
+        stopOpacity: "0"
+      }))), /*#__PURE__*/React.createElement("g", {
+        className: "shell-shake"
+      }, /*#__PURE__*/React.createElement("g", {
+        className: "baby-emerge"
+      }, /*#__PURE__*/React.createElement("g", {
+        transform: "translate(67,106)"
+      }, /*#__PURE__*/React.createElement("ellipse", {
+        cx: "-7",
+        cy: "-11",
+        rx: "5.5",
+        ry: "11",
+        fill: gillFill,
+        transform: "rotate(-42 -7 -11)"
+      }), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "-11",
+        cy: "0",
+        rx: "5.5",
+        ry: "11",
+        fill: gillFill,
+        transform: "rotate(-10 -11 0)"
+      }), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "-7",
+        cy: "11",
+        rx: "5.5",
+        ry: "11",
+        fill: gillFill,
+        transform: "rotate(20 -7 11)"
+      })), /*#__PURE__*/React.createElement("g", {
+        transform: "translate(133,106) scale(-1,1)"
+      }, /*#__PURE__*/React.createElement("ellipse", {
+        cx: "-7",
+        cy: "-11",
+        rx: "5.5",
+        ry: "11",
+        fill: gillFill,
+        transform: "rotate(-42 -7 -11)"
+      }), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "-11",
+        cy: "0",
+        rx: "5.5",
+        ry: "11",
+        fill: gillFill,
+        transform: "rotate(-10 -11 0)"
+      }), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "-7",
+        cy: "11",
+        rx: "5.5",
+        ry: "11",
+        fill: gillFill,
+        transform: "rotate(20 -7 11)"
+      })), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "70",
+        cy: "148",
+        rx: "7",
+        ry: "11",
+        fill: bodyFill,
+        transform: "rotate(-20 70 148)"
+      }), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "130",
+        cy: "148",
+        rx: "7",
+        ry: "11",
+        fill: bodyFill,
+        transform: "rotate(20 130 148)"
+      }), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "100",
+        cy: "152",
+        rx: "33",
+        ry: "30",
+        fill: bodyFill
+      }), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "100",
+        cy: "158",
+        rx: "22",
+        ry: "17",
+        fill: "#ffffff",
+        opacity: "0.4"
+      }), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "100",
+        cy: "108",
+        rx: "33",
+        ry: "29",
+        fill: bodyFill
+      }), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "82",
+        cy: "116",
+        rx: "8",
+        ry: "6",
+        fill: pal.blush,
+        opacity: "0.75"
+      }), /*#__PURE__*/React.createElement("ellipse", {
+        cx: "118",
+        cy: "116",
+        rx: "8",
+        ry: "6",
+        fill: pal.blush,
+        opacity: "0.75"
+      }), /*#__PURE__*/React.createElement("circle", {
+        cx: "89",
+        cy: "106",
+        r: "5",
+        fill: "#5B4636"
+      }), /*#__PURE__*/React.createElement("circle", {
+        cx: "91",
+        cy: "104",
+        r: "1.7",
+        fill: "#fff"
+      }), /*#__PURE__*/React.createElement("circle", {
+        cx: "111",
+        cy: "106",
+        r: "5",
+        fill: "#5B4636"
+      }), /*#__PURE__*/React.createElement("circle", {
+        cx: "113",
+        cy: "104",
+        r: "1.7",
+        fill: "#fff"
+      }), /*#__PURE__*/React.createElement("path", {
+        d: "M92 118 Q100 125 108 118",
+        stroke: "#5B4636",
+        strokeWidth: "2.6",
+        fill: "none",
+        strokeLinecap: "round"
+      }), /*#__PURE__*/React.createElement("path", {
+        d: "M100 77 Q104 73 108 77",
+        stroke: gillFill,
+        strokeWidth: "3",
+        fill: "none",
+        strokeLinecap: "round"
+      })), /*#__PURE__*/React.createElement("g", {
+        className: "piece-bottom"
+      }, /*#__PURE__*/React.createElement("path", {
+        d: "M56 118 L68 111 L80 122 L92 111 L104 122 L116 111 L128 122 L140 111 L144 118 C146 150 130 176 100 176 C70 176 54 150 56 118 Z",
+        fill: bodyFill
+      }), /*#__PURE__*/React.createElement("path", {
+        d: "M56 118 L68 111 L80 122 L92 111 L104 122 L116 111 L128 122 L140 111 L144 118 C146 150 130 176 100 176 C70 176 54 150 56 118 Z",
+        fill: "url(#eggShine)"
+      })), /*#__PURE__*/React.createElement("g", {
+        className: "piece-top"
+      }, /*#__PURE__*/React.createElement("path", {
+        d: "M56 118 C54 80 72 64 100 64 C128 64 146 80 144 118 L140 111 L128 122 L116 111 L104 122 L92 111 L80 122 L68 111 L56 118 Z",
+        fill: bodyFill
+      }), /*#__PURE__*/React.createElement("path", {
+        d: "M76 70 Q100 58 124 70 Q115 64 100 64 Q85 64 76 70",
+        fill: "#ffffff",
+        opacity: "0.35"
+      })), /*#__PURE__*/React.createElement("path", {
+        className: "crackline",
+        d: "M100 116 L95 104 L103 94 L97 84 L102 74",
+        stroke: "#00000035",
+        strokeWidth: "2.4",
+        fill: "none",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }), /*#__PURE__*/React.createElement("path", {
+        className: "crackline",
+        d: "M104 122 L112 116 L108 108",
+        stroke: "#00000028",
+        strokeWidth: "2",
+        fill: "none",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }), /*#__PURE__*/React.createElement("circle", {
+        className: "egg-spark",
+        cx: "74",
+        cy: "96",
+        r: "3.5",
+        fill: "#FFE89C"
+      }), /*#__PURE__*/React.createElement("circle", {
+        className: "egg-spark",
+        cx: "128",
+        cy: "100",
+        r: "3",
+        fill: "#FFE89C"
+      }), /*#__PURE__*/React.createElement("circle", {
+        className: "egg-spark",
+        cx: "100",
+        cy: "70",
+        r: "3",
+        fill: "#FFE89C"
+      })));
+    }
     return /*#__PURE__*/React.createElement("svg", {
       viewBox: "0 0 200 240",
       width: size,
       height: size * 1.2,
-      className: hatching ? "egg-hatch" : rubbing ? "egg-wiggle" : "axo-bob"
+      className: trembling ? "egg-tremble" : rubbing ? "egg-wiggle" : "axo-bob"
     }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("radialGradient", {
       id: "eggShine",
       cx: "0.35",
@@ -4574,7 +4787,8 @@ function Onboarding({
     paletteKey: "durazno",
     size: 200,
     evo: "huevo",
-    hatching: hatching
+    hatching: hatching,
+    trembling: !hatching
   }), !hatching ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", {
     className: "display",
     style: {
