@@ -488,6 +488,7 @@ function(a,b,c){if(!Vd(b))throw Error(n(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
 </script>
 <script>
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 const {
   useState,
   useMemo,
@@ -641,7 +642,7 @@ function AuthScreen({
       marginBottom: 0,
       paddingRight: 48
     },
-    placeholder: "Contraseña (mín. 6 caracteres)",
+    placeholder: "Contrase\xF1a (m\xEDn. 6 caracteres)",
     type: showPass ? "text" : "password",
     value: pass,
     onChange: e => setPass(e.target.value)
@@ -680,19 +681,19 @@ function AuthScreen({
     style: {
       fontSize: 24
     }
-  }, "¡Revisa tu email! 💌"), /*#__PURE__*/React.createElement("p", {
+  }, "\xA1Revisa tu email! \uD83D\uDC8C"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       maxWidth: 280,
       textAlign: "center"
     }
-  }, "Te mandamos un link de confirmación a ", /*#__PURE__*/React.createElement("b", null, email), ". Ábrelo y luego regresa aquí a iniciar sesión."), /*#__PURE__*/React.createElement("button", {
+  }, "Te mandamos un link de confirmaci\xF3n a ", /*#__PURE__*/React.createElement("b", null, email), ". \xC1brelo y luego regresa aqu\xED a iniciar sesi\xF3n."), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => {
       setModo("login");
       setConfirmado(false);
     }
-  }, "Ir a iniciar sesión"));
+  }, "Ir a iniciar sesi\xF3n"));
   if (modo === "reset") {
     if (resetEnviado) return /*#__PURE__*/React.createElement("div", {
       className: "screen center",
@@ -709,19 +710,19 @@ function AuthScreen({
       style: {
         fontSize: 24
       }
-    }, "¡Revisa tu email! 💌"), /*#__PURE__*/React.createElement("p", {
+    }, "\xA1Revisa tu email! \uD83D\uDC8C"), /*#__PURE__*/React.createElement("p", {
       className: "muted",
       style: {
         maxWidth: 280,
         textAlign: "center"
       }
-    }, "Te mandamos el link para crear nueva contraseña a ", /*#__PURE__*/React.createElement("b", null, email), "."), /*#__PURE__*/React.createElement("button", {
+    }, "Te mandamos el link para crear nueva contrase\xF1a a ", /*#__PURE__*/React.createElement("b", null, email), "."), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       onClick: () => {
         setModo("login");
         setResetEnviado(false);
       }
-    }, "Volver a iniciar sesión"));
+    }, "Volver a iniciar sesi\xF3n"));
     return /*#__PURE__*/React.createElement("div", {
       className: "screen center",
       style: {
@@ -737,7 +738,7 @@ function AuthScreen({
         fontSize: 24,
         margin: "6px 0 4px"
       }
-    }, "¿Olvidaste tu contraseña?"), /*#__PURE__*/React.createElement("p", {
+    }, "\xBFOlvidaste tu contrase\xF1a?"), /*#__PURE__*/React.createElement("p", {
       className: "muted",
       style: {
         marginBottom: 20,
@@ -808,7 +809,7 @@ function AuthScreen({
     }
   }, modo === "registro" && /*#__PURE__*/React.createElement("input", {
     style: inputStyle,
-    placeholder: "¿Cómo te llamas?",
+    placeholder: "\xBFC\xF3mo te llamas?",
     value: nombre,
     onChange: e => setNombre(e.target.value),
     maxLength: 30
@@ -853,7 +854,7 @@ function AuthScreen({
       setModo("reset");
       setError(null);
     }
-  }, "¿Olvidaste tu contraseña?"), !isInStandalone && (installPrompt || isIos || installState === "done") && /*#__PURE__*/React.createElement("div", {
+  }, "\xBFOlvidaste tu contrase\xF1a?"), !isInStandalone && (installPrompt || isIos || installState === "done") && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 16
     }
@@ -873,7 +874,7 @@ function AuthScreen({
       fontSize: 15,
       margin: "0 0 10px"
     }
-  }, "✅ ¡App instalada!"), /*#__PURE__*/React.createElement("button", {
+  }, "\u2705 \xA1App instalada!"), /*#__PURE__*/React.createElement("button", {
     onClick: () => window.location.reload(),
     style: {
       width: "100%",
@@ -887,7 +888,7 @@ function AuthScreen({
       fontSize: 15,
       cursor: "pointer"
     }
-  }, "Abrir AxoloFit 🐾")) : /*#__PURE__*/React.createElement("button", {
+  }, "Abrir AxoloFit \uD83D\uDC3E")) : /*#__PURE__*/React.createElement("button", {
     onClick: handleInstall,
     disabled: installState === "installing",
     style: {
@@ -913,11 +914,11 @@ function AuthScreen({
       color: "#4a4f6a",
       lineHeight: 1.6
     }
-  }, "En Safari toca el botón ", /*#__PURE__*/React.createElement("b", null, "compartir"), " ", /*#__PURE__*/React.createElement("span", {
+  }, "En Safari toca el bot\xF3n ", /*#__PURE__*/React.createElement("b", null, "compartir"), " ", /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 16
     }
-  }, "⬆️"), " y luego ", /*#__PURE__*/React.createElement("b", null, "\"Agregar a pantalla de inicio\""), "."))));
+  }, "\u2B06\uFE0F"), " y luego ", /*#__PURE__*/React.createElement("b", null, "\"Agregar a pantalla de inicio\""), "."))));
 }
 
 /* ---------- ICONOS (SVG propios) ---------- */
@@ -1072,86 +1073,66 @@ function Icon({
   };
   return /*#__PURE__*/React.createElement("svg", c, P[name]);
 }
-const Camera = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "camera",
-  ...p
-});
-const Mic = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "mic",
-  ...p
-});
-const Search = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "search",
-  ...p
-});
-const Pencil = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "pencil",
-  ...p
-});
-const HomeIcon = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "home",
-  ...p
-});
-const BarChart2 = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "chart",
-  ...p
-});
-const Sparkles = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "sparkles",
-  ...p
-});
-const Lock = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "lock",
-  ...p
-});
-const ChevronLeft = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "chevL",
-  ...p
-});
-const Plus = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "plus",
-  ...p
-});
-const Droplet = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "droplet",
-  ...p
-});
-const Flame = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "flame",
-  ...p
-});
-const Heart = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "heart",
-  ...p
-});
-const X = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "x",
-  ...p
-});
-const ShieldCheck = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "shield",
-  ...p
-});
-const Trophy = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "trophy",
-  ...p
-});
-const MessageCircle = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "msg",
-  ...p
-});
-const Check = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "check",
-  ...p
-});
-const Crown = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "crown",
-  ...p
-});
-const Settings = p => /*#__PURE__*/React.createElement(Icon, {
-  name: "settings",
-  ...p
-});
+const Camera = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "camera"
+}, p));
+const Mic = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "mic"
+}, p));
+const Search = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "search"
+}, p));
+const Pencil = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "pencil"
+}, p));
+const HomeIcon = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "home"
+}, p));
+const BarChart2 = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "chart"
+}, p));
+const Sparkles = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "sparkles"
+}, p));
+const Lock = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "lock"
+}, p));
+const ChevronLeft = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "chevL"
+}, p));
+const Plus = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "plus"
+}, p));
+const Droplet = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "droplet"
+}, p));
+const Flame = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "flame"
+}, p));
+const Heart = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "heart"
+}, p));
+const X = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "x"
+}, p));
+const ShieldCheck = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "shield"
+}, p));
+const Trophy = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "trophy"
+}, p));
+const MessageCircle = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "msg"
+}, p));
+const Check = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "check"
+}, p));
+const Crown = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "crown"
+}, p));
+const Settings = p => /*#__PURE__*/React.createElement(Icon, _extends({
+  name: "settings"
+}, p));
 
 /* ---------- DATA ---------- */
 const FOODS = [{
@@ -2991,12 +2972,6 @@ function Axo({
     rx: tRx,
     ry: "46",
     fill: bodyFill
-  }), (accessory === "conejo" || accessory === "gato") && /*#__PURE__*/React.createElement("ellipse", {
-    cx: "100",
-    cy: "90",
-    rx: "64",
-    ry: "58",
-    fill: accessory === "conejo" ? "#F0EDE8" : "#CAC3B2"
   }), /*#__PURE__*/React.createElement("ellipse", {
     cx: "100",
     cy: "86",
@@ -3355,115 +3330,124 @@ function Axo({
     rx: "4",
     fill: "#C24459"
   })), accessory === "conejo" && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
-    d: "M42 92 Q42 32 100 32 Q158 32 158 92 L148 92 Q148 48 100 48 Q52 48 52 92 Z",
-    fill: "#F0EDE8"
+    d: "M40 70 C 38 34 64 20 100 20 C 136 20 162 34 160 70 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 Z",
+    fill: "#C9B6F2",
+    stroke: "#B19CE4",
+    strokeWidth: "2"
   }), /*#__PURE__*/React.createElement("ellipse", {
-    cx: "76",
-    cy: "36",
-    rx: "12",
-    ry: "30",
-    fill: "#F0EDE8",
-    stroke: "#D8D2C8",
+    cx: "74",
+    cy: "16",
+    rx: "12.5",
+    ry: "33",
+    fill: "#C9B6F2",
+    stroke: "#B19CE4",
     strokeWidth: "2",
-    transform: "rotate(-8 76 36)"
+    transform: "rotate(-12 74 16)"
   }), /*#__PURE__*/React.createElement("ellipse", {
-    cx: "76",
-    cy: "36",
+    cx: "74",
+    cy: "18",
     rx: "5.5",
-    ry: "20",
-    fill: "#F4AABF",
-    transform: "rotate(-8 76 36)"
+    ry: "22",
+    fill: "#F7AFC5",
+    transform: "rotate(-12 74 18)"
   }), /*#__PURE__*/React.createElement("ellipse", {
-    cx: "124",
-    cy: "36",
-    rx: "12",
-    ry: "30",
-    fill: "#F0EDE8",
-    stroke: "#D8D2C8",
+    cx: "126",
+    cy: "16",
+    rx: "12.5",
+    ry: "33",
+    fill: "#C9B6F2",
+    stroke: "#B19CE4",
     strokeWidth: "2",
-    transform: "rotate(8 124 36)"
+    transform: "rotate(12 126 16)"
   }), /*#__PURE__*/React.createElement("ellipse", {
-    cx: "124",
-    cy: "36",
+    cx: "126",
+    cy: "18",
     rx: "5.5",
-    ry: "20",
-    fill: "#F4AABF",
-    transform: "rotate(8 124 36)"
+    ry: "22",
+    fill: "#F7AFC5",
+    transform: "rotate(12 126 18)"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "88",
+    cy: "50",
+    r: "3.2",
+    fill: "#5B4636"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "112",
+    cy: "50",
+    r: "3.2",
+    fill: "#5B4636"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M96 57 L104 57 L100 62 Z",
+    fill: "#EE8AA6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M94 59 Q84 56 78 56 M94 61 Q85 62 79 64",
+    stroke: "#A98FD0",
+    strokeWidth: "1.3",
+    fill: "none",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M106 59 Q116 56 122 56 M106 61 Q115 62 121 64",
+    stroke: "#A98FD0",
+    strokeWidth: "1.3",
+    fill: "none",
+    strokeLinecap: "round"
   })), accessory === "gato" && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
-    d: "M42 92 Q42 32 100 32 Q158 32 158 92 L148 92 Q148 48 100 48 Q52 48 52 92 Z",
-    fill: "#CAC3B2"
+    d: "M40 70 C 38 34 64 20 100 20 C 136 20 162 34 160 70 Z",
+    fill: "#FFFFFF",
+    stroke: "#D9D0EA",
+    strokeWidth: "2"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M70 54 L 56 24 L 92 48 Z",
-    fill: "#CAC3B2",
-    stroke: "#B0A892",
+    d: "M46 40 L58 6 L86 38 Z",
+    fill: "#FFFFFF",
+    stroke: "#D9D0EA",
     strokeWidth: "2",
     strokeLinejoin: "round"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M70 54 L 62 30 L 88 48 Z",
-    fill: "#E8D5C8"
+    d: "M56 35 L62 17 L76 34 Z",
+    fill: "#F7AFC5"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M130 54 L 144 24 L 108 48 Z",
-    fill: "#CAC3B2",
-    stroke: "#B0A892",
+    d: "M154 40 L142 6 L114 38 Z",
+    fill: "#FFFFFF",
+    stroke: "#D9D0EA",
     strokeWidth: "2",
     strokeLinejoin: "round"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M130 54 L 138 30 L 112 48 Z",
-    fill: "#E8D5C8"
-  }), /*#__PURE__*/React.createElement("line", {
-    x1: "89",
-    y1: "44",
-    x2: "89",
-    y2: "54",
-    stroke: "#7A6A52",
-    strokeWidth: "2.2",
-    strokeLinecap: "round"
-  }), /*#__PURE__*/React.createElement("line", {
-    x1: "100",
-    y1: "42",
-    x2: "100",
-    y2: "52",
-    stroke: "#7A6A52",
-    strokeWidth: "2.2",
-    strokeLinecap: "round"
-  }), /*#__PURE__*/React.createElement("line", {
-    x1: "111",
-    y1: "44",
-    x2: "111",
-    y2: "54",
-    stroke: "#7A6A52",
-    strokeWidth: "2.2",
-    strokeLinecap: "round"
-  }), /*#__PURE__*/React.createElement("line", {
-    x1: "44",
-    y1: "114",
-    x2: "38",
-    y2: "134",
-    stroke: "#B0A892",
-    strokeWidth: "2.5",
-    strokeLinecap: "round"
+    d: "M144 35 L138 17 L124 34 Z",
+    fill: "#F7AFC5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M36 58 Q100 52 164 58 L164 74 Q100 80 36 74 Z",
+    fill: "#FFFFFF",
+    stroke: "#D9D0EA",
+    strokeWidth: "2",
+    strokeLinejoin: "round"
   }), /*#__PURE__*/React.createElement("circle", {
-    cx: "37",
-    cy: "138",
-    r: "6",
-    fill: "#CAC3B2",
-    stroke: "#B0A892",
-    strokeWidth: "1.5"
-  }), /*#__PURE__*/React.createElement("line", {
-    x1: "156",
-    y1: "114",
-    x2: "162",
-    y2: "134",
-    stroke: "#B0A892",
-    strokeWidth: "2.5",
-    strokeLinecap: "round"
+    cx: "88",
+    cy: "50",
+    r: "3.2",
+    fill: "#5B4636"
   }), /*#__PURE__*/React.createElement("circle", {
-    cx: "163",
-    cy: "138",
-    r: "6",
-    fill: "#CAC3B2",
-    stroke: "#B0A892",
-    strokeWidth: "1.5"
+    cx: "112",
+    cy: "50",
+    r: "3.2",
+    fill: "#5B4636"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "100",
+    cy: "60",
+    rx: "4",
+    ry: "3",
+    fill: "#EE8AA6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M94 59 L78 55 M94 61 L77 61 M94 63 L78 67",
+    stroke: "#BCB2D2",
+    strokeWidth: "1.3",
+    fill: "none",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M106 59 L122 55 M106 61 L123 61 M106 63 L122 67",
+    stroke: "#BCB2D2",
+    strokeWidth: "1.3",
+    fill: "none",
+    strokeLinecap: "round"
   })), outfit === "jersey" && (() => {
     const jw = tRx * 1.28;
     const cx = 100;
@@ -3988,7 +3972,7 @@ function StudioLogo() {
     fontSize: "22",
     fontWeight: "600",
     fill: "#8a8da0"
-  }, "Organización · Eficiencia · Innovación"));
+  }, "Organizaci\xF3n \xB7 Eficiencia \xB7 Innovaci\xF3n"));
 }
 
 /* ---------- HEADER ---------- */
@@ -4039,7 +4023,7 @@ function NumField({
     className: "stepper"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => commit(value - 1)
-  }, "–"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2013"), /*#__PURE__*/React.createElement("div", {
     className: "num-wrap"
   }, /*#__PURE__*/React.createElement("input", {
     className: "num-input",
@@ -4187,7 +4171,7 @@ function Onboarding({
       maxWidth: 310
     },
     onClick: () => setStep("objetivo")
-  }, "Crear mi ajolote 💗"));
+  }, "Crear mi ajolote \uD83D\uDC97"));
   if (step === "objetivo") return /*#__PURE__*/React.createElement("div", {
     className: "screen"
   }, /*#__PURE__*/React.createElement(Header, {
@@ -4211,14 +4195,14 @@ function Onboarding({
       textAlign: "center",
       marginBottom: 4
     }
-  }, "¿Cuál es tu objetivo?"), /*#__PURE__*/React.createElement("p", {
+  }, "\xBFCu\xE1l es tu objetivo?"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       textAlign: "center",
       marginBottom: 20,
       fontSize: 14
     }
-  }, "Esto ajusta tus calorías y macros automáticamente."), /*#__PURE__*/React.createElement("div", {
+  }, "Esto ajusta tus calor\xEDas y macros autom\xE1ticamente."), /*#__PURE__*/React.createElement("div", {
     className: "col"
   }, [["perder", "⬇️ Perder peso", "Déficit calórico controlado (−20% de tu gasto)."], ["mantener", "⚖️ Mantener mi peso", "Comes exactamente lo que gastas."], ["ganar", "⬆️ Ganar peso", "Superávit moderado (+15%) para ganar masa."]].map(([v, t, desc]) => /*#__PURE__*/React.createElement("button", {
     key: v,
@@ -4254,7 +4238,7 @@ function Onboarding({
     className: "scroll"
   }, /*#__PURE__*/React.createElement("div", {
     className: "field"
-  }, /*#__PURE__*/React.createElement("label", null, "Sexo biológico"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("label", null, "Sexo biol\xF3gico"), /*#__PURE__*/React.createElement("div", {
     className: "col"
   }, [["F", "Mujer"], ["M", "Hombre"], ["X", "Prefiero no decirlo"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
     key: v,
@@ -4277,16 +4261,16 @@ function Onboarding({
       color: "#B06A12",
       lineHeight: 1.5
     }
-  }, /*#__PURE__*/React.createElement("b", null, "⚠️ Este dato afecta tu cálculo."), " El sexo biológico determina tu gasto calórico basal y el mínimo de calorías seguras al día. Sin él usamos un promedio que puede no ser preciso para ti. Si puedes, elige Mujer u Hombre para un plan más exacto.")) : /*#__PURE__*/React.createElement("p", {
+  }, /*#__PURE__*/React.createElement("b", null, "\u26A0\uFE0F Este dato afecta tu c\xE1lculo."), " El sexo biol\xF3gico determina tu gasto cal\xF3rico basal y el m\xEDnimo de calor\xEDas seguras al d\xEDa. Sin \xE9l usamos un promedio que puede no ser preciso para ti. Si puedes, elige Mujer u Hombre para un plan m\xE1s exacto.")) : /*#__PURE__*/React.createElement("p", {
     className: "hint"
-  }, "Solo se usa para calcular tu energía y el piso mínimo de calorías seguras. No se comparte con nadie.")), /*#__PURE__*/React.createElement(NumField, {
+  }, "Solo se usa para calcular tu energ\xEDa y el piso m\xEDnimo de calor\xEDas seguras. No se comparte con nadie.")), /*#__PURE__*/React.createElement(NumField, {
     label: "Edad",
     value: d.edad,
     onChange: v => set("edad", v),
-    suffix: "años",
+    suffix: "a\xF1os",
     min: 15,
     max: 90,
-    hint: "Toca el número para escribirlo, o usa − / +."
+    hint: "Toca el n\xFAmero para escribirlo, o usa \u2212 / +."
   }), /*#__PURE__*/React.createElement(NumField, {
     label: "Peso",
     value: d.pesoKg,
@@ -4329,12 +4313,12 @@ function Onboarding({
     style: {
       marginTop: 4
     }
-  }, "Con esto calculamos tu % de grasa, estructura ósea, ICM y peso corporal ideal personalizado."), /*#__PURE__*/React.createElement("p", {
+  }, "Con esto calculamos tu % de grasa, estructura \xF3sea, ICM y peso corporal ideal personalizado."), /*#__PURE__*/React.createElement("p", {
     className: "hint",
     style: {
       marginBottom: 4
     }
-  }, "Necesitas una cinta métrica. Mide en cm sobre la piel, sin apretar."), /*#__PURE__*/React.createElement(NumField, {
+  }, "Necesitas una cinta m\xE9trica. Mide en cm sobre la piel, sin apretar."), /*#__PURE__*/React.createElement(NumField, {
     label: "Cuello",
     value: d.cuelloCm,
     onChange: v => set("cuelloCm", v),
@@ -4356,13 +4340,13 @@ function Onboarding({
     min: 60,
     max: 180
   }), /*#__PURE__*/React.createElement(NumField, {
-    label: "Muñeca",
+    label: "Mu\xF1eca",
     value: d.muñecaCm,
     onChange: v => set("muñecaCm", v),
     suffix: "cm",
     min: 10,
     max: 30,
-    hint: "Mide alrededor de la muñeca en su parte más delgada."
+    hint: "Mide alrededor de la mu\xF1eca en su parte m\xE1s delgada."
   })), /*#__PURE__*/React.createElement("div", {
     className: "footer-cta"
   }, /*#__PURE__*/React.createElement("button", {
@@ -4375,7 +4359,7 @@ function Onboarding({
       marginTop: 4
     },
     onClick: () => setSkipWarn(true)
-  }, "No tengo cinta — lo hago más tarde")), skipWarn && /*#__PURE__*/React.createElement("div", {
+  }, "No tengo cinta \u2014 lo hago m\xE1s tarde")), skipWarn && /*#__PURE__*/React.createElement("div", {
     className: "overlay",
     onClick: () => setSkipWarn(false)
   }, /*#__PURE__*/React.createElement("div", {
@@ -4404,7 +4388,7 @@ function Onboarding({
       fontSize: 22,
       flexShrink: 0
     }
-  }, "💡"), /*#__PURE__*/React.createElement("h2", {
+  }, "\uD83D\uDCA1"), /*#__PURE__*/React.createElement("h2", {
     className: "display",
     style: {
       fontSize: 19,
@@ -4417,7 +4401,7 @@ function Onboarding({
       lineHeight: 1.6,
       marginBottom: 16
     }
-  }, "Las medidas de cuello, cintura, cadera y muñeca nos permiten calcular tu distribución de grasa, riesgo cardiometabólico, estructura ósea y peso ideal personalizado. Sin ellas, tu plan será menos preciso.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", {
+  }, "Las medidas de cuello, cintura, cadera y mu\xF1eca nos permiten calcular tu distribuci\xF3n de grasa, riesgo cardiometab\xF3lico, estructura \xF3sea y peso ideal personalizado. Sin ellas, tu plan ser\xE1 menos preciso.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", {
     style: {
       color: "#B06A12"
     }
@@ -4439,7 +4423,7 @@ function Onboarding({
       }));
       setStep("resultados");
     }
-  }, "Entendido, las agrego después"))));
+  }, "Entendido, las agrego despu\xE9s"))));
   if (step === "resultados") {
     const r = computeProfile(d);
     const Stat = ({
@@ -4469,7 +4453,7 @@ function Onboarding({
       className: "card hero-card"
     }, /*#__PURE__*/React.createElement("span", {
       className: "muted"
-    }, "Tu meta diaria · ", d.objetivo === "ganar" ? "⬆️ Ganar peso" : d.objetivo === "mantener" ? "⚖️ Mantener" : "⬇️ Perder peso"), /*#__PURE__*/React.createElement("div", {
+    }, "Tu meta diaria \xB7 ", d.objetivo === "ganar" ? "⬆️ Ganar peso" : d.objetivo === "mantener" ? "⚖️ Mantener" : "⬇️ Perder peso"), /*#__PURE__*/React.createElement("div", {
       className: "big-num"
     }, r.objetivoDeficit, /*#__PURE__*/React.createElement("small", null, " kcal")), /*#__PURE__*/React.createElement("div", {
       className: "macro-row"
@@ -4477,7 +4461,7 @@ function Onboarding({
       style: {
         color: "#7C5CFF"
       }
-    }, "Proteína ", r.prote, " g"), /*#__PURE__*/React.createElement("span", {
+    }, "Prote\xEDna ", r.prote, " g"), /*#__PURE__*/React.createElement("span", {
       style: {
         color: "#F2B705"
       }
@@ -4535,7 +4519,7 @@ function Onboarding({
         marginTop: -2,
         marginBottom: 10
       }
-    }, "Sin medidas solo calculamos por peso. Agrégalas en tu perfil para ver % grasa, ICM y peso ideal."), /*#__PURE__*/React.createElement("button", {
+    }, "Sin medidas solo calculamos por peso. Agr\xE9galas en tu perfil para ver % grasa, ICM y peso ideal."), /*#__PURE__*/React.createElement("button", {
       onClick: () => setShowInfo(s => !s),
       style: {
         width: "100%",
@@ -4570,16 +4554,16 @@ function Onboarding({
       style: {
         color: "#2A2D43"
       }
-    }, term), " — ", def))), /*#__PURE__*/React.createElement("div", {
+    }, term), " \u2014 ", def))), /*#__PURE__*/React.createElement("div", {
       className: "safety"
     }, /*#__PURE__*/React.createElement(ShieldCheck, {
       size: 18
-    }), /*#__PURE__*/React.createElement("p", null, "Estos cálculos son orientativos y no sustituyen a un profesional de la salud. Nunca te pediremos comer por debajo de un mínimo seguro. Si tu relación con la comida te preocupa, entra a ", /*#__PURE__*/React.createElement("b", null, "Más → Apoyo"), "."))), /*#__PURE__*/React.createElement("div", {
+    }), /*#__PURE__*/React.createElement("p", null, "Estos c\xE1lculos son orientativos y no sustituyen a un profesional de la salud. Nunca te pediremos comer por debajo de un m\xEDnimo seguro. Si tu relaci\xF3n con la comida te preocupa, entra a ", /*#__PURE__*/React.createElement("b", null, "M\xE1s \u2192 Apoyo"), "."))), /*#__PURE__*/React.createElement("div", {
       className: "footer-cta"
     }, /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       onClick: () => setStep("nombrar")
-    }, "¡Me encanta!")));
+    }, "\xA1Me encanta!")));
   }
   return /*#__PURE__*/React.createElement("div", {
     className: "screen center",
@@ -4597,13 +4581,13 @@ function Onboarding({
       fontSize: 24,
       margin: "4px 0 2px"
     }
-  }, "¡Está a punto de nacer!"), /*#__PURE__*/React.createElement("p", {
+  }, "\xA1Est\xE1 a punto de nacer!"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       fontSize: 14,
       marginBottom: 10
     }
-  }, "¿Cómo lo vas a llamar?"), /*#__PURE__*/React.createElement("input", {
+  }, "\xBFC\xF3mo lo vas a llamar?"), /*#__PURE__*/React.createElement("input", {
     className: "name-input",
     value: name,
     maxLength: 14,
@@ -4616,14 +4600,14 @@ function Onboarding({
         ...d
       }, name || "Axo"), 950);
     }
-  }, "¡Que nazca! 🥚💗")) : /*#__PURE__*/React.createElement("p", {
+  }, "\xA1Que nazca! \uD83E\uDD5A\uD83D\uDC97")) : /*#__PURE__*/React.createElement("p", {
     className: "display",
     style: {
       fontSize: 22,
       color: "#E79FAE",
       marginTop: 8
     }
-  }, "¡Naciendo… 🥚✨!"));
+  }, "\xA1Naciendo\u2026 \uD83E\uDD5A\u2728!"));
 }
 
 /* ---------- NUEVA CONTRASEÑA (recovery flow) ---------- */
@@ -4687,13 +4671,13 @@ function NewPassScreen({
     style: {
       fontSize: 24
     }
-  }, "¡Contraseña actualizada! 🎉"), /*#__PURE__*/React.createElement("p", {
+  }, "\xA1Contrase\xF1a actualizada! \uD83C\uDF89"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       maxWidth: 280,
       textAlign: "center"
     }
-  }, "Ya puedes entrar con tu nueva contraseña."), /*#__PURE__*/React.createElement("button", {
+  }, "Ya puedes entrar con tu nueva contrase\xF1a."), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: onDone
   }, "Entrar a AxoloFit"));
@@ -4712,14 +4696,14 @@ function NewPassScreen({
       fontSize: 24,
       margin: "6px 0 4px"
     }
-  }, "Nueva contraseña"), /*#__PURE__*/React.createElement("p", {
+  }, "Nueva contrase\xF1a"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       marginBottom: 20,
       fontSize: 14,
       maxWidth: 270
     }
-  }, "Elige una contraseña nueva para tu cuenta."), /*#__PURE__*/React.createElement("div", {
+  }, "Elige una contrase\xF1a nueva para tu cuenta."), /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       maxWidth: 320
@@ -4735,7 +4719,7 @@ function NewPassScreen({
       marginBottom: 0,
       paddingRight: 48
     },
-    placeholder: "Nueva contraseña (mín. 6 caracteres)",
+    placeholder: "Nueva contrase\xF1a (m\xEDn. 6 caracteres)",
     type: showPass ? "text" : "password",
     value: pass,
     onChange: e => setPass(e.target.value)
@@ -4760,7 +4744,7 @@ function NewPassScreen({
     size: 20
   }))), /*#__PURE__*/React.createElement("input", {
     style: inputStyle,
-    placeholder: "Repite la contraseña",
+    placeholder: "Repite la contrase\xF1a",
     type: showPass ? "text" : "password",
     value: pass2,
     onChange: e => setPass2(e.target.value)
@@ -4869,7 +4853,7 @@ function QuizScreen({
       background: "linear-gradient(180deg,#FFF4EC,#E7F7F4)"
     }
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "🥗 ¿Saludable o antojo?",
+    title: "\uD83E\uDD57 \xBFSaludable o antojo?",
     back: () => setScreen("arcade")
   }), /*#__PURE__*/React.createElement("div", {
     className: "scroll",
@@ -4899,18 +4883,18 @@ function QuizScreen({
       fontSize: 26,
       margin: "8px 0 4px"
     }
-  }, "¡", score, "/", GAME_ITEMS.length, " correctas!"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
+  }, "\xA1", score, "/", GAME_ITEMS.length, " correctas!"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
     className: "display",
     style: {
       color: "#F2B705",
       fontSize: 15
     }
-  }, "🏆 ¡Nuevo récord!"), /*#__PURE__*/React.createElement("p", {
+  }, "\uD83C\uDFC6 \xA1Nuevo r\xE9cord!"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       marginBottom: 16
     }
-  }, "Ganaste +", score * 10, " XP · 🏆 ", Math.max(best, score)), /*#__PURE__*/React.createElement("button", {
+  }, "Ganaste +", score * 10, " XP \xB7 \uD83C\uDFC6 ", Math.max(best, score)), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => {
       setXp(x => Math.min(99, x + score * 10));
@@ -4962,14 +4946,14 @@ function QuizScreen({
       boxShadow: "none"
     },
     onClick: () => answer(true)
-  }, "🥗 Saludable"), /*#__PURE__*/React.createElement("button", {
+  }, "\uD83E\uDD57 Saludable"), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     style: {
       background: "linear-gradient(180deg,#FFB36B,#FF9036)",
       boxShadow: "none"
     },
     onClick: () => answer(false)
-  }, "🍩 Antojo")))));
+  }, "\uD83C\uDF69 Antojo")))));
 }
 function MemoScreen({
   pet,
@@ -5042,7 +5026,7 @@ function MemoScreen({
       background: "linear-gradient(180deg,#F0EBFF,#E2D8FF)"
     }
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "🧠 Memorama de comida",
+    title: "\uD83E\uDDE0 Memorama de comida",
     back: () => setScreen("arcade")
   }), /*#__PURE__*/React.createElement("div", {
     className: "scroll"
@@ -5071,9 +5055,9 @@ function MemoScreen({
       fontSize: 21,
       margin: "4px 12px"
     }
-  }, "¡", petName, " está feliz! ", pairs, " pares en ", moves, " movimientos"), /*#__PURE__*/React.createElement("p", {
+  }, "\xA1", petName, " est\xE1 feliz! ", pairs, " pares en ", moves, " movimientos"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "🏆 Mejor nivel: ", Math.max(best, nivel)), /*#__PURE__*/React.createElement("p", {
+  }, "\uD83C\uDFC6 Mejor nivel: ", Math.max(best, nivel)), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       marginBottom: 14
@@ -5084,7 +5068,7 @@ function MemoScreen({
       marginBottom: 8
     },
     onClick: nextLevel
-  }, "🎉 Siguiente nivel (+2 pares)"), /*#__PURE__*/React.createElement("button", {
+  }, "\uD83C\uDF89 Siguiente nivel (+2 pares)"), /*#__PURE__*/React.createElement("button", {
     className: "btn ghost",
     onClick: () => {
       recordBest("memo", nivel);
@@ -5101,7 +5085,7 @@ function MemoScreen({
       color: "#7a8099",
       margin: "2px 0 14px"
     }
-  }, "Nivel ", nivel, " · ", moves, " mov · ", matched.length / 2, "/", pairs, " pares"), /*#__PURE__*/React.createElement("div", {
+  }, "Nivel ", nivel, " \xB7 ", moves, " mov \xB7 ", matched.length / 2, "/", pairs, " pares"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(4,1fr)",
@@ -5132,7 +5116,7 @@ function MemoScreen({
       textAlign: "center",
       marginTop: 14
     }
-  }, "Encuentra los pares. Al ganar, ¡", petName, " pide más pares!"), /*#__PURE__*/React.createElement("div", {
+  }, "Encuentra los pares. Al ganar, \xA1", petName, " pide m\xE1s pares!"), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 60
     }
@@ -5205,7 +5189,7 @@ function SimonScreen({
       background: "linear-gradient(180deg,#EAF6FF,#E2D8FF)"
     }
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "🎵 Axo Dice",
+    title: "\uD83C\uDFB5 Axo Dice",
     back: () => setScreen("arcade")
   }), /*#__PURE__*/React.createElement("div", {
     className: "scroll",
@@ -5279,12 +5263,12 @@ function SimonScreen({
     style: {
       marginTop: 10
     }
-  }, "Llegaste a la ronda ", score, ".", score > 0 ? " +" + score * 8 + " XP" : "", " · 🏆 ", Math.max(best, score)), !started && !over && best > 0 && /*#__PURE__*/React.createElement("p", {
+  }, "Llegaste a la ronda ", score, ".", score > 0 ? " +" + score * 8 + " XP" : "", " \xB7 \uD83C\uDFC6 ", Math.max(best, score)), !started && !over && best > 0 && /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       marginTop: 8
     }
-  }, "🏆 Tu récord: ronda ", best), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFC6 Tu r\xE9cord: ronda ", best), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 40
     }
@@ -5400,7 +5384,7 @@ function CatchScreen({
       background: "linear-gradient(180deg,#EAF6FF,#D7ECFF)"
     }
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "🍬 Atrapa lo sano",
+    title: "\uD83C\uDF6C Atrapa lo sano",
     back: () => setScreen("arcade")
   }), over ? /*#__PURE__*/React.createElement("div", {
     className: "center",
@@ -5421,24 +5405,24 @@ function CatchScreen({
       fontSize: 26,
       margin: "8px 0 2px"
     }
-  }, "¡", score, " puntos!"), /*#__PURE__*/React.createElement("p", {
+  }, "\xA1", score, " puntos!"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       marginBottom: 4
     }
-  }, "Llegaste al nivel ", level, " · +", score * 5, " XP"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
+  }, "Llegaste al nivel ", level, " \xB7 +", score * 5, " XP"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
     className: "display",
     style: {
       color: "#F2B705",
       fontSize: 16,
       marginBottom: 6
     }
-  }, "🏆 ¡Nuevo récord!"), score < best && /*#__PURE__*/React.createElement("p", {
+  }, "\uD83C\uDFC6 \xA1Nuevo r\xE9cord!"), score < best && /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       marginBottom: 6
     }
-  }, "Récord: ", best), /*#__PURE__*/React.createElement("button", {
+  }, "R\xE9cord: ", best), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => {
       setXp(x => Math.min(99, x + score * 5));
@@ -5470,11 +5454,11 @@ function CatchScreen({
     style: {
       color: "#E79FAE"
     }
-  }, "⏱️ ", time, "s"), /*#__PURE__*/React.createElement("span", {
+  }, "\u23F1\uFE0F ", time, "s"), /*#__PURE__*/React.createElement("span", {
     style: {
       color: "#34BC97"
     }
-  }, "🍬 ", score, "/", tgt)), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDF6C ", score, "/", tgt)), /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       height: 5,
@@ -5545,13 +5529,13 @@ function CatchScreen({
       fontSize: 30,
       color: "#7C5CFF"
     }
-  }, "¡Nivel ", level, "! 🎉"))), /*#__PURE__*/React.createElement("p", {
+  }, "\xA1Nivel ", level, "! \uD83C\uDF89"))), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       textAlign: "center",
       marginTop: 10
     }
-  }, "Llega a ", tgt, " pts antes de que acabe el tiempo · 🏆 ", best)));
+  }, "Llega a ", tgt, " pts antes de que acabe el tiempo \xB7 \uD83C\uDFC6 ", best)));
 }
 function CalScreen({
   pet,
@@ -5589,7 +5573,7 @@ function CalScreen({
       background: "linear-gradient(180deg,#FFF6E6,#FFE9C8)"
     }
   }, /*#__PURE__*/React.createElement(Header, {
-    title: "🔥 ¿Cuál tiene más calorías?",
+    title: "\uD83D\uDD25 \xBFCu\xE1l tiene m\xE1s calor\xEDas?",
     back: () => setScreen("arcade")
   }), /*#__PURE__*/React.createElement("div", {
     className: "scroll",
@@ -5617,18 +5601,18 @@ function CalScreen({
       fontSize: 26,
       margin: "8px 0 4px"
     }
-  }, "¡", score, "/", KCAL_PAIRS.length, " correctas!"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
+  }, "\xA1", score, "/", KCAL_PAIRS.length, " correctas!"), score >= best && score > 0 && /*#__PURE__*/React.createElement("p", {
     className: "display",
     style: {
       color: "#F2B705",
       fontSize: 15
     }
-  }, "🏆 ¡Nuevo récord!"), /*#__PURE__*/React.createElement("p", {
+  }, "\uD83C\uDFC6 \xA1Nuevo r\xE9cord!"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       marginBottom: 16
     }
-  }, "Ganaste +", score * 12, " XP · 🏆 ", Math.max(best, score)), /*#__PURE__*/React.createElement("button", {
+  }, "Ganaste +", score * 12, " XP \xB7 \uD83C\uDFC6 ", Math.max(best, score)), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => {
       setXp(x => Math.min(99, x + score * 12));
@@ -5648,7 +5632,7 @@ function CalScreen({
       color: "#9aa0b4",
       marginBottom: 8
     }
-  }, i + 1, " de ", KCAL_PAIRS.length, " · ¿cuál tiene MÁS calorías?"), /*#__PURE__*/React.createElement("p", {
+  }, i + 1, " de ", KCAL_PAIRS.length, " \xB7 \xBFcu\xE1l tiene M\xC1S calor\xEDas?"), /*#__PURE__*/React.createElement("p", {
     style: {
       textAlign: "center",
       fontFamily: "Fredoka",
@@ -6389,7 +6373,7 @@ function App() {
   }, /*#__PURE__*/React.createElement(Flame, {
     size: 16,
     color: "#FF7A3D"
-  }), " ", streak, " días"), /*#__PURE__*/React.createElement("div", {
+  }), " ", streak, " d\xEDas"), /*#__PURE__*/React.createElement("div", {
     className: "lvl-pill"
   }, "Nivel ", level, /*#__PURE__*/React.createElement("span", {
     className: "xp-track"
@@ -6446,7 +6430,7 @@ function App() {
       border: "none"
     },
     onClick: () => setScreen("pet")
-  }, "✨ Vestir a ", petName)), /*#__PURE__*/React.createElement("div", {
+  }, "\u2728 Vestir a ", petName)), /*#__PURE__*/React.createElement("div", {
     className: "rings"
   }, /*#__PURE__*/React.createElement("div", {
     className: "ring-item"
@@ -6468,7 +6452,7 @@ function App() {
     className: "ring-c"
   }, /*#__PURE__*/React.createElement("b", null, Math.round(totals.p)), /*#__PURE__*/React.createElement("span", null, "/", targets.prote, "g"))), /*#__PURE__*/React.createElement("span", {
     className: "ring-lbl"
-  }, "Proteína")), /*#__PURE__*/React.createElement("div", {
+  }, "Prote\xEDna")), /*#__PURE__*/React.createElement("div", {
     className: "ring-item"
   }, /*#__PURE__*/React.createElement(Ring, {
     progress: pAgua,
@@ -6515,7 +6499,7 @@ function App() {
   }, /*#__PURE__*/React.createElement(Droplet, {
     size: 16,
     color: "#3FA9F5"
-  }), " Agua de hoy · ", vasos, "/", targets.vasos, " vasos"), /*#__PURE__*/React.createElement("div", {
+  }), " Agua de hoy \xB7 ", vasos, "/", targets.vasos, " vasos"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
@@ -6553,7 +6537,7 @@ function App() {
     onClick: () => setOverlay("coach")
   }, /*#__PURE__*/React.createElement(MessageCircle, {
     size: 16
-  }), " Pregúntale a ", petName)), /*#__PURE__*/React.createElement("div", {
+  }), " Preg\xFAntale a ", petName)), /*#__PURE__*/React.createElement("div", {
     className: "quick-water"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn soft feature",
@@ -6563,7 +6547,7 @@ function App() {
   }), " Generar receta"), /*#__PURE__*/React.createElement("button", {
     className: "btn soft",
     onClick: () => setScreen("arcade")
-  }, "🎮 Juegos")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFAE Juegos")), /*#__PURE__*/React.createElement("div", {
     className: "quick-water"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn soft feature",
@@ -6571,29 +6555,29 @@ function App() {
       flex: "1 1 100%"
     },
     onClick: () => setOverlay("menu")
-  }, "🍽️ Menú del día · generar"), /*#__PURE__*/React.createElement("button", {
+  }, "\uD83C\uDF7D\uFE0F Men\xFA del d\xEDa \xB7 generar"), /*#__PURE__*/React.createElement("button", {
     className: "btn soft feature",
     style: {
       flex: "1 1 100%"
     },
     onClick: () => setScreen("semana")
-  }, "📅 Ver plan semanal")), !celebrated && /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCC5 Ver plan semanal")), !celebrated && /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
   }, /*#__PURE__*/React.createElement(Sparkles, {
     size: 16,
     color: "#F2B705"
-  }), " ¿Se te antoja algo más?"), /*#__PURE__*/React.createElement("p", {
+  }), " \xBFSe te antoja algo m\xE1s?"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Registra lo que comas fuera del plan — todo suma a tu conteo del día."), ["pozole", "pechuga", "frijol", "pastor"].map(id => {
+  }, "Registra lo que comas fuera del plan \u2014 todo suma a tu conteo del d\xEDa."), ["pozole", "pechuga", "frijol", "pastor"].map(id => {
     const f = FOODS.find(x => x.id === id);
     return /*#__PURE__*/React.createElement("div", {
       key: id,
       className: "sug-row"
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, f.n), /*#__PURE__*/React.createElement("span", {
       className: "muted sm"
-    }, " · ", f.kcal, " kcal · ", f.p, "g prot")), /*#__PURE__*/React.createElement("button", {
+    }, " \xB7 ", f.kcal, " kcal \xB7 ", f.p, "g prot")), /*#__PURE__*/React.createElement("button", {
       className: "add-btn",
       onClick: () => addFood(f)
     }, /*#__PURE__*/React.createElement(Plus, {
@@ -6605,12 +6589,12 @@ function App() {
     className: "card-h"
   }, "Hoy comiste"), log.length === 0 && /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Aún nada. Toca el botón rosa para registrar."), log.map(f => /*#__PURE__*/React.createElement("div", {
+  }, "A\xFAn nada. Toca el bot\xF3n rosa para registrar."), log.map(f => /*#__PURE__*/React.createElement("div", {
     key: f.uid,
     className: "log-row"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, f.n), /*#__PURE__*/React.createElement("span", {
     className: "muted sm"
-  }, " · ", f.qty > 1 ? f.qty + "× " : "", f.kcal * f.qty, " kcal")), /*#__PURE__*/React.createElement("button", {
+  }, " \xB7 ", f.qty > 1 ? f.qty + "× " : "", f.kcal * f.qty, " kcal")), /*#__PURE__*/React.createElement("button", {
     className: "x-btn",
     onClick: () => removeFood(f.uid)
   }, /*#__PURE__*/React.createElement(X, {
@@ -6623,7 +6607,7 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
-  }, "📅 Plan semanal"), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCC5 Plan semanal"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 4,
@@ -6671,23 +6655,23 @@ function App() {
       padding: "10px"
     },
     onClick: () => setScreen("semana")
-  }, "Abrir planeación semanal")), /*#__PURE__*/React.createElement("div", {
+  }, "Abrir planeaci\xF3n semanal")), /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
       background: "linear-gradient(135deg,#EEF0FF,#F6EDFF)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
-  }, "🌙 Antes de dormir"), /*#__PURE__*/React.createElement("p", {
+  }, "\uD83C\uDF19 Antes de dormir"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Un momento contigo y con ", petName, ". Cuéntale cómo te fue hoy."), /*#__PURE__*/React.createElement("button", {
+  }, "Un momento contigo y con ", petName, ". Cu\xE9ntale c\xF3mo te fue hoy."), /*#__PURE__*/React.createElement("button", {
     className: "btn primary",
     style: {
       width: "100%",
       marginTop: 8
     },
     onClick: () => setOverlay("reflexion")
-  }, "¿Cómo te fue hoy?")), /*#__PURE__*/React.createElement("div", {
+  }, "\xBFC\xF3mo te fue hoy?")), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 90
     }
@@ -6766,7 +6750,7 @@ function App() {
       size: 18,
       color: "#9aa0b4"
     }), /*#__PURE__*/React.createElement("input", {
-      placeholder: "Busca: tacos, pozole, concha…",
+      placeholder: "Busca: tacos, pozole, concha\u2026",
       value: q,
       onChange: e => setQ(e.target.value)
     })), results.map(f => /*#__PURE__*/React.createElement("div", {
@@ -6774,7 +6758,7 @@ function App() {
       className: "sug-row"
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, f.n), /*#__PURE__*/React.createElement("span", {
       className: "muted sm"
-    }, " · ", f.u, " · ", f.kcal, " kcal · P", f.p, " C", f.c, " G", f.g)), /*#__PURE__*/React.createElement("button", {
+    }, " \xB7 ", f.u, " \xB7 ", f.kcal, " kcal \xB7 P", f.p, " C", f.c, " G", f.g)), /*#__PURE__*/React.createElement("button", {
       className: "add-btn",
       onClick: () => addFood(f)
     }, /*#__PURE__*/React.createElement(Plus, {
@@ -6860,7 +6844,7 @@ function App() {
         color: "#9aa0b4",
         letterSpacing: 0.3
       }
-    }, "🌱 EVOLUCIÓN DE ", petName.toUpperCase()), /*#__PURE__*/React.createElement("div", {
+    }, "\uD83C\uDF31 EVOLUCI\xD3N DE ", petName.toUpperCase()), /*#__PURE__*/React.createElement("div", {
       className: "evo-row"
     }, [["huevo", "🥚", "Huevo", 0], ["cria", "🐣", "Cría", 3], ["joven", "🦎", "Joven", 7], ["adulto", "⭐", "Adulto", 21], ["mistico", "✨", "Místico", 60]].map(([k, em, e, dias], idx, arr) => {
       const evoOrder = arr.map(x => x[0]);
@@ -6899,7 +6883,7 @@ function App() {
           color: "#b0b6c8",
           marginTop: 1
         }
-      }, "día ", dias), current && /*#__PURE__*/React.createElement("small", {
+      }, "d\xEDa ", dias), current && /*#__PURE__*/React.createElement("small", {
         style: {
           fontSize: 9,
           color: "#7C5CFF",
@@ -6923,7 +6907,7 @@ function App() {
       style: {
         marginBottom: 8
       }
-    }, "🎨 ", /*#__PURE__*/React.createElement("b", null, "Color"), " es el skin de ", petName, ". ", /*#__PURE__*/React.createElement("b", null, "Estilo"), ", ", /*#__PURE__*/React.createElement("b", null, "Accesorio"), " (cabeza) y ", /*#__PURE__*/React.createElement("b", null, "Outfit"), " (cuerpo) se combinan entre sí. Los que tienen 👑 son premium (desbloqueados en este demo)."), /*#__PURE__*/React.createElement("div", {
+    }, "\uD83C\uDFA8 ", /*#__PURE__*/React.createElement("b", null, "Color"), " es el skin de ", petName, ". ", /*#__PURE__*/React.createElement("b", null, "Estilo"), ", ", /*#__PURE__*/React.createElement("b", null, "Accesorio"), " (cabeza) y ", /*#__PURE__*/React.createElement("b", null, "Outfit"), " (cuerpo) se combinan entre s\xED. Los que tienen \uD83D\uDC51 son premium (desbloqueados en este demo)."), /*#__PURE__*/React.createElement("div", {
       className: "sect-t"
     }, "Color / Skin"), /*#__PURE__*/React.createElement(Swatches, {
       sk: "pal",
@@ -7013,7 +6997,7 @@ function App() {
       onClick: () => showToast("✨ Premium activo en este demo — todo desbloqueado")
     }, /*#__PURE__*/React.createElement(Crown, {
       size: 16
-    }), " Premium activo (demo) · todo desbloqueado"), /*#__PURE__*/React.createElement("div", {
+    }), " Premium activo (demo) \xB7 todo desbloqueado"), /*#__PURE__*/React.createElement("div", {
       style: {
         height: 80
       }
@@ -7058,7 +7042,7 @@ function App() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       className: "card-h"
-    }, "⚖️ Tu peso · ", pa.toFixed(1), " kg"), /*#__PURE__*/React.createElement("div", {
+    }, "\u2696\uFE0F Tu peso \xB7 ", pa.toFixed(1), " kg"), /*#__PURE__*/React.createElement("div", {
       className: "center",
       style: {
         margin: "2px 0"
@@ -7076,7 +7060,7 @@ function App() {
       style: {
         textAlign: "center"
       }
-    }, "Meta: ", pesoMeta, " kg · ", petName, " adelgaza contigo conforme bajas de peso."), /*#__PURE__*/React.createElement("div", {
+    }, "Meta: ", pesoMeta, " kg \xB7 ", petName, " adelgaza contigo conforme bajas de peso."), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 8,
@@ -7085,7 +7069,7 @@ function App() {
     }, /*#__PURE__*/React.createElement("button", {
       className: "btn soft",
       onClick: () => setPesoActual(Math.max(pesoMeta, +(pa - 0.5).toFixed(1)))
-    }, "− 0.5 kg"), /*#__PURE__*/React.createElement("button", {
+    }, "\u2212 0.5 kg"), /*#__PURE__*/React.createElement("button", {
       className: "btn soft",
       onClick: () => setPesoActual(Math.min(pesoIni, +(pa + 0.5).toFixed(1)))
     }, "+ 0.5 kg")), /*#__PURE__*/React.createElement("p", {
@@ -7093,33 +7077,33 @@ function App() {
       style: {
         textAlign: "center"
       }
-    }, "Demo: registra tu peso y mira cómo cambia tu ajolote.")), /*#__PURE__*/React.createElement("div", {
+    }, "Demo: registra tu peso y mira c\xF3mo cambia tu ajolote.")), /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("div", {
       className: "card-h"
-    }, "Peso · últimos 7 días"), /*#__PURE__*/React.createElement(MiniChart, {
+    }, "Peso \xB7 \xFAltimos 7 d\xEDas"), /*#__PURE__*/React.createElement(MiniChart, {
       data: data
     }), /*#__PURE__*/React.createElement("p", {
       className: "win"
-    }, "▼ 1.2 kg esta semana · ¡", petName, " lo celebra contigo!")), /*#__PURE__*/React.createElement("div", {
+    }, "\u25BC 1.2 kg esta semana \xB7 \xA1", petName, " lo celebra contigo!")), /*#__PURE__*/React.createElement("div", {
       className: "tip-box"
     }, /*#__PURE__*/React.createElement("span", {
       className: "tip-icon"
-    }, "💡"), /*#__PURE__*/React.createElement("p", {
+    }, "\uD83D\uDCA1"), /*#__PURE__*/React.createElement("p", {
       className: "tip-text"
-    }, /*#__PURE__*/React.createElement("b", null, "No te obsesiones con la báscula."), " El peso sube y baja por agua o músculo. Lo ideal es ", /*#__PURE__*/React.createElement("b", null, "bajar de talla y perder grasa"), " manteniendo tus músculos fuertes. ¡Tus centímetros nos dicen el progreso real!")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, "No te obsesiones con la b\xE1scula."), " El peso sube y baja por agua o m\xFAsculo. Lo ideal es ", /*#__PURE__*/React.createElement("b", null, "bajar de talla y perder grasa"), " manteniendo tus m\xFAsculos fuertes. \xA1Tus cent\xEDmetros nos dicen el progreso real!")), /*#__PURE__*/React.createElement("div", {
       className: "tip-box musc"
     }, /*#__PURE__*/React.createElement("span", {
       className: "tip-icon"
-    }, "💪"), /*#__PURE__*/React.createElement("p", {
+    }, "\uD83D\uDCAA"), /*#__PURE__*/React.createElement("p", {
       className: "tip-text"
-    }, /*#__PURE__*/React.createElement("b", null, "El músculo es tu aliado."), " Al bajar de peso, conservar y ganar músculo mantiene tu metabolismo activo, te da fuerza y hace que la grasa se vaya sin recuperarla. Por eso priorizamos la ", /*#__PURE__*/React.createElement("b", null, "proteína"), " y el movimiento, no solo comer menos.")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, "El m\xFAsculo es tu aliado."), " Al bajar de peso, conservar y ganar m\xFAsculo mantiene tu metabolismo activo, te da fuerza y hace que la grasa se vaya sin recuperarla. Por eso priorizamos la ", /*#__PURE__*/React.createElement("b", null, "prote\xEDna"), " y el movimiento, no solo comer menos.")), /*#__PURE__*/React.createElement("div", {
       className: "grid2"
     }, /*#__PURE__*/React.createElement("div", {
       className: "stat-chip"
-    }, /*#__PURE__*/React.createElement("b", null, streak), /*#__PURE__*/React.createElement("span", null, "Racha (días)")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, streak), /*#__PURE__*/React.createElement("span", null, "Racha (d\xEDas)")), /*#__PURE__*/React.createElement("div", {
       className: "stat-chip"
-    }, /*#__PURE__*/React.createElement("b", null, Math.round(totals.p), /*#__PURE__*/React.createElement("small", null, "g")), /*#__PURE__*/React.createElement("span", null, "Proteína hoy")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, Math.round(totals.p), /*#__PURE__*/React.createElement("small", null, "g")), /*#__PURE__*/React.createElement("span", null, "Prote\xEDna hoy")), /*#__PURE__*/React.createElement("div", {
       className: "stat-chip"
     }, /*#__PURE__*/React.createElement("b", null, Math.round(totals.kcal)), /*#__PURE__*/React.createElement("span", null, "Kcal hoy")), /*#__PURE__*/React.createElement("div", {
       className: "stat-chip"
@@ -7130,7 +7114,7 @@ function App() {
     }, /*#__PURE__*/React.createElement(Sparkles, {
       size: 16,
       color: "#7C5CFF"
-    }), " Informe avanzado · distribución de hoy"), (() => {
+    }), " Informe avanzado \xB7 distribuci\xF3n de hoy"), (() => {
       const pk = totals.p * 4,
         ck = totals.c * 4,
         gk = totals.g * 9,
@@ -7150,7 +7134,7 @@ function App() {
           marginBottom: 4
         }
       }, /*#__PURE__*/React.createElement("span", null, l, l === "Carbohidratos" && /*#__PURE__*/React.createElement(InfoDot, {
-        text: "Combina tus carbohidratos con fibra o proteína para evitar picos de glucosa. Así mantienes la energía estable y el apetito bajo control todo el día."
+        text: "Combina tus carbohidratos con fibra o prote\xEDna para evitar picos de glucosa. As\xED mantienes la energ\xEDa estable y el apetito bajo control todo el d\xEDa."
       })), /*#__PURE__*/React.createElement("span", {
         style: {
           color: col
@@ -7173,9 +7157,9 @@ function App() {
       className: "tip-box glu"
     }, /*#__PURE__*/React.createElement("span", {
       className: "tip-icon"
-    }, "🕵️"), /*#__PURE__*/React.createElement("p", {
+    }, "\uD83D\uDD75\uFE0F"), /*#__PURE__*/React.createElement("p", {
       className: "tip-text"
-    }, /*#__PURE__*/React.createElement("b", null, "Tip de Axo:"), " combinar tus carbohidratos con fibra o proteína evita los picos de glucosa. ¡Así mantienes tu energía estable y el apetito bajo control toda la tarde!")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, "Tip de Axo:"), " combinar tus carbohidratos con fibra o prote\xEDna evita los picos de glucosa. \xA1As\xED mantienes tu energ\xEDa estable y el apetito bajo control toda la tarde!")), /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("div", {
       className: "card-h"
@@ -7211,13 +7195,13 @@ function App() {
     color: "#F2B705"
   }), " AxoloFit Premium"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "IA por foto ilimitada · recetas infinitas · skins y especies raras · informes avanzados · minijuegos exclusivos."), /*#__PURE__*/React.createElement("button", {
+  }, "IA por foto ilimitada \xB7 recetas infinitas \xB7 skins y especies raras \xB7 informes avanzados \xB7 minijuegos exclusivos."), /*#__PURE__*/React.createElement("button", {
     className: "btn primary",
     onClick: () => setOverlay("paywall")
   }, "Ver planes")), /*#__PURE__*/React.createElement("button", {
     className: "list-row",
     onClick: () => setOverlay("prefs")
-  }, "🥗 Preferencias y alergias"), /*#__PURE__*/React.createElement("button", {
+  }, "\uD83E\uDD57 Preferencias y alergias"), /*#__PURE__*/React.createElement("button", {
     className: "list-row",
     onClick: () => setOverlay("privacy")
   }, /*#__PURE__*/React.createElement(ShieldCheck, {
@@ -7245,7 +7229,7 @@ function App() {
       setUserId(null);
       setPhase("auth");
     }
-  }, "🚪 Cerrar sesión"), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDEAA Cerrar sesi\xF3n"), /*#__PURE__*/React.createElement("div", {
     className: "studio"
   }, /*#__PURE__*/React.createElement(StudioLogo, null), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
@@ -7260,7 +7244,7 @@ function App() {
       fontSize: 11,
       opacity: 0.7
     }
-  }, "Herramienta de seguimiento y educación nutricional. No sustituye la atención profesional.")), /*#__PURE__*/React.createElement("div", {
+  }, "Herramienta de seguimiento y educaci\xF3n nutricional. No sustituye la atenci\xF3n profesional.")), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 80
     }
@@ -7380,15 +7364,15 @@ function App() {
     }, /*#__PURE__*/React.createElement(Sparkles, {
       size: 15,
       color: "#F2B705"
-    }), " ¿Qué comiste?"), /*#__PURE__*/React.createElement("p", {
+    }), " \xBFQu\xE9 comiste?"), /*#__PURE__*/React.createElement("p", {
       className: "muted sm",
       style: {
         marginBottom: 12
       }
-    }, "Descíbelo como quieras: \"una taza de papaya con yogurt\", \"dos tacos de canasta con agua de jamaica\"…"), /*#__PURE__*/React.createElement("textarea", {
+    }, "Desc\xEDbelo como quieras: \"una taza de papaya con yogurt\", \"dos tacos de canasta con agua de jamaica\"\u2026"), /*#__PURE__*/React.createElement("textarea", {
       value: texto,
       onChange: e => setTexto(e.target.value),
-      placeholder: "Escribe aquí lo que comiste…",
+      placeholder: "Escribe aqu\xED lo que comiste\u2026",
       style: {
         width: "100%",
         minHeight: 90,
@@ -7415,7 +7399,7 @@ function App() {
       },
       onClick: () => texto.trim() && analizar(texto),
       disabled: !texto.trim()
-    }, "Analizar con IA ✨")), etapa === "cargando" && /*#__PURE__*/React.createElement("div", {
+    }, "Analizar con IA \u2728")), etapa === "cargando" && /*#__PURE__*/React.createElement("div", {
       className: "center",
       style: {
         padding: "32px 0"
@@ -7425,9 +7409,9 @@ function App() {
         fontSize: 36,
         marginBottom: 12
       }
-    }, "🧠"), /*#__PURE__*/React.createElement("p", {
+    }, "\uD83E\uDDE0"), /*#__PURE__*/React.createElement("p", {
       className: "muted"
-    }, "Calculando macros…")), etapa === "extras" && resultado && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("p", {
+    }, "Calculando macros\u2026")), etapa === "extras" && resultado && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("p", {
       className: "detect-h"
     }, /*#__PURE__*/React.createElement(Sparkles, {
       size: 15,
@@ -7457,7 +7441,7 @@ function App() {
     }, resultado.pregunta_extras), /*#__PURE__*/React.createElement("textarea", {
       value: extras,
       onChange: e => setExtras(e.target.value),
-      placeholder: "Ej: sí, con una cucharada de aceite y salsa",
+      placeholder: "Ej: s\xED, con una cucharada de aceite y salsa",
       style: {
         width: "100%",
         minHeight: 70,
@@ -7488,7 +7472,7 @@ function App() {
     }, /*#__PURE__*/React.createElement(Sparkles, {
       size: 15,
       color: "#F2B705"
-    }), " Esto es lo que detecté"), /*#__PURE__*/React.createElement("div", {
+    }), " Esto es lo que detect\xE9"), /*#__PURE__*/React.createElement("div", {
       style: {
         background: "#f6f7fb",
         borderRadius: 14,
@@ -7536,7 +7520,7 @@ function App() {
       }
     }, resultado.proteina, "g"), /*#__PURE__*/React.createElement("div", {
       className: "muted sm"
-    }, "proteína")), /*#__PURE__*/React.createElement("div", {
+    }, "prote\xEDna")), /*#__PURE__*/React.createElement("div", {
       style: {
         textAlign: "center",
         flex: 1
@@ -7565,7 +7549,7 @@ function App() {
     }, "grasa")))), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       onClick: confirmar
-    }, "✅ Confirmar y registrar"), /*#__PURE__*/React.createElement("button", {
+    }, "\u2705 Confirmar y registrar"), /*#__PURE__*/React.createElement("button", {
       className: "btn ghost",
       style: {
         width: "100%",
@@ -7575,7 +7559,7 @@ function App() {
         setEtapa("escribir");
         setResultado(null);
       }
-    }, "Corregir descripción"))));
+    }, "Corregir descripci\xF3n"))));
   };
   const Photo = () => {
     const etapa = photoEtapa;
@@ -7667,7 +7651,7 @@ function App() {
         textAlign: "center",
         cursor: "pointer"
       }
-    }, "📷 Tomar o subir foto", /*#__PURE__*/React.createElement("input", {
+    }, "\uD83D\uDCF7 Tomar o subir foto", /*#__PURE__*/React.createElement("input", {
       type: "file",
       accept: "image/*",
       capture: "environment",
@@ -7698,7 +7682,7 @@ function App() {
       }
     }), /*#__PURE__*/React.createElement("p", {
       className: "muted"
-    }, "Analizando tu plato…")), etapa === "resultado" && resultado && /*#__PURE__*/React.createElement(React.Fragment, null, img && /*#__PURE__*/React.createElement("img", {
+    }, "Analizando tu plato\u2026")), etapa === "resultado" && resultado && /*#__PURE__*/React.createElement(React.Fragment, null, img && /*#__PURE__*/React.createElement("img", {
       src: img,
       alt: "plato",
       style: {
@@ -7713,7 +7697,7 @@ function App() {
     }, /*#__PURE__*/React.createElement(Sparkles, {
       size: 15,
       color: "#F2B705"
-    }), " Esto detecté en tu plato"), /*#__PURE__*/React.createElement("div", {
+    }), " Esto detect\xE9 en tu plato"), /*#__PURE__*/React.createElement("div", {
       style: {
         background: "#f6f7fb",
         borderRadius: 14,
@@ -7761,7 +7745,7 @@ function App() {
       }
     }, resultado.proteina, "g"), /*#__PURE__*/React.createElement("div", {
       className: "muted sm"
-    }, "proteína")), /*#__PURE__*/React.createElement("div", {
+    }, "prote\xEDna")), /*#__PURE__*/React.createElement("div", {
       style: {
         textAlign: "center",
         flex: 1
@@ -7790,7 +7774,7 @@ function App() {
     }, "grasa")))), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       onClick: confirmar
-    }, "✅ Confirmar y registrar"), /*#__PURE__*/React.createElement("button", {
+    }, "\u2705 Confirmar y registrar"), /*#__PURE__*/React.createElement("button", {
       className: "btn ghost",
       style: {
         width: "100%",
@@ -7831,9 +7815,9 @@ function App() {
       className: "tip-box"
     }, /*#__PURE__*/React.createElement("span", {
       className: "tip-icon"
-    }, "🌮"), /*#__PURE__*/React.createElement("p", {
+    }, "\uD83C\uDF2E"), /*#__PURE__*/React.createElement("p", {
       className: "tip-text"
-    }, /*#__PURE__*/React.createElement("b", null, "¡Come rico, come sano!"), " Con buenos ingredientes, la comida mexicana nutre y sabe increíble.")), /*#__PURE__*/React.createElement("h2", {
+    }, /*#__PURE__*/React.createElement("b", null, "\xA1Come rico, come sano!"), " Con buenos ingredientes, la comida mexicana nutre y sabe incre\xEDble.")), /*#__PURE__*/React.createElement("h2", {
       className: "display",
       style: {
         fontSize: 21,
@@ -7870,9 +7854,9 @@ function App() {
       style: {
         fontWeight: 600
       }
-    }, "• ", x)))), /*#__PURE__*/React.createElement("div", {
+    }, "\u2022 ", x)))), /*#__PURE__*/React.createElement("div", {
       className: "sect-t"
-    }, "Preparación"), /*#__PURE__*/React.createElement("p", {
+    }, "Preparaci\xF3n"), /*#__PURE__*/React.createElement("p", {
       className: "muted sm",
       style: {
         lineHeight: 1.5,
@@ -7893,7 +7877,7 @@ function App() {
         setOverlay(null);
         setScreen("home");
       }
-    }, "Añadir a hoy"), /*#__PURE__*/React.createElement("button", {
+    }, "A\xF1adir a hoy"), /*#__PURE__*/React.createElement("button", {
       className: "btn ghost",
       style: {
         width: "100%",
@@ -7907,7 +7891,7 @@ function App() {
     return /*#__PURE__*/React.createElement("div", {
       className: "screen"
     }, /*#__PURE__*/React.createElement(Header, {
-      title: "🎮 Juegos",
+      title: "\uD83C\uDFAE Juegos",
       back: () => setScreen("home")
     }), /*#__PURE__*/React.createElement("div", {
       className: "scroll",
@@ -7942,7 +7926,7 @@ function App() {
         textAlign: "center",
         marginTop: 6
       }
-    }, "Gana XP y supera tu récord para vestir a ", petName, "."), /*#__PURE__*/React.createElement("div", {
+    }, "Gana XP y supera tu r\xE9cord para vestir a ", petName, "."), /*#__PURE__*/React.createElement("div", {
       style: {
         height: 80
       }
@@ -8004,9 +7988,9 @@ function App() {
         textAlign: "center",
         margin: "2px 0 8px"
       }
-    }, "Antes de dormir…"), /*#__PURE__*/React.createElement("div", {
+    }, "Antes de dormir\u2026"), /*#__PURE__*/React.createElement("div", {
       className: "streak-big"
-    }, "🔥 ", streak, " días seguidos"), /*#__PURE__*/React.createElement("p", {
+    }, "\uD83D\uDD25 ", streak, " d\xEDas seguidos"), /*#__PURE__*/React.createElement("p", {
       className: "muted",
       style: {
         textAlign: "center",
@@ -8018,7 +8002,7 @@ function App() {
         textAlign: "center",
         marginTop: 14
       }
-    }, "¿Cómo te fue hoy?"), /*#__PURE__*/React.createElement("div", {
+    }, "\xBFC\xF3mo te fue hoy?"), /*#__PURE__*/React.createElement("div", {
       className: "col"
     }, opciones.map(o => /*#__PURE__*/React.createElement("button", {
       key: o.t,
@@ -8073,9 +8057,9 @@ function App() {
       className: "reward"
     }, "+20 XP"), /*#__PURE__*/React.createElement("span", {
       className: "reward"
-    }, "🔥 Racha ", streak), /*#__PURE__*/React.createElement("span", {
+    }, "\uD83D\uDD25 Racha ", streak), /*#__PURE__*/React.createElement("span", {
       className: "reward"
-    }, "💗 Beso")), /*#__PURE__*/React.createElement("button", {
+    }, "\uD83D\uDC97 Beso")), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       onClick: () => {
         setXp(x => Math.min(99, x + 20));
@@ -8083,7 +8067,7 @@ function App() {
         setReflexionPicked(null);
         setOverlay(null);
       }
-    }, "Buenas noches 🌙"))));
+    }, "Buenas noches \uD83C\uDF19"))));
   };
   const SemanaScreen = () => {
     const plan = weekPlan[selDay];
@@ -8098,7 +8082,7 @@ function App() {
     return /*#__PURE__*/React.createElement("div", {
       className: "screen"
     }, /*#__PURE__*/React.createElement(Header, {
-      title: "Planeación semanal",
+      title: "Planeaci\xF3n semanal",
       back: () => setScreen("home")
     }), /*#__PURE__*/React.createElement("div", {
       className: "scroll",
@@ -8116,13 +8100,13 @@ function App() {
         flex: 1
       },
       onClick: () => setOverlay("porciones")
-    }, "🍽️ Guía por porciones"), /*#__PURE__*/React.createElement("button", {
+    }, "\uD83C\uDF7D\uFE0F Gu\xEDa por porciones"), /*#__PURE__*/React.createElement("button", {
       className: "btn soft feature",
       style: {
         flex: 1
       },
       onClick: () => setOverlay("prefs")
-    }, "⚙️ Mis preferencias")), (prefs.veg || prefs.lowcarb || prefs.evitar.length > 0) && /*#__PURE__*/React.createElement("p", {
+    }, "\u2699\uFE0F Mis preferencias")), (prefs.veg || prefs.lowcarb || prefs.evitar.length > 0) && /*#__PURE__*/React.createElement("p", {
       className: "muted sm",
       style: {
         marginBottom: 10,
@@ -8177,7 +8161,7 @@ function App() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       className: "muted"
-    }, DIAS_FULL[DIAS.indexOf(selDay)], " · total del día"), /*#__PURE__*/React.createElement("div", {
+    }, DIAS_FULL[DIAS.indexOf(selDay)], " \xB7 total del d\xEDa"), /*#__PURE__*/React.createElement("div", {
       className: "big-num"
     }, dayTot, /*#__PURE__*/React.createElement("small", null, " kcal")), /*#__PURE__*/React.createElement("div", {
       className: "macro-row"
@@ -8195,7 +8179,7 @@ function App() {
         marginTop: 6,
         lineHeight: 1.4
       }
-    }, "💡 Las calorías varían por día porque cada platillo tiene diferente aporte. Todos los menús están diseñados dentro de tu rango objetivo personalizado.")), MEAL_SPLIT.map(([k, label]) => {
+    }, "\uD83D\uDCA1 Las calor\xEDas var\xEDan por d\xEDa porque cada platillo tiene diferente aporte. Todos los men\xFAs est\xE1n dise\xF1ados dentro de tu rango objetivo personalizado.")), MEAL_SPLIT.map(([k, label]) => {
       const dish = MENU_DB[k][plan[k]];
       const sd = scaleMeal(dish, dayF);
       const ek = selDay + "_" + k;
@@ -8276,7 +8260,7 @@ function App() {
           fontWeight: 600,
           color: "#7a8099"
         }
-      }, sd.kcal, " kcal · Prot ", sd.p, "g · Carbos ", sd.c, "g · Grasa ", sd.g, "g"), fruta && /*#__PURE__*/React.createElement("div", {
+      }, sd.kcal, " kcal \xB7 Prot ", sd.p, "g \xB7 Carbos ", sd.c, "g \xB7 Grasa ", sd.g, "g"), fruta && /*#__PURE__*/React.createElement("div", {
         style: {
           marginTop: 8,
           paddingTop: 8,
@@ -8289,7 +8273,7 @@ function App() {
           fontSize: 13,
           color: "#C58A2E"
         }
-      }, "➕ Acompaña con una fruta"), /*#__PURE__*/React.createElement("b", {
+      }, "\u2795 Acompa\xF1a con una fruta"), /*#__PURE__*/React.createElement("b", {
         style: {
           fontSize: 14,
           display: "block",
@@ -8301,7 +8285,7 @@ function App() {
           color: "#9aa0b4",
           fontSize: 12
         }
-      }, "· ", FRUTAS[plan.fruta].d)), /*#__PURE__*/React.createElement("div", {
+      }, "\xB7 ", FRUTAS[plan.fruta].d)), /*#__PURE__*/React.createElement("div", {
         className: "muted sm",
         style: {
           marginTop: 2,
@@ -8309,7 +8293,7 @@ function App() {
           fontWeight: 600,
           color: "#7a8099"
         }
-      }, fruta.kcal, " kcal · Carbos ", fruta.c, "g")), snackEx && /*#__PURE__*/React.createElement("div", {
+      }, fruta.kcal, " kcal \xB7 Carbos ", fruta.c, "g")), snackEx && /*#__PURE__*/React.createElement("div", {
         style: {
           marginTop: 8,
           paddingTop: 8,
@@ -8322,7 +8306,7 @@ function App() {
           fontSize: 13,
           color: "#C58A2E"
         }
-      }, "➕ Segundo snack del día"), /*#__PURE__*/React.createElement("b", {
+      }, "\u2795 Segundo snack del d\xEDa"), /*#__PURE__*/React.createElement("b", {
         style: {
           fontSize: 14,
           display: "block",
@@ -8341,14 +8325,14 @@ function App() {
           fontWeight: 600,
           color: "#7a8099"
         }
-      }, snackEx.kcal, " kcal · Prot ", snackEx.p, "g · Carbos ", snackEx.c, "g · Grasa ", snackEx.g, "g")));
+      }, snackEx.kcal, " kcal \xB7 Prot ", snackEx.p, "g \xB7 Carbos ", snackEx.c, "g \xB7 Grasa ", snackEx.g, "g")));
     }), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
       style: {
         marginTop: 4
       },
       onClick: () => regenDay(selDay)
-    }, "🔄 Regenerar ", DIAS_FULL[DIAS.indexOf(selDay)]), /*#__PURE__*/React.createElement("div", {
+    }, "\uD83D\uDD04 Regenerar ", DIAS_FULL[DIAS.indexOf(selDay)]), /*#__PURE__*/React.createElement("div", {
       style: {
         marginTop: 10,
         background: "#f6f7fb",
@@ -8499,13 +8483,13 @@ function App() {
     }, /*#__PURE__*/React.createElement(Sparkles, {
       size: 15,
       color: "#F2B705"
-    }), " Menú del día · meta ", goal, " kcal"), /*#__PURE__*/React.createElement("div", {
+    }), " Men\xFA del d\xEDa \xB7 meta ", goal, " kcal"), /*#__PURE__*/React.createElement("div", {
       className: "tip-box"
     }, /*#__PURE__*/React.createElement("span", {
       className: "tip-icon"
-    }, "🌮"), /*#__PURE__*/React.createElement("p", {
+    }, "\uD83C\uDF2E"), /*#__PURE__*/React.createElement("p", {
       className: "tip-text"
-    }, /*#__PURE__*/React.createElement("b", null, "¡Come rico, come sano!"), " La comida mexicana está llena de sabor y nutrientes cuando balanceamos los ingredientes. Comer bien no es comer aburrido.")), dishes.map(x => /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("b", null, "\xA1Come rico, come sano!"), " La comida mexicana est\xE1 llena de sabor y nutrientes cuando balanceamos los ingredientes. Comer bien no es comer aburrido.")), dishes.map(x => /*#__PURE__*/React.createElement("div", {
       key: x.k,
       style: {
         borderBottom: "1px solid #f4f5f9",
@@ -8548,7 +8532,7 @@ function App() {
         fontWeight: 600,
         color: "#7a8099"
       }
-    }, x.d.kcal, " kcal · P", x.d.p, " · C", x.d.c, " · G", x.d.g))), /*#__PURE__*/React.createElement("div", {
+    }, x.d.kcal, " kcal \xB7 P", x.d.p, " \xB7 C", x.d.c, " \xB7 G", x.d.g))), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         justifyContent: "space-between",
@@ -8558,7 +8542,7 @@ function App() {
       style: {
         fontFamily: "'Fredoka'"
       }
-    }, "Total del día"), /*#__PURE__*/React.createElement("b", {
+    }, "Total del d\xEDa"), /*#__PURE__*/React.createElement("b", {
       style: {
         fontFamily: "'Fredoka'",
         color: okColor
@@ -8600,14 +8584,14 @@ function App() {
         setOverlay(null);
         setScreen("home");
       }
-    }, "Añadir todo a hoy"), /*#__PURE__*/React.createElement("button", {
+    }, "A\xF1adir todo a hoy"), /*#__PURE__*/React.createElement("button", {
       className: "btn ghost",
       style: {
         width: "100%",
         marginTop: 4
       },
       onClick: regen
-    }, "Regenerar menú")));
+    }, "Regenerar men\xFA")));
   };
   const Nav = () => /*#__PURE__*/React.createElement("div", {
     className: "navbar"
@@ -8714,7 +8698,7 @@ function App() {
       fontSize: 24,
       margin: "2px 0 0"
     }
-  }, "¡Meta del día cumplida!"), /*#__PURE__*/React.createElement("p", {
+  }, "\xA1Meta del d\xEDa cumplida!"), /*#__PURE__*/React.createElement("p", {
     className: "muted",
     style: {
       margin: "4px 0 10px"
@@ -8725,10 +8709,10 @@ function App() {
     className: "reward"
   }, "+50 XP"), /*#__PURE__*/React.createElement("span", {
     className: "reward"
-  }, "🔥 Racha ", streak + 1)), /*#__PURE__*/React.createElement("button", {
+  }, "\uD83D\uDD25 Racha ", streak + 1)), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: closeCelebrate
-  }, "¡Gracias, ", petName, "!"))), overlay === "regalo" && regaloSkin && /*#__PURE__*/React.createElement("div", {
+  }, "\xA1Gracias, ", petName, "!"))), overlay === "regalo" && regaloSkin && /*#__PURE__*/React.createElement("div", {
     className: "overlay celebrate",
     onClick: () => {
       setOverlay(null);
@@ -8753,13 +8737,13 @@ function App() {
       fontSize: 52,
       marginBottom: 4
     }
-  }, "🎁"), /*#__PURE__*/React.createElement("h2", {
+  }, "\uD83C\uDF81"), /*#__PURE__*/React.createElement("h2", {
     className: "display",
     style: {
       fontSize: 23,
       margin: "2px 0 6px"
     }
-  }, "¡Nuevo color desbloqueado!"), /*#__PURE__*/React.createElement("div", {
+  }, "\xA1Nuevo color desbloqueado!"), /*#__PURE__*/React.createElement("div", {
     className: "kiss-stage",
     style: {
       margin: "4px 0"
@@ -8798,7 +8782,7 @@ function App() {
       setRegaloSkin(null);
       showToast("¡" + petName + " estrena color! 🎨");
     }
-  }, "Ponérselo ahora"), /*#__PURE__*/React.createElement("button", {
+  }, "Pon\xE9rselo ahora"), /*#__PURE__*/React.createElement("button", {
     className: "btn ghost",
     style: {
       width: "100%"
@@ -8807,7 +8791,7 @@ function App() {
       setOverlay(null);
       setRegaloSkin(null);
     }
-  }, "Más tarde"))), overlay === "paywall" && /*#__PURE__*/React.createElement("div", {
+  }, "M\xE1s tarde"))), overlay === "paywall" && /*#__PURE__*/React.createElement("div", {
     className: "overlay",
     onClick: () => setOverlay(null)
   }, /*#__PURE__*/React.createElement("div", {
@@ -8833,7 +8817,7 @@ function App() {
     }
   }, "Hazte Premium"), /*#__PURE__*/React.createElement("div", {
     className: "plan best"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Anual"), /*#__PURE__*/React.createElement("small", null, " 2 meses gratis")), /*#__PURE__*/React.createElement("b", null, "$799", /*#__PURE__*/React.createElement("small", null, "/año"))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Anual"), /*#__PURE__*/React.createElement("small", null, " 2 meses gratis")), /*#__PURE__*/React.createElement("b", null, "$799", /*#__PURE__*/React.createElement("small", null, "/a\xF1o"))), /*#__PURE__*/React.createElement("div", {
     className: "plan"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Mensual")), /*#__PURE__*/React.createElement("b", null, "$99", /*#__PURE__*/React.createElement("small", null, "/mes"))), /*#__PURE__*/React.createElement("ul", {
     className: "perks"
@@ -8848,12 +8832,12 @@ function App() {
       setOverlay(null);
       showToast("Demo: aquí iría el checkout 🛒");
     }
-  }, "Probar 7 días gratis"), /*#__PURE__*/React.createElement("p", {
+  }, "Probar 7 d\xEDas gratis"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       textAlign: "center"
     }
-  }, "Gratis siempre: registro de comida, ajolote básico y stats básicas."))), overlay === "coach" && /*#__PURE__*/React.createElement("div", {
+  }, "Gratis siempre: registro de comida, ajolote b\xE1sico y stats b\xE1sicas."))), overlay === "coach" && /*#__PURE__*/React.createElement("div", {
     className: "overlay",
     onClick: () => setOverlay(null)
   }, /*#__PURE__*/React.createElement("div", {
@@ -8875,7 +8859,7 @@ function App() {
     size: 70
   }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, petName, ", tu coach"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Nutrición con base en evidencia, sin culpa."))), Object.keys(COACH_QA).map(q => /*#__PURE__*/React.createElement("div", {
+  }, "Nutrici\xF3n con base en evidencia, sin culpa."))), Object.keys(COACH_QA).map(q => /*#__PURE__*/React.createElement("div", {
     key: q,
     className: "coach-q " + (coachOpenMap[q] ? "open" : ""),
     onClick: () => setCoachOpenMap(m => ({
@@ -8900,12 +8884,12 @@ function App() {
     size: 20
   })), /*#__PURE__*/React.createElement("p", {
     className: "detect-h"
-  }, "🥗 Preferencias y alergias"), /*#__PURE__*/React.createElement("p", {
+  }, "\uD83E\uDD57 Preferencias y alergias"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       marginBottom: 14
     }
-  }, "Esto ajusta tu plan semanal y el menú del día. Lo que marques aquí, ", petName, " no te lo va a sugerir."), /*#__PURE__*/React.createElement("button", {
+  }, "Esto ajusta tu plan semanal y el men\xFA del d\xEDa. Lo que marques aqu\xED, ", petName, " no te lo va a sugerir."), /*#__PURE__*/React.createElement("button", {
     className: "row-opt",
     style: {
       marginBottom: 14
@@ -8919,7 +8903,7 @@ function App() {
       fontFamily: "Fredoka",
       fontSize: 16
     }
-  }, "🌱 Vegetariano"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("small", {
+  }, "\uD83C\uDF31 Vegetariano"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("small", {
     style: {
       color: "#9aa0b4"
     }
@@ -8958,11 +8942,11 @@ function App() {
       fontFamily: "Fredoka",
       fontSize: 16
     }
-  }, "🥩 Bajo en carbohidratos"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("small", {
+  }, "\uD83E\uDD69 Bajo en carbohidratos"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("small", {
     style: {
       color: "#9aa0b4"
     }
-  }, "Platillos con pocos o nada de carbos (≤16 g)")), /*#__PURE__*/React.createElement("span", {
+  }, "Platillos con pocos o nada de carbos (\u226416 g)")), /*#__PURE__*/React.createElement("span", {
     style: {
       width: 46,
       height: 28,
@@ -9025,7 +9009,7 @@ function App() {
       ...p,
       otrosTxt: e.target.value
     })),
-    placeholder: "¿Qué más evitas? Ej: fresa, camarón, soya…",
+    placeholder: "\xBFQu\xE9 m\xE1s evitas? Ej: fresa, camar\xF3n, soya\u2026",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -9041,7 +9025,7 @@ function App() {
     style: {
       marginTop: 6
     }
-  }, "Lo guardamos como recordatorio. Aún no filtra solo, así que revisa los ingredientes de cada platillo.")), /*#__PURE__*/React.createElement("button", {
+  }, "Lo guardamos como recordatorio. A\xFAn no filtra solo, as\xED que revisa los ingredientes de cada platillo.")), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => {
       regenWeek();
@@ -9061,44 +9045,44 @@ function App() {
     size: 20
   })), /*#__PURE__*/React.createElement("p", {
     className: "detect-h"
-  }, "🍽️ Guía por porciones"), /*#__PURE__*/React.createElement("p", {
+  }, "\uD83C\uDF7D\uFE0F Gu\xEDa por porciones"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       marginBottom: 14
     }
-  }, "Si no te laten los menús fijos, esta es una forma flexible que a mucha gente le funciona: armar el plato por porciones, priorizando proteína y verduras. Ayuda a mantener la glucosa estable y a no andar con hambre entre comidas."), /*#__PURE__*/React.createElement("div", {
+  }, "Si no te laten los men\xFAs fijos, esta es una forma flexible que a mucha gente le funciona: armar el plato por porciones, priorizando prote\xEDna y verduras. Ayuda a mantener la glucosa estable y a no andar con hambre entre comidas."), /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
       marginBottom: 10
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
-  }, "☀️ Desayuno"), /*#__PURE__*/React.createElement("p", {
+  }, "\u2600\uFE0F Desayuno"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Más proteína que fruta. Si es fruta de mano, 1 pieza. Puedes sumar 1 carbohidrato (1 tortilla o 1 pan).")), /*#__PURE__*/React.createElement("div", {
+  }, "M\xE1s prote\xEDna que fruta. Si es fruta de mano, 1 pieza. Puedes sumar 1 carbohidrato (1 tortilla o 1 pan).")), /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
       marginBottom: 10
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
-  }, "🍽️ Comida"), /*#__PURE__*/React.createElement("p", {
+  }, "\uD83C\uDF7D\uFE0F Comida"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Una porción de proteína + 2 tostadas + ½ aguacate + muchas verduras.")), /*#__PURE__*/React.createElement("div", {
+  }, "Una porci\xF3n de prote\xEDna + 2 tostadas + \xBD aguacate + muchas verduras.")), /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
       marginBottom: 10
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-h"
-  }, "🌙 Cena"), /*#__PURE__*/React.createElement("p", {
+  }, "\uD83C\uDF19 Cena"), /*#__PURE__*/React.createElement("p", {
     className: "muted sm"
-  }, "Ligera: proteína + verduras. Si te da hambre, un snack con proteína (yogur griego, huevo cocido).")), /*#__PURE__*/React.createElement("p", {
+  }, "Ligera: prote\xEDna + verduras. Si te da hambre, un snack con prote\xEDna (yogur griego, huevo cocido).")), /*#__PURE__*/React.createElement("p", {
     className: "muted sm",
     style: {
       marginTop: 4
     }
-  }, "La idea no es contar todo al gramo, sino la proporción del plato. Es una guía general, no un plan médico: si tienes una condición (diabetes, riñón, embarazo), confírmalo con tu nutriólogo."))), overlay === "privacy" && /*#__PURE__*/React.createElement("div", {
+  }, "La idea no es contar todo al gramo, sino la proporci\xF3n del plato. Es una gu\xEDa general, no un plan m\xE9dico: si tienes una condici\xF3n (diabetes, ri\xF1\xF3n, embarazo), conf\xEDrmalo con tu nutri\xF3logo."))), overlay === "privacy" && /*#__PURE__*/React.createElement("div", {
     className: "overlay",
     onClick: () => setOverlay(null)
   }, /*#__PURE__*/React.createElement("div", {
@@ -9119,7 +9103,7 @@ function App() {
     className: "legal"
   }, /*#__PURE__*/React.createElement("p", {
     className: "legal-note"
-  }, "Borrador de muestra. Debe revisarlo un abogado antes de publicarse."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Responsable."), " Ricky Rabbit Dev Studio (“nosotros”) es responsable del tratamiento de tus datos personales."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Datos que recabamos."), " De identificación (nombre, correo) y de salud: sexo, edad, peso, estatura, circunferencias y hábitos alimenticios. Los datos de salud son ", /*#__PURE__*/React.createElement("b", null, "datos personales sensibles"), "."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Finalidades."), " Calcular tus requerimientos nutricionales, personalizar recomendaciones y operar la app. No tomamos decisiones médicas por ti ni reemplazamos a un profesional."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Consentimiento."), " Para datos sensibles obtenemos tu consentimiento libre, específico e informado, conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares vigente (DOF 20 de marzo de 2025)."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Derechos ARCO."), " Puedes acceder, rectificar, cancelar u oponerte, y revocar tu consentimiento, en privacidad@rickyrabbit.studio. La autoridad es la Secretaría Anticorrupción y Buen Gobierno."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Seguridad."), " Aplicamos medidas de seguridad para proteger tus datos. No vendemos tus datos personales.")), /*#__PURE__*/React.createElement("button", {
+  }, "Borrador de muestra. Debe revisarlo un abogado antes de publicarse."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Responsable."), " Ricky Rabbit Dev Studio (\u201Cnosotros\u201D) es responsable del tratamiento de tus datos personales."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Datos que recabamos."), " De identificaci\xF3n (nombre, correo) y de salud: sexo, edad, peso, estatura, circunferencias y h\xE1bitos alimenticios. Los datos de salud son ", /*#__PURE__*/React.createElement("b", null, "datos personales sensibles"), "."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Finalidades."), " Calcular tus requerimientos nutricionales, personalizar recomendaciones y operar la app. No tomamos decisiones m\xE9dicas por ti ni reemplazamos a un profesional."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Consentimiento."), " Para datos sensibles obtenemos tu consentimiento libre, espec\xEDfico e informado, conforme a la Ley Federal de Protecci\xF3n de Datos Personales en Posesi\xF3n de los Particulares vigente (DOF 20 de marzo de 2025)."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Derechos ARCO."), " Puedes acceder, rectificar, cancelar u oponerte, y revocar tu consentimiento, en privacidad@rickyrabbit.studio. La autoridad es la Secretar\xEDa Anticorrupci\xF3n y Buen Gobierno."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Seguridad."), " Aplicamos medidas de seguridad para proteger tus datos. No vendemos tus datos personales.")), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: () => setOverlay(null)
   }, "Entendido"))), eating && /*#__PURE__*/React.createElement("div", {
@@ -9144,7 +9128,7 @@ function App() {
       fontSize: 18,
       animation: "floaty 1.4s ease-in-out infinite"
     }
-  }, "✨"), /*#__PURE__*/React.createElement("span", {
+  }, "\u2728"), /*#__PURE__*/React.createElement("span", {
     style: {
       position: "absolute",
       top: "14%",
@@ -9152,7 +9136,7 @@ function App() {
       fontSize: 16,
       animation: "floaty 1.6s ease-in-out infinite .3s"
     }
-  }, "😋"))), toast && /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDE0B"))), toast && /*#__PURE__*/React.createElement("div", {
     className: "toast"
   }, toast)));
 }
