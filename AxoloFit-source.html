@@ -1055,7 +1055,7 @@ function Ring({ progress, size = 78, stroke = 9, color = "#E79FAE", track = "#00
 function MiniChart({ data }) {
   const w = 320, h = 160, pad = 26;
   const ys = data.map((d) => d.peso), min = Math.min(...ys) - 0.3, max = Math.max(...ys) + 0.3;
-  const px = (i) => pad + i * ((w - 2 * pad) / (data.length - 1));
+  const px = (i) => data.length <= 1 ? w / 2 : pad + i * ((w - 2 * pad) / (data.length - 1));
   const py = (v) => h - pad - ((v - min) / (max - min)) * (h - 2 * pad);
   const pts = data.map((d, i) => px(i) + "," + py(d.peso)).join(" ");
   return (
@@ -1717,11 +1717,16 @@ function App() {
   /* --- Cargar datos del usuario desde Supabase --- */
   const cargarDatos = async (uid) => {
     try {
-      const [{ data: perfil }, { data: axo }, { data: comidas }] = await Promise.all([
+      const [{ data: perfil }, { data: axo }, { data: comidas }, { data: pesos }] = await Promise.all([
         sb.from("profiles").select("*").eq("id", uid).single(),
         sb.from("axo_state").select("*").eq("id", uid).single(),
         sb.from("food_log").select("*").eq("user_id", uid).eq("fecha", new Date().toISOString().slice(0, 10)).order("created_at"),
+        sb.from("peso_log").select("*").eq("user_id", uid).order("fecha"),
       ]);
+      if (pesos && pesos.length > 0) {
+        setPesoHist(pesos.map(r => ({ fecha: r.fecha, peso: parseFloat(r.peso) })));
+        setPesoActual(parseFloat(pesos[pesos.length - 1].peso));
+      }
       if (perfil && perfil.nombre) {
         setPetName(perfil.nombre || "Axo");
         setProfile(p => ({
@@ -1783,6 +1788,21 @@ function App() {
     if (typeof foodId === "string") await sb.from("food_log").delete().eq("id", foodId);
   };
 
+  /* --- Guardar / registrar peso --- */
+  const guardarPeso = async (uid, peso) => {
+    const fecha = new Date().toISOString().slice(0, 10);
+    await sb.from("peso_log").upsert({ user_id: uid, fecha, peso }, { onConflict: "user_id,fecha" });
+  };
+  const registrarPeso = async () => {
+    const peso = parseFloat(pesoInput);
+    if (!peso || peso < 30 || peso > 300) { showToast("Pon un peso válido (30–300 kg)"); return; }
+    const fecha = new Date().toISOString().slice(0, 10);
+    setPesoHist(h => [...h.filter(r => r.fecha !== fecha), { fecha, peso }].sort((a, b) => a.fecha.localeCompare(b.fecha)));
+    setPesoActual(peso); setPesoInput("");
+    if (userId) await guardarPeso(userId, peso);
+    showToast("¡Peso registrado! 💪");
+  };
+
   /* --- Callback de login exitoso --- */
   const handleAuth = async (user, nombreNuevo) => {
     setUserId(user.id);
@@ -1794,6 +1814,8 @@ function App() {
     }
   };
   const [pesoActual, setPesoActual] = useState(null);
+  const [pesoHist, setPesoHist] = useState([]);
+  const [pesoInput, setPesoInput] = useState("");
   const DIAS = ["L","M","X","J","V","S","D"];
   const DIAS_LABEL = ["L","Ma","Mi","J","V","S","D"];
   const DIAS_FULL = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
@@ -2147,22 +2169,32 @@ function App() {
   };
 
   const StatsScreen = () => {
-    const data = [{ d: "L", peso: 69.2 }, { d: "Ma", peso: 69.0 }, { d: "Mi", peso: 68.7 }, { d: "J", peso: 68.6 }, { d: "V", peso: 68.3 }, { d: "S", peso: 68.1 }, { d: "D", peso: 68.0 }];
+    const estatura = (profile.estaturaCm || 0) / 100;
+    const pesoReal = pesoHist.length > 0 ? pesoHist[pesoHist.length - 1].peso : pa;
+    const imc = estatura > 0 ? pesoReal / (estatura * estatura) : 0;
+    const imcCat = imc < 18.5 ? "bajo peso" : imc < 25 ? "saludable" : imc < 30 ? "sobrepeso" : "obesidad";
+    const descenso = pesoHist.length >= 2 ? (pesoHist[0].peso - pesoHist[pesoHist.length - 1].peso) : 0;
+    const chartData = pesoHist.map(r => ({ d: r.fecha.slice(5).replace("-", "/"), peso: r.peso }));
     return (
       <div className="screen">
         <Header title="Progreso" back={() => setScreen("home")} />
         <div className="scroll" ref={sRef("stats")} onScroll={sSave("stats")}>
           <div className="card" style={{ background: "linear-gradient(135deg,#FCEFF1,#EEF7F4)" }}>
-            <div className="card-h">⚖️ Tu peso · {pa.toFixed(1)} kg</div>
+            <div className="card-h">⚖️ Tu peso · {pesoReal.toFixed(1)} kg</div>
             <div className="center" style={{ margin: "2px 0" }}><Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={pet.evo} size={150} /></div>
             <p className="muted sm" style={{ textAlign: "center" }}>Meta: {pesoMeta} kg · {petName} adelgaza contigo conforme bajas de peso.</p>
-            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-              <button className="btn soft" onClick={() => setPesoActual(Math.max(pesoMeta, +(pa - 0.5).toFixed(1)))}>− 0.5 kg</button>
-              <button className="btn soft" onClick={() => setPesoActual(Math.min(pesoIni, +(pa + 0.5).toFixed(1)))}>+ 0.5 kg</button>
+            {imc > 0 && <p className="muted sm" style={{ textAlign: "center", marginTop: 2 }}>IMC: <b>{imc.toFixed(1)}</b> · {imcCat}</p>}
+            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+              <input type="number" inputMode="decimal" placeholder="Tu peso de hoy (kg)" value={pesoInput} onChange={(e) => setPesoInput(e.target.value)} style={{ flex: 1, padding: "11px 13px", borderRadius: 13, border: "1px solid #e3dcef", fontSize: 15, fontFamily: "Nunito", outline: "none" }} />
+              <button className="btn primary" onClick={registrarPeso}>Registrar</button>
             </div>
-            <p className="hint" style={{ textAlign: "center" }}>Demo: registra tu peso y mira cómo cambia tu ajolote.</p>
+            <p className="hint" style={{ textAlign: "center" }}>Registra tu peso una vez por semana para ver tu avance.</p>
           </div>
-          <div className="card"><div className="card-h">Peso · últimos 7 días</div><MiniChart data={data} /><p className="win">▼ 1.2 kg esta semana · ¡{petName} lo celebra contigo!</p></div>
+          <div className="card"><div className="card-h">Tu progreso de peso</div>
+            {pesoHist.length === 0 && <p className="muted sm">Aún no registras tu peso. Pon tu peso de hoy arriba para empezar tu gráfica.</p>}
+            {pesoHist.length === 1 && <p className="muted sm">¡Primer registro guardado! Registra de nuevo la próxima semana para ver tu línea de progreso.</p>}
+            {pesoHist.length >= 2 && <><MiniChart data={chartData} />{descenso > 0 ? <p className="win">▼ {descenso.toFixed(1)} kg desde que empezaste · ¡{petName} lo celebra contigo!</p> : descenso < 0 ? <p className="muted sm">Has subido {Math.abs(descenso).toFixed(1)} kg desde el inicio. Sigue, {petName} está contigo. 💪</p> : <p className="muted sm">Te mantienes igual que al inicio. ¡A seguir!</p>}</>}
+          </div>
           <div className="tip-box">
             <span className="tip-icon">💡</span>
             <p className="tip-text"><b>No te obsesiones con la báscula.</b> El peso sube y baja por agua o músculo. Lo ideal es <b>bajar de talla y perder grasa</b> manteniendo tus músculos fuertes. ¡Tus centímetros nos dicen el progreso real!</p>
