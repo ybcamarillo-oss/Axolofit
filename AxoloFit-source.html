@@ -891,10 +891,10 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
             {/* capucha lavanda con borde mullido */}
             <path d="M40 70 C 38 34 64 20 100 20 C 136 20 162 34 160 70 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 q -7.5 8 -15 0 Z" fill="#C9B6F2" stroke="#B19CE4" strokeWidth="2" />
             {/* orejas largas con interior rosa */}
-            <ellipse cx="74" cy="16" rx="12.5" ry="33" fill="#C9B6F2" stroke="#B19CE4" strokeWidth="2" transform="rotate(-12 74 16)" />
-            <ellipse cx="74" cy="18" rx="5.5" ry="22" fill="#F7AFC5" transform="rotate(-12 74 18)" />
-            <ellipse cx="126" cy="16" rx="12.5" ry="33" fill="#C9B6F2" stroke="#B19CE4" strokeWidth="2" transform="rotate(12 126 16)" />
-            <ellipse cx="126" cy="18" rx="5.5" ry="22" fill="#F7AFC5" transform="rotate(12 126 18)" />
+            <ellipse cx="74" cy="31" rx="12.5" ry="29" fill="#C9B6F2" stroke="#B19CE4" strokeWidth="2" transform="rotate(-12 74 31)" />
+            <ellipse cx="74" cy="33" rx="5.5" ry="19" fill="#F7AFC5" transform="rotate(-12 74 33)" />
+            <ellipse cx="126" cy="31" rx="12.5" ry="29" fill="#C9B6F2" stroke="#B19CE4" strokeWidth="2" transform="rotate(12 126 31)" />
+            <ellipse cx="126" cy="33" rx="5.5" ry="19" fill="#F7AFC5" transform="rotate(12 126 33)" />
             {/* carita: ojitos, naricita y bigotes */}
             <circle cx="88" cy="50" r="3.2" fill="#5B4636" />
             <circle cx="112" cy="50" r="3.2" fill="#5B4636" />
@@ -1130,6 +1130,7 @@ function Onboarding({ onDone }) {
   const [slide, setSlide] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
   const [hatching, setHatching] = useState(false);
+  const [colorNacer] = useState(() => { const c = ["durazno","rosa","menta","cielo","morado"]; return c[Math.floor(Math.random()*c.length)]; });
   const set = (k, v) => setD((p) => ({ ...p, [k]: v }));
   const SLIDES = [
     { emoji: "🦎", title: "Tu ajolote crece contigo", desc: "Mientras mejor comes, más feliz y fuerte se vuelve. Cuídalo y él te cuida." },
@@ -1315,7 +1316,7 @@ function Onboarding({ onDone }) {
 
   return (
     <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)" }}>
-      <Axo paletteKey="durazno" size={200} evo="huevo" hatching={hatching} trembling={!hatching} />
+      <Axo paletteKey={colorNacer} size={200} evo="huevo" hatching={hatching} trembling={!hatching} />
       {!hatching
         ? <>
             <h2 className="display" style={{ fontSize: 24, margin: "4px 0 2px" }}>¡Está a punto de nacer!</h2>
@@ -1323,7 +1324,7 @@ function Onboarding({ onDone }) {
             <input className="name-input" value={name} maxLength={14} onChange={(e) => setName(e.target.value)} />
             <button className="btn primary big" onClick={() => {
               setHatching(true);
-              setTimeout(() => onDone({ ...d }, name || "Axo"), 950);
+              setTimeout(() => onDone({ ...d }, name || "Axo", colorNacer), 950);
             }}>¡Que nazca! 🥚💗</button>
           </>
         : <p className="display" style={{ fontSize: 22, color: "#E79FAE", marginTop: 8 }}>¡Naciendo… 🥚✨!</p>
@@ -2003,11 +2004,13 @@ function App() {
     return <div className="root"><div className="phone"><NewPassScreen onDone={() => { sb.auth.getSession().then(({data:{session}}) => { if(session) { setUserId(session.user.id); cargarDatos(session.user.id); } else setPhase("auth"); }); }} /></div></div>;
 
   if (phase === "onboarding")
-    return <div className="root"><div className="phone"><Onboarding onDone={async (p, name) => {
+    return <div className="root"><div className="phone"><Onboarding onDone={async (p, name, variedad) => {
       setProfile(p); setPetName(name); setPhase("app"); setScreen("home");
+      if (variedad) setPet(prev => ({ ...prev, palette: variedad }));
       scrollPositions.current = {};
       try { window.scrollTo(0, 0); } catch(e) {}
       if (userId) await guardarPerfil(userId, p, name);
+      if (userId && variedad) await guardarAxo(userId, { variedad, accesorio: "ninguno", outfit: "ninguno", nivel: level, xp, racha: streak });
     }} /></div></div>;
 
   const HomeScreen = () => (
