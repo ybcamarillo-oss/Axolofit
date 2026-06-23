@@ -6022,6 +6022,7 @@ function App() {
   }, []);
 
   /* --- Cargar datos del usuario desde Supabase --- */
+  const hoyLocal = (d = new Date()) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   const cargarDatos = async uid => {
     try {
       const [{
@@ -6032,7 +6033,7 @@ function App() {
         data: comidas
       }, {
         data: pesos
-      }] = await Promise.all([sb.from("profiles").select("*").eq("id", uid).single(), sb.from("axo_state").select("*").eq("id", uid).single(), sb.from("food_log").select("*").eq("user_id", uid).eq("fecha", new Date().toISOString().slice(0, 10)).order("created_at"), sb.from("peso_log").select("*").eq("user_id", uid).order("fecha")]);
+      }] = await Promise.all([sb.from("profiles").select("*").eq("id", uid).single(), sb.from("axo_state").select("*").eq("id", uid).single(), sb.from("food_log").select("*").eq("user_id", uid).eq("fecha", hoyLocal()).order("created_at"), sb.from("peso_log").select("*").eq("user_id", uid).order("fecha")]);
       if (pesos && pesos.length > 0) {
         setPesoHist(pesos.map(r => ({
           fecha: r.fecha,
@@ -6123,7 +6124,7 @@ function App() {
 
   /* --- Guardar / registrar peso --- */
   const guardarPeso = async (uid, peso) => {
-    const fecha = new Date().toISOString().slice(0, 10);
+    const fecha = hoyLocal();
     await sb.from("peso_log").upsert({
       user_id: uid,
       fecha,
@@ -6138,7 +6139,7 @@ function App() {
       showToast("Pon un peso válido (30–300 kg)");
       return;
     }
-    const fecha = new Date().toISOString().slice(0, 10);
+    const fecha = hoyLocal();
     setPesoHist(h => [...h.filter(r => r.fecha !== fecha), {
       fecha,
       peso
@@ -6370,6 +6371,7 @@ function App() {
   const [ultimoDia, setUltimoDia] = useState(null);
   const [skinsUnlocked, setSkinsUnlocked] = useState([]);
   const [regaloSkin, setRegaloSkin] = useState(null);
+  const [evoNueva, setEvoNueva] = useState(null);
   const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : "cria";
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest(b => ({
@@ -6505,10 +6507,10 @@ function App() {
     });
     // Racha por fecha real
     const hoy = new Date();
-    const hoyStr = hoy.toISOString().slice(0, 10);
+    const hoyStr = hoyLocal(hoy);
     const ayer = new Date(hoy);
     ayer.setDate(ayer.getDate() - 1);
-    const ayerStr = ayer.toISOString().slice(0, 10);
+    const ayerStr = hoyLocal(ayer);
     let nuevaRacha;
     if (ultimoDia === hoyStr) {
       nuevaRacha = streak;
@@ -6521,6 +6523,8 @@ function App() {
     } // primer día o se rompió la racha
     setStreak(nuevaRacha);
     setUltimoDia(hoyStr);
+    const evoDe = s => s >= 60 ? "mistico" : s >= 21 ? "adulto" : s >= 7 ? "joven" : "cria";
+    const subioEtapa = nuevaRacha > streak && evoDe(nuevaRacha) !== evoDe(streak);
     // Desbloqueo de skin: primera vez (racha 1) y cada 7 días (7, 14, 21...)
     const esDiaDeRegalo = nuevaRacha === 1 || nuevaRacha % 7 === 0;
     let nuevaSkin = null;
@@ -6552,7 +6556,13 @@ function App() {
       ultimo_dia: hoyStr,
       skins: skinsUnlocked.join(",")
     });
-    if (nuevaSkin) {
+    if (subioEtapa) {
+      setEvoNueva({
+        etapa: evoDe(nuevaRacha),
+        dias: nuevaRacha
+      });
+      setOverlay("evolucion");
+    } else if (nuevaSkin) {
       setRegaloSkin(nuevaSkin);
       setOverlay("regalo");
     } else if (ultimoDia === hoyStr) showToast("¡Gracias por cuidarte hoy! 💗");else showToast("🔥 Día " + nuevaRacha + " cuidándote · ¡bien hecho!");
@@ -9146,7 +9156,74 @@ function App() {
   }, "\uD83D\uDD25 Racha ", streak + 1)), /*#__PURE__*/React.createElement("button", {
     className: "btn primary big",
     onClick: closeCelebrate
-  }, "\xA1Gracias, ", petName, "!"))), overlay === "regalo" && regaloSkin && /*#__PURE__*/React.createElement("div", {
+  }, "\xA1Gracias, ", petName, "!"))), overlay === "evolucion" && evoNueva && /*#__PURE__*/React.createElement("div", {
+    className: "overlay celebrate",
+    onClick: () => {
+      setOverlay(null);
+      setEvoNueva(null);
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "papel"
+  }, Array.from({
+    length: 14
+  }).map((_, i) => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    style: {
+      left: i * 7 % 100 + "%",
+      animationDelay: i % 5 * 0.2 + "s",
+      background: ["#FF6F9C", "#7C5CFF", "#34BC97", "#FFD15C"][i % 4]
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "celebrate-card",
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 52,
+      marginBottom: 4
+    }
+  }, "\uD83C\uDF1F"), /*#__PURE__*/React.createElement("h2", {
+    className: "display",
+    style: {
+      fontSize: 23,
+      margin: "2px 0 6px"
+    }
+  }, "\xA1", petName, " creci\xF3!"), /*#__PURE__*/React.createElement("div", {
+    className: "kiss-stage",
+    style: {
+      margin: "4px 0"
+    }
+  }, /*#__PURE__*/React.createElement(Axo, {
+    paletteKey: pet.palette,
+    accessory: pet.accessory,
+    outfit: pet.outfit,
+    estilo: pet.estilo,
+    chub: chub,
+    evo: evoNueva.etapa,
+    mood: "amor",
+    size: 150
+  })), /*#__PURE__*/React.createElement("p", {
+    className: "display",
+    style: {
+      fontSize: 19,
+      color: "#E79FAE",
+      margin: "2px 0"
+    }
+  }, {
+    joven: "¡Ya es Joven! 🦎",
+    adulto: "¡Ya es Adulto! ⭐",
+    mistico: "¡Forma Mística! ✨"
+  }[evoNueva.etapa]), /*#__PURE__*/React.createElement("p", {
+    className: "muted",
+    style: {
+      margin: "2px 14px 12px"
+    }
+  }, "\xA1Felicidades! Gracias a tu constancia de ", evoNueva.dias, " d\xEDas seguidos, ", petName, " ha crecido. \uD83D\uDCAA"), /*#__PURE__*/React.createElement("button", {
+    className: "btn primary",
+    onClick: () => {
+      setOverlay(null);
+      setEvoNueva(null);
+    }
+  }, "\xA1Genial!"))), overlay === "regalo" && regaloSkin && /*#__PURE__*/React.createElement("div", {
     className: "overlay celebrate",
     onClick: () => {
       setOverlay(null);
