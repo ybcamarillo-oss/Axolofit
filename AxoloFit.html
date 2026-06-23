@@ -3549,36 +3549,36 @@ function Axo({
     strokeWidth: "2"
   }), /*#__PURE__*/React.createElement("ellipse", {
     cx: "74",
-    cy: "16",
+    cy: "31",
     rx: "12.5",
-    ry: "33",
+    ry: "29",
     fill: "#C9B6F2",
     stroke: "#B19CE4",
     strokeWidth: "2",
-    transform: "rotate(-12 74 16)"
+    transform: "rotate(-12 74 31)"
   }), /*#__PURE__*/React.createElement("ellipse", {
     cx: "74",
-    cy: "18",
+    cy: "33",
     rx: "5.5",
-    ry: "22",
+    ry: "19",
     fill: "#F7AFC5",
-    transform: "rotate(-12 74 18)"
+    transform: "rotate(-12 74 33)"
   }), /*#__PURE__*/React.createElement("ellipse", {
     cx: "126",
-    cy: "16",
+    cy: "31",
     rx: "12.5",
-    ry: "33",
+    ry: "29",
     fill: "#C9B6F2",
     stroke: "#B19CE4",
     strokeWidth: "2",
-    transform: "rotate(12 126 16)"
+    transform: "rotate(12 126 31)"
   }), /*#__PURE__*/React.createElement("ellipse", {
     cx: "126",
-    cy: "18",
+    cy: "33",
     rx: "5.5",
-    ry: "22",
+    ry: "19",
     fill: "#F7AFC5",
-    transform: "rotate(12 126 18)"
+    transform: "rotate(12 126 33)"
   }), /*#__PURE__*/React.createElement("circle", {
     cx: "88",
     cy: "50",
@@ -4276,6 +4276,10 @@ function Onboarding({
   const [slide, setSlide] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
   const [hatching, setHatching] = useState(false);
+  const [colorNacer] = useState(() => {
+    const c = ["durazno", "rosa", "menta", "cielo", "morado"];
+    return c[Math.floor(Math.random() * c.length)];
+  });
   const set = (k, v) => setD(p => ({
     ...p,
     [k]: v
@@ -4784,7 +4788,7 @@ function Onboarding({
       background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)"
     }
   }, /*#__PURE__*/React.createElement(Axo, {
-    paletteKey: "durazno",
+    paletteKey: colorNacer,
     size: 200,
     evo: "huevo",
     hatching: hatching,
@@ -4812,7 +4816,7 @@ function Onboarding({
       setHatching(true);
       setTimeout(() => onDone({
         ...d
-      }, name || "Axo"), 950);
+      }, name || "Axo", colorNacer), 950);
     }
   }, "\xA1Que nazca! \uD83E\uDD5A\uD83D\uDC97")) : /*#__PURE__*/React.createElement("p", {
     className: "display",
@@ -6562,16 +6566,28 @@ function App() {
   }, /*#__PURE__*/React.createElement("div", {
     className: "phone"
   }, /*#__PURE__*/React.createElement(Onboarding, {
-    onDone: async (p, name) => {
+    onDone: async (p, name, variedad) => {
       setProfile(p);
       setPetName(name);
       setPhase("app");
       setScreen("home");
+      if (variedad) setPet(prev => ({
+        ...prev,
+        palette: variedad
+      }));
       scrollPositions.current = {};
       try {
         window.scrollTo(0, 0);
       } catch (e) {}
       if (userId) await guardarPerfil(userId, p, name);
+      if (userId && variedad) await guardarAxo(userId, {
+        variedad,
+        accesorio: "ninguno",
+        outfit: "ninguno",
+        nivel: level,
+        xp,
+        racha: streak
+      });
     }
   })));
   const HomeScreen = () => /*#__PURE__*/React.createElement("div", {
