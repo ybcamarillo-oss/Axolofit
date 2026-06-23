@@ -2359,7 +2359,7 @@ function App() {
             <p className="detect-h"><Sparkles size={15} color="#F2B705" /> Una pregunta</p>
             <div style={{background:"#f6f7fb",borderRadius:12,padding:"10px 13px",marginBottom:12}}>
               <b style={{fontSize:15}}>{resultado.nombre}</b>
-              <div className="muted sm" style={{marginTop:3}}>{resultado.kcal} kcal \u00b7 P {resultado.proteina}g \u00b7 C {resultado.carbos}g \u00b7 G {resultado.grasa}g</div>
+              <div className="muted sm" style={{marginTop:3}}>{resultado.kcal} kcal · P {resultado.proteina}g · C {resultado.carbos}g · G {resultado.grasa}g</div>
             </div>
             <p style={{fontSize:14,color:"#4a4f6a",marginBottom:8}}>{resultado.pregunta_extras}</p>
             <textarea value={extras} onChange={e => setExtras(e.target.value)} placeholder="Ej: sí, con una cucharada de aceite y salsa" style={{width:"100%",minHeight:70,borderRadius:12,border:"1.5px solid #e8eaf0",padding:"10px 12px",fontFamily:"Nunito",fontSize:14,resize:"none",boxSizing:"border-box",outline:"none"}} />
