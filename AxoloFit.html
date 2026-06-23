@@ -7355,11 +7355,13 @@ function App() {
     }, /*#__PURE__*/React.createElement("input", {
       type: "number",
       inputMode: "decimal",
-      placeholder: "Tu peso de hoy (kg)",
+      placeholder: "Peso de hoy (kg)",
       value: pesoInput,
       onChange: e => setPesoInput(e.target.value),
       style: {
         flex: 1,
+        minWidth: 0,
+        boxSizing: "border-box",
         padding: "11px 13px",
         borderRadius: 13,
         border: "1px solid #e3dcef",
@@ -7369,7 +7371,11 @@ function App() {
       }
     }), /*#__PURE__*/React.createElement("button", {
       className: "btn primary",
-      onClick: registrarPeso
+      onClick: registrarPeso,
+      style: {
+        flexShrink: 0,
+        padding: "12px 16px"
+      }
     }, "Registrar")), /*#__PURE__*/React.createElement("p", {
       className: "hint",
       style: {
@@ -7465,9 +7471,9 @@ function App() {
       const _p = PALETTES[pet.palette] || PALETTES.durazno;
       return /*#__PURE__*/React.createElement("svg", {
         className: "tip-icon",
-        width: "22",
-        height: "22",
-        viewBox: "0 0 100 100"
+        width: "38",
+        height: "38",
+        viewBox: "8 14 84 84"
       }, /*#__PURE__*/React.createElement("g", {
         transform: "translate(22,50) scale(-0.46,0.46)"
       }, /*#__PURE__*/React.createElement("g", {
