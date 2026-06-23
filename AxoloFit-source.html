@@ -181,6 +181,12 @@ html,body { height:100%; }
 .kiss-heart { animation: kissHeart 1.8s ease-out 0.95s forwards; transform-box:fill-box; transform-origin:center; }
 @keyframes kissHeart2 { 0%,30%{opacity:0; transform:translate(0,0) scale(0.2)} 50%{opacity:1; transform:translate(-2px,-6px) scale(0.8)} 100%{opacity:0; transform:translate(-10px,-34px) scale(0.7)} }
 .kiss-heart2 { animation: kissHeart2 1.8s ease-out 1.1s forwards; transform-box:fill-box; transform-origin:center; }
+@keyframes rayPulse { 0%,100%{ opacity:.25; transform:scale(.82) } 50%{ opacity:1; transform:scale(1.12) } }
+@keyframes bulbGlow { 0%,100%{ fill:#FFE89C } 50%{ fill:#FFE372 } }
+@keyframes glowShine { 0%,100%{ opacity:.55 } 50%{ opacity:1 } }
+.foco-rays { animation: rayPulse 1.6s ease-in-out infinite; transform-box:fill-box; transform-origin:60px 24px; }
+.foco-bulb { animation: bulbGlow 1.6s ease-in-out infinite; }
+.foco-shine { animation: glowShine 1.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -2311,7 +2317,25 @@ function App() {
           </>)}
           {etapa === "cargando" && (
             <div className="center" style={{padding:"32px 0"}}>
-              <div style={{fontSize:36,marginBottom:12}}>🧠</div>
+              {(() => { const _p = PALETTES[pet.palette] || PALETTES.durazno; return (
+                <svg viewBox="0 0 120 132" width="84" height="92" className="axo-bob" style={{ marginBottom: 8 }}>
+                  <g className="foco-rays" stroke="#FFC93C" strokeWidth="2.4" strokeLinecap="round">
+                    <line x1="60" y1="6" x2="60" y2="0.5" /><line x1="44" y1="11" x2="40" y2="7" /><line x1="76" y1="11" x2="80" y2="7" /><line x1="38" y1="24" x2="32.5" y2="24" /><line x1="82" y1="24" x2="87.5" y2="24" />
+                  </g>
+                  <ellipse className="foco-bulb" cx="60" cy="24" rx="11" ry="11.5" fill="#FFE372" stroke="#F2C84A" strokeWidth="1.4" />
+                  <path className="foco-shine" d="M55 20 Q57 17 60 17" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+                  <path d="M55 30 Q60 33 65 30" fill="none" stroke="#E0A93C" strokeWidth="1.4" strokeLinecap="round" />
+                  <rect x="55" y="33.5" width="10" height="3" rx="1.4" fill="#CDBBA6" /><rect x="55.5" y="37" width="9" height="2.6" rx="1.2" fill="#BCA892" />
+                  <path d="M56.5 39.6 L63.5 39.6 L62 42.4 L58 42.4 Z" fill="#A8927C" />
+                  <g transform="translate(34,82) scale(-0.52,0.52)"><g transform="rotate(-38)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g><g transform="rotate(-12)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g><g transform="rotate(14)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g></g>
+                  <g transform="translate(86,82) scale(0.52,0.52)"><g transform="rotate(-38)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g><g transform="rotate(-12)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g><g transform="rotate(14)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g></g>
+                  <ellipse cx="60" cy="84" rx="28" ry="25" fill={_p.body} />
+                  <ellipse cx="47" cy="90" rx="6" ry="4.5" fill={_p.blush} opacity="0.65" /><ellipse cx="73" cy="90" rx="6" ry="4.5" fill={_p.blush} opacity="0.65" />
+                  <ellipse cx="51" cy="82" rx="4" ry="4.6" fill="#5B4636" /><ellipse cx="69" cy="82" rx="4" ry="4.6" fill="#5B4636" />
+                  <circle cx="52.3" cy="80" r="1.5" fill="#fff" /><circle cx="70.3" cy="80" r="1.5" fill="#fff" />
+                  <path d="M54 94 Q60 99 66 94" fill="none" stroke="#C77B92" strokeWidth="2.2" strokeLinecap="round" />
+                </svg>
+              ); })()}
               <p className="muted">Calculando macros…</p>
             </div>
           )}
