@@ -1721,14 +1721,20 @@ function App() {
   }, []);
 
   /* --- Cargar datos del usuario desde Supabase --- */
+  useEffect(() => {
+    if (phase === "app") { try { localStorage.setItem("axo_screen", screen); localStorage.setItem("axo_screen_t", "" + Date.now()); } catch (e) {} }
+  }, [screen, phase]);
+  const hoyLocal = (d = new Date()) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   const cargarDatos = async (uid) => {
     try {
-      const [{ data: perfil }, { data: axo }, { data: comidas }, { data: pesos }] = await Promise.all([
+      const [{ data: perfil }, { data: axo }, { data: comidas }, { data: pesos }, { count: totComidas }] = await Promise.all([
         sb.from("profiles").select("*").eq("id", uid).single(),
         sb.from("axo_state").select("*").eq("id", uid).single(),
-        sb.from("food_log").select("*").eq("user_id", uid).eq("fecha", new Date().toISOString().slice(0, 10)).order("created_at"),
+        sb.from("food_log").select("*").eq("user_id", uid).eq("fecha", hoyLocal()).order("created_at"),
         sb.from("peso_log").select("*").eq("user_id", uid).order("fecha"),
+        sb.from("food_log").select("id", { count: "exact", head: true }).eq("user_id", uid),
       ]);
+      setTotalComidas(totComidas || 0);
       if (pesos && pesos.length > 0) {
         setPesoHist(pesos.map(r => ({ fecha: r.fecha, peso: parseFloat(r.peso) })));
         setPesoActual(parseFloat(pesos[pesos.length - 1].peso));
@@ -1758,6 +1764,11 @@ function App() {
         if (comidas && comidas.length > 0) {
           setLog(comidas.map((c, i) => ({ id: c.id, n: c.nombre, kcal: c.kcal, p: c.proteina, c: c.carbos, g: c.grasa, qty: 1, uid: i + 1 })));
         }
+        try {
+          const sv = localStorage.getItem("axo_screen");
+          const t = +localStorage.getItem("axo_screen_t") || 0;
+          if (sv && sv !== "home" && Date.now() - t < 1800000) setScreen(sv);
+        } catch (e) {}
         setPhase("app");
       } else {
         setPhase("onboarding");
@@ -1796,13 +1807,13 @@ function App() {
 
   /* --- Guardar / registrar peso --- */
   const guardarPeso = async (uid, peso) => {
-    const fecha = new Date().toISOString().slice(0, 10);
+    const fecha = hoyLocal();
     await sb.from("peso_log").upsert({ user_id: uid, fecha, peso }, { onConflict: "user_id,fecha" });
   };
   const registrarPeso = async () => {
     const peso = parseFloat(pesoInput);
     if (!peso || peso < 30 || peso > 300) { showToast("Pon un peso válido (30–300 kg)"); return; }
-    const fecha = new Date().toISOString().slice(0, 10);
+    const fecha = hoyLocal();
     setPesoHist(h => [...h.filter(r => r.fecha !== fecha), { fecha, peso }].sort((a, b) => a.fecha.localeCompare(b.fecha)));
     setPesoActual(peso); setPesoInput("");
     if (userId) await guardarPeso(userId, peso);
@@ -1822,6 +1833,7 @@ function App() {
   const [pesoActual, setPesoActual] = useState(null);
   const [pesoHist, setPesoHist] = useState([]);
   const [pesoInput, setPesoInput] = useState("");
+  const [totalComidas, setTotalComidas] = useState(0);
   const DIAS = ["L","M","X","J","V","S","D"];
   const DIAS_LABEL = ["L","Ma","Mi","J","V","S","D"];
   const DIAS_FULL = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
@@ -1937,6 +1949,7 @@ function App() {
   const [ultimoDia, setUltimoDia] = useState(null);
   const [skinsUnlocked, setSkinsUnlocked] = useState([]);
   const [regaloSkin, setRegaloSkin] = useState(null);
+  const [evoNueva, setEvoNueva] = useState(null);
   const computedEvo = streak >= 60 ? "mistico" : streak >= 21 ? "adulto" : streak >= 7 ? "joven" : "cria";
   const [best, setBest] = useState({});
   const recordBest = (g, v) => setBest((b) => ({ ...b, [g]: Math.max(b[g] || 0, v) }));
@@ -1998,14 +2011,16 @@ function App() {
     setOverlay(null);
     setXp((x) => { const nx = x + 50; if (nx >= 100) { setLevel((l) => l + 1); return nx - 100; } return nx; });
     // Racha por fecha real
-    const hoy = new Date(); const hoyStr = hoy.toISOString().slice(0, 10);
-    const ayer = new Date(hoy); ayer.setDate(ayer.getDate() - 1); const ayerStr = ayer.toISOString().slice(0, 10);
+    const hoy = new Date(); const hoyStr = hoyLocal(hoy);
+    const ayer = new Date(hoy); ayer.setDate(ayer.getDate() - 1); const ayerStr = hoyLocal(ayer);
     let nuevaRacha;
     if (ultimoDia === hoyStr) { nuevaRacha = streak; } // ya contó hoy, no duplica
     else if (ultimoDia === ayerStr) { nuevaRacha = streak + 1; } // día consecutivo
     else { nuevaRacha = 1; } // primer día o se rompió la racha
     setStreak(nuevaRacha);
     setUltimoDia(hoyStr);
+    const evoDe = (s) => s >= 60 ? "mistico" : s >= 21 ? "adulto" : s >= 7 ? "joven" : "cria";
+    const subioEtapa = nuevaRacha > streak && evoDe(nuevaRacha) !== evoDe(streak);
     // Desbloqueo de skin: primera vez (racha 1) y cada 7 días (7, 14, 21...)
     const esDiaDeRegalo = nuevaRacha === 1 || nuevaRacha % 7 === 0;
     let nuevaSkin = null;
@@ -2019,7 +2034,8 @@ function App() {
       }
     }
     if (!nuevaSkin && userId) guardarAxo(userId, { variedad: pet.palette, accesorio: pet.accessory, outfit: pet.outfit, nivel: level, xp: xp, racha: nuevaRacha, ultimo_dia: hoyStr, skins: skinsUnlocked.join(",") });
-    if (nuevaSkin) { setRegaloSkin(nuevaSkin); setOverlay("regalo"); }
+    if (subioEtapa) { setEvoNueva({ etapa: evoDe(nuevaRacha), dias: nuevaRacha }); setOverlay("evolucion"); }
+    else if (nuevaSkin) { setRegaloSkin(nuevaSkin); setOverlay("regalo"); }
     else if (ultimoDia === hoyStr) showToast("¡Gracias por cuidarte hoy! 💗");
     else showToast("🔥 Día " + nuevaRacha + " cuidándote · ¡bien hecho!");
   };
@@ -2219,11 +2235,11 @@ function App() {
             {(() => { const pk = totals.p * 4, ck = totals.c * 4, gk = totals.g * 9, tk = Math.max(1, pk + ck + gk); const rows = [["Proteína", pk, "#7C5CFF"], ["Carbohidratos", ck, "#34BC97"], ["Grasa", gk, "#F2B705"]]; return rows.map(([l, v, col]) => <div key={l} style={{ margin: "8px 0" }}><div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, marginBottom: 4 }}><span>{l}{l === "Carbohidratos" && <InfoDot text="Combina tus carbohidratos con fibra o proteína para evitar picos de glucosa. Así mantienes la energía estable y el apetito bajo control todo el día." />}</span><span style={{ color: col }}>{Math.round(v / tk * 100)}%</span></div><div style={{ height: 9, background: "#eef0f6", borderRadius: 5, overflow: "hidden" }}><div style={{ width: (v / tk * 100) + "%", height: "100%", background: col }} /></div></div>); })()}
           </div>
           <div className="tip-box glu">
-            <span className="tip-icon">🕵️</span>
+            {(() => { const _p = PALETTES[pet.palette] || PALETTES.durazno; return (<svg className="tip-icon" width="22" height="22" viewBox="0 0 100 100"><g transform="translate(22,50) scale(-0.46,0.46)"><g transform="rotate(-36)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g><g transform="rotate(-10)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g><g transform="rotate(16)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g></g><g transform="translate(78,50) scale(0.46,0.46)"><g transform="rotate(-36)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g><g transform="rotate(-10)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g><g transform="rotate(16)"><path d="M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z" fill={_p.gill} /></g></g><ellipse cx="50" cy="50" rx="28" ry="25" fill={_p.body} /><ellipse cx="38" cy="56" rx="5.5" ry="4" fill={_p.blush} opacity="0.65" /><ellipse cx="62" cy="56" rx="5.5" ry="4" fill={_p.blush} opacity="0.65" /><ellipse cx="40" cy="48" rx="4" ry="4.6" fill="#5B4636" /><circle cx="41.3" cy="46.3" r="1.4" fill="#fff" /><ellipse cx="61" cy="48" rx="4.6" ry="5.2" fill="#5B4636" /><circle cx="62.5" cy="46" r="1.6" fill="#fff" /><path d="M44 60 Q50 65 56 60" fill="none" stroke="#C77B92" strokeWidth="2.2" strokeLinecap="round" /><line x1="69" y1="56" x2="80" y2="68" stroke="#8a6d52" strokeWidth="4.5" strokeLinecap="round" /><circle cx="61" cy="48" r="11" fill="#CDE8FF" opacity="0.4" /><circle cx="61" cy="48" r="11" fill="none" stroke="#8a6d52" strokeWidth="3.5" /><path d="M55 43 Q57 41 61 41" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" opacity="0.85" /></svg>); })()}
             <p className="tip-text"><b>Tip de Axo:</b> combinar tus carbohidratos con fibra o proteína evita los picos de glucosa. ¡Así mantienes tu energía estable y el apetito bajo control toda la tarde!</p>
           </div>
           <div className="card"><div className="card-h"><Trophy size={16} color="#F2B705" /> Logros recientes</div>
-            {[["🔥", "Racha de 7 días", "¡desbloqueado!"], ["🥗", "100 comidas registradas", "82 / 100"], ["⚖️", "Primeros 5 kg", "1.2 / 5 kg"]].map(([e, t, s]) => <div key={t} className="log-row"><div><b>{e} {t}</b></div><span className="muted sm">{s}</span></div>)}
+            {[["🔥", "Racha de 7 días", streak >= 7 ? "¡desbloqueado!" : streak + " / 7 días"], ["🥗", "100 comidas registradas", Math.min(totalComidas, 100) + " / 100"], ["⚖️", "Primeros 5 kg", (descenso > 0 ? descenso.toFixed(1) : "0") + " / 5 kg"]].map(([e, t, s]) => <div key={t} className="log-row"><div><b>{e} {t}</b></div><span className="muted sm">{s}</span></div>)}
           </div>
           <div style={{ height: 80 }} />
         </div>
@@ -2682,6 +2698,19 @@ function App() {
               <p className="muted" style={{ margin: "4px 0 10px" }}>{phrase}</p>
               <div className="reward-row"><span className="reward">+50 XP</span><span className="reward">🔥 Racha {streak + 1}</span></div>
               <button className="btn primary big" onClick={closeCelebrate}>¡Gracias, {petName}!</button>
+            </div>
+          </div>
+        )}
+        {overlay === "evolucion" && evoNueva && (
+          <div className="overlay celebrate" onClick={() => { setOverlay(null); setEvoNueva(null); }}>
+            <div className="papel">{Array.from({ length: 14 }).map((_, i) => <span key={i} style={{ left: ((i * 7) % 100) + "%", animationDelay: ((i % 5) * 0.2) + "s", background: ["#FF6F9C", "#7C5CFF", "#34BC97", "#FFD15C"][i % 4] }} />)}</div>
+            <div className="celebrate-card" onClick={(e) => e.stopPropagation()}>
+              <div style={{ fontSize: 52, marginBottom: 4 }}>🌟</div>
+              <h2 className="display" style={{ fontSize: 23, margin: "2px 0 6px" }}>¡{petName} creció!</h2>
+              <div className="kiss-stage" style={{ margin: "4px 0" }}><Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={evoNueva.etapa} mood="amor" size={150} /></div>
+              <p className="display" style={{ fontSize: 19, color: "#E79FAE", margin: "2px 0" }}>{{ joven: "¡Ya es Joven! 🦎", adulto: "¡Ya es Adulto! ⭐", mistico: "¡Forma Mística! ✨" }[evoNueva.etapa]}</p>
+              <p className="muted" style={{ margin: "2px 14px 12px" }}>¡Felicidades! Gracias a tu constancia de {evoNueva.dias} días seguidos, {petName} ha crecido. 💪</p>
+              <button className="btn primary" onClick={() => { setOverlay(null); setEvoNueva(null); }}>¡Genial!</button>
             </div>
           </div>
         )}
