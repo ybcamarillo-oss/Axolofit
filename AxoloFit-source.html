@@ -504,7 +504,7 @@ const PALETTES = {
 const SKINS_REGALO = ["dorado", "leucistico", "galaxia", "albino", "cobre", "melanico", "salvaje", "arcoiris"];
 const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, conejo: { label: "Gorro conejo", premium: false }, gato: { label: "Gorro gato", premium: false }, mariposa: { label: "Alas mariposa", premium: false }, corona: { label: "Corona", premium: true } };
 const ESTILOS = { clasico: { label: "Clásico", premium: false }, galan: { label: "Galán", premium: false } };
-const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false }, hoodieRojo: { label: "Hoodie rojo", premium: false }, hoodieAzul: { label: "Hoodie azul", premium: false }, playeraRaya: { label: "Playera rayada", premium: false }, poloRosa: { label: "Polo rosa", premium: false }, chivas: { label: "Rojiblanca", premium: false }, azulDiag: { label: "Azul diagonal", premium: false }, pumas: { label: "Felina dorada", premium: false } };
+const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false }, hoodieRojo: { label: "Hoodie rojo", premium: false }, hoodieAzul: { label: "Hoodie azul", premium: false }, playeraRaya: { label: "Playera rayada", premium: false }, poloRosa: { label: "Polo rosa", premium: false }, chivas: { label: "Rojiblanca", premium: false }, azulDiag: { label: "Azul diagonal", premium: false }, pumas: { label: "Felino azul y oro", premium: false } };
 const BACKGROUNDS = { agua: { label: "Agua", from: "#E7F7F4", to: "#CDEFE9", premium: false }, lavanda: { label: "Lavanda", from: "#F0EBFF", to: "#E2D8FF", premium: false }, atardecer: { label: "Atardecer", from: "#FFE9D6", to: "#FFD3C0", premium: false }, noche: { label: "Noche", from: "#4E5180", to: "#3A3D63", premium: true } };
 const PHRASES = ["¡Lo lograste! Estoy orgulloso de ti 💗", "Hoy te cuidaste increíble. Gracias por cuidarme a mí también.", "Pequeños pasos, gran corazón. ¡Mua!", "Cada día contigo soy más fuerte 🥹"];
 const COACH_QA = {
@@ -791,16 +791,16 @@ function Axo({ paletteKey = "durazno", accessory = "ninguno", outfit = "ninguno"
       <g className="axo-bob">
         {accessory === "mariposa" && (<g className="mari-wings">
           <g>
-            <path d="M100 130 C 112 80, 152 50, 178 66 C 198 78, 190 116, 150 138 C 126 150, 106 148, 100 130 Z" fill="#A98EDB" stroke="#6E54B0" strokeWidth="2.5" />
-            <path d="M100 142 C 122 150, 158 162, 162 188 C 164 208, 136 210, 118 190 C 106 178, 100 158, 100 142 Z" fill="#BBA2E6" stroke="#6E54B0" strokeWidth="2.5" />
-            <circle cx="150" cy="92" r="9" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="2" />
-            <circle cx="138" cy="180" r="6" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="1.8" />
+            <path d="M144 126 C 156 88, 184 68, 197 88 C 204 100, 190 128, 156 140 C 146 144, 142 137, 144 126 Z" fill="#A98EDB" stroke="#6E54B0" strokeWidth="2.5" />
+            <path d="M150 142 C 166 150, 189 164, 187 186 C 186 202, 162 200, 152 184 C 146 174, 147 156, 150 142 Z" fill="#BBA2E6" stroke="#6E54B0" strokeWidth="2.5" />
+            <circle cx="178" cy="100" r="8" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="2" />
+            <circle cx="170" cy="180" r="5" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="1.8" />
           </g>
           <g transform="translate(200,0) scale(-1,1)">
-            <path d="M100 130 C 112 80, 152 50, 178 66 C 198 78, 190 116, 150 138 C 126 150, 106 148, 100 130 Z" fill="#A98EDB" stroke="#6E54B0" strokeWidth="2.5" />
-            <path d="M100 142 C 122 150, 158 162, 162 188 C 164 208, 136 210, 118 190 C 106 178, 100 158, 100 142 Z" fill="#BBA2E6" stroke="#6E54B0" strokeWidth="2.5" />
-            <circle cx="150" cy="92" r="9" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="2" />
-            <circle cx="138" cy="180" r="6" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="1.8" />
+            <path d="M144 126 C 156 88, 184 68, 197 88 C 204 100, 190 128, 156 140 C 146 144, 142 137, 144 126 Z" fill="#A98EDB" stroke="#6E54B0" strokeWidth="2.5" />
+            <path d="M150 142 C 166 150, 189 164, 187 186 C 186 202, 162 200, 152 184 C 146 174, 147 156, 150 142 Z" fill="#BBA2E6" stroke="#6E54B0" strokeWidth="2.5" />
+            <circle cx="178" cy="100" r="8" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="2" />
+            <circle cx="170" cy="180" r="5" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="1.8" />
           </g>
         </g>)}
         {/* colita larga que fluye */}
