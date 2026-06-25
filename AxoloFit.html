@@ -6795,6 +6795,12 @@ function App() {
   const [searchQ, setSearchQ] = useState("");
   const [voiceTexto, setVoiceTexto] = useState("");
   const [voiceEtapa, setVoiceEtapa] = useState("escribir");
+  const [ejIdx, setEjIdx] = useState(0);
+  const EJEMPLOS_COMIDA = ["Pide en una taquería: 3 tacos de pastor con salsa", "Tengo antojo de algo dulce: un mango con chile", "Desayuné: huevos revueltos con jamón y tostadas", "Almorcé en la calle: torta de milanesa con refresco", "Cené ligero: sopa de verduras y un yogurt", "Me comí media pizza de pepperoni", "Comí en la lonchería: pollo a la plancha con arroz", "Antojo de snack: papas y un jugo", "Comí en casa de mi mamá: mole con arroz y frijoles", "Una concha del súper de camino al trabajo"];
+  useEffect(() => {
+    const t = setInterval(() => setEjIdx(i => (i + 1) % 10), 4000);
+    return () => clearInterval(t);
+  }, []);
   const [voiceResultado, setVoiceResultado] = useState(null);
   const [voiceExtras, setVoiceExtras] = useState("");
   const [voiceError, setVoiceError] = useState(null);
@@ -7035,11 +7041,7 @@ function App() {
   }, /*#__PURE__*/React.createElement("div", {
     className: "home-top"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "streak-pill",
-    onClick: () => showToast("🔥 Tu racha sube cuando cumples tu meta de calorías del día"),
-    style: {
-      cursor: "pointer"
-    }
+    className: "streak-pill"
   }, /*#__PURE__*/React.createElement(Flame, {
     size: 16,
     color: "#FF7A3D"
@@ -7052,7 +7054,14 @@ function App() {
     style: {
       width: xp + "%"
     }
-  })))), /*#__PURE__*/React.createElement("div", {
+  })))), /*#__PURE__*/React.createElement("p", {
+    style: {
+      textAlign: "center",
+      fontSize: 11,
+      color: darkBg ? "#ffffff99" : "#b0a8bb",
+      margin: "-4px 0 2px"
+    }
+  }, "\uD83D\uDD25 La racha sube al cumplir tu meta cal\xF3rica del d\xEDa"), /*#__PURE__*/React.createElement("div", {
     className: "scroll",
     ref: sRef("home"),
     onScroll: sSave("home")
@@ -8187,7 +8196,7 @@ function App() {
     }, "Desc\xEDbelo como quieras: \"una taza de papaya con yogurt\", \"dos tacos de canasta con agua de jamaica\"\u2026"), /*#__PURE__*/React.createElement("textarea", {
       value: texto,
       onChange: e => setTexto(e.target.value),
-      placeholder: "Escribe aqu\xED lo que comiste\u2026",
+      placeholder: EJEMPLOS_COMIDA[ejIdx],
       style: {
         width: "100%",
         minHeight: 90,
