@@ -545,6 +545,9 @@ function AuthScreen({
   const [confirmado, setConfirmado] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [resetEnviado, setResetEnviado] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpVerificado, setOtpVerificado] = useState(false);
+  const [otpError, setOtpError] = useState(null);
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showIosHint, setShowIosHint] = useState(false);
   const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -655,6 +658,24 @@ function AuthScreen({
     }
     setCargando(false);
   };
+  const handleVerifyOtp = async () => {
+    setCargando(true);
+    setOtpError(null);
+    try {
+      const {
+        error: e
+      } = await sb.auth.verifyOtp({
+        email,
+        token: otpCode.trim(),
+        type: "recovery"
+      });
+      if (e) throw e;
+      setOtpVerificado(true);
+    } catch (e) {
+      setOtpError("Código incorrecto o expirado. Intenta de nuevo.");
+    }
+    setCargando(false);
+  };
   const passInputJSX = /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative",
@@ -734,19 +755,81 @@ function AuthScreen({
       style: {
         fontSize: 24
       }
-    }, "\xA1Revisa tu email! \uD83D\uDC8C"), /*#__PURE__*/React.createElement("p", {
+    }, otpVerificado ? "Crea tu nueva contraseña 🔐" : "Revisa tu correo 💌"), /*#__PURE__*/React.createElement("p", {
       className: "muted",
       style: {
         maxWidth: 280,
+        textAlign: "center",
+        marginBottom: 16
+      }
+    }, otpVerificado ? "Ya verificamos tu identidad. Pon tu nueva contraseña." : /*#__PURE__*/React.createElement(React.Fragment, null, "Te mandamos un c\xF3digo de 6 d\xEDgitos a ", /*#__PURE__*/React.createElement("b", null, email), ".")), !otpVerificado ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
+      style: {
+        width: "100%",
+        maxWidth: 280,
+        boxSizing: "border-box",
+        textAlign: "center",
+        fontSize: 28,
+        letterSpacing: 10,
+        fontWeight: 700,
+        padding: "14px 12px",
+        borderRadius: 14,
+        border: "1.5px solid #e3dcef",
+        fontFamily: "Nunito",
+        outline: "none",
+        marginBottom: 10
+      },
+      placeholder: "000000",
+      type: "tel",
+      inputMode: "numeric",
+      maxLength: 6,
+      value: otpCode,
+      onChange: e => setOtpCode(e.target.value.replace(/[^0-9]/g, "")),
+      autoFocus: true
+    }), otpError && /*#__PURE__*/React.createElement("p", {
+      style: {
+        color: "#c0392b",
+        fontSize: 13,
+        fontWeight: 700,
+        marginBottom: 10,
         textAlign: "center"
       }
-    }, "Te mandamos el link para crear nueva contrase\xF1a a ", /*#__PURE__*/React.createElement("b", null, email), "."), /*#__PURE__*/React.createElement("button", {
+    }, otpError), /*#__PURE__*/React.createElement("button", {
       className: "btn primary big",
-      onClick: () => {
-        setModo("login");
-        setResetEnviado(false);
+      onClick: handleVerifyOtp,
+      disabled: cargando || otpCode.length < 6,
+      style: {
+        width: "100%",
+        maxWidth: 280
       }
-    }, "Volver a iniciar sesi\xF3n"));
+    }, cargando ? "Verificando…" : "Verificar código ✓"), /*#__PURE__*/React.createElement("button", {
+      className: "btn ghost",
+      style: {
+        width: "100%",
+        maxWidth: 280,
+        marginTop: 8
+      },
+      onClick: () => {
+        setResetEnviado(false);
+        setOtpCode("");
+        setOtpError(null);
+      }
+    }, "\u2190 Cambiar email")) : /*#__PURE__*/React.createElement(React.Fragment, null, passInputJSX, error && /*#__PURE__*/React.createElement("p", {
+      style: {
+        color: "#c0392b",
+        fontSize: 13,
+        fontWeight: 700,
+        marginBottom: 10,
+        textAlign: "center"
+      }
+    }, error), /*#__PURE__*/React.createElement("button", {
+      className: "btn primary big",
+      onClick: handleNuevaPass,
+      disabled: cargando,
+      style: {
+        width: "100%",
+        maxWidth: 280
+      }
+    }, cargando ? "Guardando…" : "Guardar nueva contraseña 🔐")));
     return /*#__PURE__*/React.createElement("div", {
       className: "screen center",
       style: {
@@ -769,12 +852,12 @@ function AuthScreen({
         fontSize: 14,
         maxWidth: 270
       }
-    }, "Escribe tu email y te mandamos un link para crear una nueva."), /*#__PURE__*/React.createElement("div", {
+    }, !resetEnviado ? "Escribe tu email y te mandamos un código de 6 dígitos." : !otpVerificado ? /*#__PURE__*/React.createElement(React.Fragment, null, "Revisa tu correo y escribe el c\xF3digo de 6 d\xEDgitos que mandamos a ", /*#__PURE__*/React.createElement("b", null, email), ".") : "¡Código verificado! Crea tu nueva contraseña."), /*#__PURE__*/React.createElement("div", {
       style: {
         width: "100%",
         maxWidth: 320
       }
-    }, /*#__PURE__*/React.createElement("input", {
+    }, !resetEnviado && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
       style: inputStyle,
       placeholder: "Email",
       type: "email",
@@ -793,7 +876,7 @@ function AuthScreen({
       className: "btn primary big",
       onClick: handleReset,
       disabled: cargando
-    }, cargando ? "Enviando…" : "Enviar link 📩"), /*#__PURE__*/React.createElement("button", {
+    }, cargando ? "Enviando…" : "Enviar código 📩"), /*#__PURE__*/React.createElement("button", {
       className: "btn ghost",
       style: {
         width: "100%",
@@ -803,7 +886,57 @@ function AuthScreen({
         setModo("login");
         setError(null);
       }
-    }, "Volver")));
+    }, "Volver al inicio de sesi\xF3n")), resetEnviado && !otpVerificado && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
+      style: {
+        ...inputStyle,
+        textAlign: "center",
+        fontSize: 28,
+        letterSpacing: 10,
+        fontWeight: 700
+      },
+      placeholder: "000000",
+      type: "tel",
+      inputMode: "numeric",
+      maxLength: 6,
+      value: otpCode,
+      onChange: e => setOtpCode(e.target.value.replace(/[^0-9]/g, "")),
+      autoFocus: true
+    }), otpError && /*#__PURE__*/React.createElement("p", {
+      style: {
+        color: "#c0392b",
+        fontSize: 13,
+        fontWeight: 700,
+        marginBottom: 10,
+        textAlign: "center"
+      }
+    }, otpError), /*#__PURE__*/React.createElement("button", {
+      className: "btn primary big",
+      onClick: handleVerifyOtp,
+      disabled: cargando || otpCode.length < 6
+    }, cargando ? "Verificando…" : "Verificar código ✓"), /*#__PURE__*/React.createElement("button", {
+      className: "btn ghost",
+      style: {
+        width: "100%",
+        marginTop: 8
+      },
+      onClick: () => {
+        setResetEnviado(false);
+        setOtpCode("");
+        setOtpError(null);
+      }
+    }, "\u2190 Cambiar email")), resetEnviado && otpVerificado && /*#__PURE__*/React.createElement(React.Fragment, null, passInputJSX, error && /*#__PURE__*/React.createElement("p", {
+      style: {
+        color: "#c0392b",
+        fontSize: 13,
+        fontWeight: 700,
+        marginBottom: 10,
+        textAlign: "center"
+      }
+    }, error), /*#__PURE__*/React.createElement("button", {
+      className: "btn primary big",
+      onClick: handleNuevaPass,
+      disabled: cargando
+    }, cargando ? "Guardando…" : "Guardar nueva contraseña 🔐"))));
   }
   return /*#__PURE__*/React.createElement("div", {
     className: "screen center",
@@ -7054,14 +7187,7 @@ function App() {
     style: {
       width: xp + "%"
     }
-  })))), /*#__PURE__*/React.createElement("p", {
-    style: {
-      textAlign: "center",
-      fontSize: 11,
-      color: darkBg ? "#ffffff99" : "#b0a8bb",
-      margin: "-4px 0 2px"
-    }
-  }, "\uD83D\uDD25 La racha sube al cumplir tu meta cal\xF3rica del d\xEDa"), /*#__PURE__*/React.createElement("div", {
+  })))), /*#__PURE__*/React.createElement("div", {
     className: "scroll",
     ref: sRef("home"),
     onScroll: sSave("home")
@@ -7089,7 +7215,14 @@ function App() {
     size: 28,
     color: "#FF4D7D",
     fill: "#FF6F9C"
-  })), /*#__PURE__*/React.createElement("div", {
+  })), streak === 0 && /*#__PURE__*/React.createElement("p", {
+    style: {
+      textAlign: "center",
+      fontSize: 11,
+      color: darkBg ? "#ffffff99" : "#b0a8bb",
+      margin: "4px 0 0"
+    }
+  }, "\uD83D\uDD25 La racha sube al cumplir tu meta cal\xF3rica del d\xEDa"), /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       marginTop: 2,
