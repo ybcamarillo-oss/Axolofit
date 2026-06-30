@@ -650,7 +650,12 @@ function AuthScreen({
     try {
       const {
         error: e
-      } = await sb.auth.resetPasswordForEmail(email);
+      } = await sb.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false
+        }
+      });
       if (e) throw e;
       setResetEnviado(true);
     } catch (e) {
@@ -667,7 +672,7 @@ function AuthScreen({
       } = await sb.auth.verifyOtp({
         email,
         token: otpCode.trim(),
-        type: "recovery"
+        type: "email"
       });
       if (e) throw e;
       setOtpVerificado(true);
