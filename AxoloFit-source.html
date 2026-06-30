@@ -309,6 +309,22 @@ function AuthScreen({ onAuth }) {
     setCargando(false);
   };
 
+  const handleNuevaPass = async () => {
+    setError(null);
+    if (!pass || pass.length < 6) { setError("Mínimo 6 caracteres."); return; }
+    setCargando(true);
+    try {
+      const { error: e } = await sb.auth.updateUser({ password: pass });
+      if (e) throw e;
+      setModo("login"); setResetEnviado(false); setOtpVerificado(false); setOtpCode(""); setPass("");
+      setError(null);
+      showToast && showToast("¡Contraseña actualizada! Ya puedes iniciar sesión 🔐");
+    } catch (e) {
+      setError(e.message);
+    }
+    setCargando(false);
+  };
+
   const passInputJSX = (
     <div style={{ position: "relative", marginBottom: 10 }}>
       <input
