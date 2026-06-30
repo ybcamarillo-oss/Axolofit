@@ -349,7 +349,7 @@ function AuthScreen({ onAuth }) {
         <Axo paletteKey="durazno" size={160} mood="amor" />
         <h2 className="display" style={{ fontSize: 24 }}>{otpVerificado ? "Crea tu nueva contraseña 🔐" : "Revisa tu correo 💌"}</h2>
         <p className="muted" style={{ maxWidth: 280, textAlign: "center", marginBottom: 16 }}>
-          {otpVerificado ? "Ya verificamos tu identidad. Pon tu nueva contraseña." : <>Te mandamos un código de 6 dígitos a <b>{email}</b>.</>}
+          {otpVerificado ? "Ya verificamos tu identidad. Pon tu nueva contraseña." : <>Te mandamos un código a <b>{email}</b>.</>}
         </p>
         {!otpVerificado ? (<>
           <input style={{ width: "100%", maxWidth: 280, boxSizing: "border-box", textAlign: "center", fontSize: 28, letterSpacing: 10, fontWeight: 700, padding: "14px 12px", borderRadius: 14, border: "1.5px solid #e3dcef", fontFamily: "Nunito", outline: "none", marginBottom: 10 }} placeholder="00000000" type="tel" inputMode="numeric" maxLength={8} value={otpCode} onChange={e => setOtpCode(e.target.value.replace(/[^0-9]/g, ""))} autoFocus />
@@ -372,7 +372,7 @@ function AuthScreen({ onAuth }) {
         <Axo paletteKey="durazno" size={140} />
         <h1 className="display" style={{ fontSize: 24, margin: "6px 0 4px" }}>¿Olvidaste tu contraseña?</h1>
         <p className="muted" style={{ marginBottom: 20, fontSize: 14, maxWidth: 270 }}>
-          {!resetEnviado ? "Escribe tu email y te mandamos un código de 6 dígitos." : !otpVerificado ? <>Revisa tu correo y escribe el código de 6 dígitos que mandamos a <b>{email}</b>.</> : "¡Código verificado! Crea tu nueva contraseña."}
+          {!resetEnviado ? "Escribe tu email y te mandamos un código." : !otpVerificado ? <>Revisa tu correo y escribe el código que mandamos a <b>{email}</b>.</> : "¡Código verificado! Crea tu nueva contraseña."}
         </p>
         <div style={{ width: "100%", maxWidth: 320 }}>
           {!resetEnviado && (<>
@@ -385,7 +385,7 @@ function AuthScreen({ onAuth }) {
             <button className="btn ghost" style={{ width: "100%", marginTop: 8 }} onClick={() => { setModo("login"); setError(null); }}>Volver al inicio de sesión</button>
           </>)}
           {resetEnviado && !otpVerificado && (<>
-            <input style={{ ...inputStyle, textAlign: "center", fontSize: 28, letterSpacing: 10, fontWeight: 700 }} placeholder="000000" type="tel" inputMode="numeric" maxLength={6} value={otpCode} onChange={e => setOtpCode(e.target.value.replace(/[^0-9]/g, ""))} autoFocus />
+            <input style={{ ...inputStyle, textAlign: "center", fontSize: 26, letterSpacing: 8, fontWeight: 700 }} placeholder="00000000" type="tel" inputMode="numeric" maxLength={8} value={otpCode} onChange={e => setOtpCode(e.target.value.replace(/[^0-9]/g, ""))} autoFocus />
             {otpError && <p style={{ color: "#c0392b", fontSize: 13, fontWeight: 700, marginBottom: 10, textAlign: "center" }}>{otpError}</p>}
             <button className="btn primary big" onClick={handleVerifyOtp} disabled={cargando || otpCode.length < 6}>
               {cargando ? "Verificando…" : "Verificar código ✓"}
