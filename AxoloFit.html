@@ -895,14 +895,14 @@ function AuthScreen({
       style: {
         ...inputStyle,
         textAlign: "center",
-        fontSize: 28,
-        letterSpacing: 10,
+        fontSize: 26,
+        letterSpacing: 8,
         fontWeight: 700
       },
-      placeholder: "000000",
+      placeholder: "00000000",
       type: "tel",
       inputMode: "numeric",
-      maxLength: 6,
+      maxLength: 8,
       value: otpCode,
       onChange: e => setOtpCode(e.target.value.replace(/[^0-9]/g, "")),
       autoFocus: true
