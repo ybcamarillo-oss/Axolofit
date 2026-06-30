@@ -767,7 +767,7 @@ function AuthScreen({
         textAlign: "center",
         marginBottom: 16
       }
-    }, otpVerificado ? "Ya verificamos tu identidad. Pon tu nueva contraseña." : /*#__PURE__*/React.createElement(React.Fragment, null, "Te mandamos un c\xF3digo de 6 d\xEDgitos a ", /*#__PURE__*/React.createElement("b", null, email), ".")), !otpVerificado ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
+    }, otpVerificado ? "Ya verificamos tu identidad. Pon tu nueva contraseña." : /*#__PURE__*/React.createElement(React.Fragment, null, "Te mandamos un c\xF3digo a ", /*#__PURE__*/React.createElement("b", null, email), ".")), !otpVerificado ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
       style: {
         width: "100%",
         maxWidth: 280,
@@ -857,7 +857,7 @@ function AuthScreen({
         fontSize: 14,
         maxWidth: 270
       }
-    }, !resetEnviado ? "Escribe tu email y te mandamos un código de 6 dígitos." : !otpVerificado ? /*#__PURE__*/React.createElement(React.Fragment, null, "Revisa tu correo y escribe el c\xF3digo de 6 d\xEDgitos que mandamos a ", /*#__PURE__*/React.createElement("b", null, email), ".") : "¡Código verificado! Crea tu nueva contraseña."), /*#__PURE__*/React.createElement("div", {
+    }, !resetEnviado ? "Escribe tu email y te mandamos un código." : !otpVerificado ? /*#__PURE__*/React.createElement(React.Fragment, null, "Revisa tu correo y escribe el c\xF3digo que mandamos a ", /*#__PURE__*/React.createElement("b", null, email), ".") : "¡Código verificado! Crea tu nueva contraseña."), /*#__PURE__*/React.createElement("div", {
       style: {
         width: "100%",
         maxWidth: 320
