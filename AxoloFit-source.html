@@ -560,9 +560,9 @@ const PALETTES = {
 };
 // Skins que se regalan al cumplir metas (1ra vez y cada 7 días)
 const SKINS_REGALO = ["dorado", "leucistico", "galaxia", "albino", "cobre", "melanico", "salvaje", "arcoiris"];
-const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, conejo: { label: "Gorro conejo", premium: false }, gato: { label: "Gorro gato", premium: false }, mariposa: { label: "Alas mariposa", premium: false }, corona: { label: "Corona", premium: true } };
-const ESTILOS = { clasico: { label: "Clásico", premium: false }, galan: { label: "Galán", premium: false } };
-const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false }, hoodieRojo: { label: "Hoodie rojo", premium: false }, hoodieAzul: { label: "Hoodie azul", premium: false }, playeraRaya: { label: "Playera rayada", premium: false }, poloRosa: { label: "Polo rosa", premium: false }, chivas: { label: "Rojiblanca", premium: false }, azulDiag: { label: "Azul diagonal", premium: false }, pumas: { label: "Felino azul y oro", premium: false } };
+const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, conejo: { label: "Gorro conejo", premium: true }, gato: { label: "Gorro gato", premium: true }, mariposa: { label: "Alas mariposa", premium: true }, corona: { label: "Corona", premium: true } };
+const ESTILOS = { clasico: { label: "Clásico", premium: false }, galan: { label: "Galán", premium: true } };
+const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false }, hoodieRojo: { label: "Hoodie rojo", premium: false }, hoodieAzul: { label: "Hoodie azul", premium: false }, playeraRaya: { label: "Playera rayada", premium: false }, poloRosa: { label: "Polo rosa", premium: true }, chivas: { label: "Rojiblanca", premium: true }, azulDiag: { label: "Azul diagonal", premium: true }, pumas: { label: "Felino azul y oro", premium: true } };
 const BACKGROUNDS = { agua: { label: "Agua", from: "#E7F7F4", to: "#CDEFE9", premium: false }, lavanda: { label: "Lavanda", from: "#F0EBFF", to: "#E2D8FF", premium: false }, atardecer: { label: "Atardecer", from: "#FFE9D6", to: "#FFD3C0", premium: false }, noche: { label: "Noche", from: "#4E5180", to: "#3A3D63", premium: true } };
 const PHRASES = ["¡Lo lograste! Estoy orgulloso de ti 💗", "Hoy te cuidaste increíble. Gracias por cuidarme a mí también.", "Pequeños pasos, gran corazón. ¡Mua!", "Cada día contigo soy más fuerte 🥹"];
 const COACH_QA = {
@@ -2317,13 +2317,13 @@ function App() {
           <div className="sect-t">Color / Skin</div>
           <Swatches sk="pal" map={PALETTES} sel={pet.palette} onPick={(k) => updatePet({ ...pet, palette: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={k} estilo={pet.estilo} size={42} /></span>} />
           <div className="sect-t">Estilo</div>
-          <Swatches sk="est" map={ESTILOS} sel={pet.estilo} onPick={(k) => updatePet({ ...pet, estilo: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} estilo={k} size={42} /></span>} />
+          <Swatches sk="est" map={ESTILOS} sel={pet.estilo} onPick={(k) => ESTILOS[k].premium ? setOverlay("paywall") : updatePet({ ...pet, estilo: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} estilo={k} size={42} /></span>} />
           <div className="sect-t">Accesorio</div>
-          <Swatches sk="acc" map={ACCESSORIES} sel={pet.accessory} onPick={(k) => updatePet({ ...pet, accessory: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} accessory={k} estilo={pet.estilo} size={42} /></span>} />
+          <Swatches sk="acc" map={ACCESSORIES} sel={pet.accessory} onPick={(k) => ACCESSORIES[k].premium ? setOverlay("paywall") : updatePet({ ...pet, accessory: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} accessory={k} estilo={pet.estilo} size={42} /></span>} />
           <div className="sect-t">Outfit</div>
-          <Swatches sk="out" map={OUTFITS} sel={pet.outfit} onPick={(k) => updatePet({ ...pet, outfit: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} outfit={k} size={42} /></span>} />
+          <Swatches sk="out" map={OUTFITS} sel={pet.outfit} onPick={(k) => OUTFITS[k].premium ? setOverlay("paywall") : updatePet({ ...pet, outfit: k })} render={(k) => <span className="dot small-axo"><Axo paletteKey={pet.palette} outfit={k} size={42} /></span>} />
           <div className="sect-t">Fondo</div>
-          <Swatches sk="bg" map={BACKGROUNDS} sel={pet.bg} onPick={(k) => updatePet({ ...pet, bg: k })} render={(k, v) => <span className="dot" style={{ background: "linear-gradient(135deg," + v.from + "," + v.to + ")" }} />} />
+          <Swatches sk="bg" map={BACKGROUNDS} sel={pet.bg} onPick={(k) => BACKGROUNDS[k].premium ? setOverlay("paywall") : updatePet({ ...pet, bg: k })} render={(k, v) => <span className="dot" style={{ background: "linear-gradient(135deg," + v.from + "," + v.to + ")" }} />} />
           <button className="btn premium-btn" onClick={() => showToast("✨ Premium activo en este demo — todo desbloqueado")}><Crown size={16} /> Premium activo (demo) · todo desbloqueado</button>
           <div style={{ height: 80 }} />
         </div>
