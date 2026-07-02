@@ -1,5 +1,5 @@
 // Service Worker para AxoloFit PWA
-const CACHE_NAME = 'axolofit-v16';
+const CACHE_NAME = 'axolofit-v17';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
