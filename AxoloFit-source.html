@@ -1912,11 +1912,27 @@ function App() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  const hoyLocal = (d = new Date()) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  // Si la app se queda abierta y cambia el día del calendario, recarga los datos de hoy sola
+  const diaAbiertoRef = React.useRef(hoyLocal());
+  useEffect(() => {
+    const revisarDia = () => {
+      const hoyAhora = hoyLocal();
+      if (hoyAhora !== diaAbiertoRef.current) {
+        diaAbiertoRef.current = hoyAhora;
+        if (userId) cargarDatos(userId);
+      }
+    };
+    const iv = setInterval(revisarDia, 60000);
+    document.addEventListener("visibilitychange", revisarDia);
+    window.addEventListener("focus", revisarDia);
+    return () => { clearInterval(iv); document.removeEventListener("visibilitychange", revisarDia); window.removeEventListener("focus", revisarDia); };
+  }, [userId]);
+
   /* --- Cargar datos del usuario desde Supabase --- */
   useEffect(() => {
     if (phase === "app") { try { localStorage.setItem("axo_screen", screen); localStorage.setItem("axo_screen_t", "" + Date.now()); } catch (e) {} }
   }, [screen, phase]);
-  const hoyLocal = (d = new Date()) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   const cargarDatos = async (uid) => {
     try {
       const [{ data: perfil }, { data: axo }, { data: comidas }, { data: pesos }, { count: totComidas }, { data: scores }] = await Promise.all([
@@ -2800,6 +2816,7 @@ function App() {
             const dish=MENU_DB[k][plan[k]];
             const sd=scaleMeal(dish,dayF);
             const ek=selDay+"_"+k; const done=weekEaten[ek];
+            const ek2=selDay+"_"+k+"_x2"; const doneExtra=weekEaten[ek2];
             const porcion = dayF>=1.15 ? (" · porción x"+dayF.toFixed(1)) : (dayF<=0.9 ? " · porción reducida" : "");
             const fruta = (k==="desayuno" && plan.fruta!=null) ? scaleMeal(FRUTAS[plan.fruta],dayF) : null;
             const snackEx = (k==="snack" && plan.snack2!=null) ? scaleMeal(MENU_DB.snack[plan.snack2],dayF) : null;
@@ -2815,13 +2832,19 @@ function App() {
               <div className="muted sm" style={{marginTop:2}}>{dish.d}{porcion && <span style={{color:"#E79FAE",fontWeight:600}}>{porcion}</span>}</div>
               <div className="muted sm" style={{marginTop:3,fontFamily:"Fredoka",fontWeight:600,color:"#7a8099"}}>{sd.kcal} kcal · Prot {sd.p}g · Carbos {sd.c}g · Grasa {sd.g}g</div>
               {fruta && <div style={{marginTop:8,paddingTop:8,borderTop:"1px dashed #f0d9b8"}}>
-                <span style={{fontFamily:"Fredoka",fontWeight:600,fontSize:13,color:"#C58A2E"}}>➕ Acompaña con una fruta</span>
-                <b style={{fontSize:14,display:"block",marginTop:1}}>{FRUTAS[plan.fruta].n} <span style={{fontWeight:400,color:"#9aa0b4",fontSize:12}}>· {FRUTAS[plan.fruta].d}</span></b>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <span style={{fontFamily:"Fredoka",fontWeight:600,fontSize:13,color:"#C58A2E"}}>➕ Acompaña con una fruta</span>
+                  <button onClick={()=>toggleEaten(selDay,k+"_x2",fruta)} style={{background:doneExtra?"#EAF7F2":"#f4f6fb",border:"none",borderRadius:10,padding:"4px 9px",fontSize:11,fontFamily:"Fredoka",cursor:"pointer",color:doneExtra?"#34BC97":"#9aa0b4"}}>{doneExtra?"✓":"Palomear"}</button>
+                </div>
+                <b style={{fontSize:14,display:"block",marginTop:1,textDecoration:doneExtra?"line-through":"none"}}>{FRUTAS[plan.fruta].n} <span style={{fontWeight:400,color:"#9aa0b4",fontSize:12}}>· {FRUTAS[plan.fruta].d}</span></b>
                 <div className="muted sm" style={{marginTop:2,fontFamily:"Fredoka",fontWeight:600,color:"#7a8099"}}>{fruta.kcal} kcal · Carbos {fruta.c}g</div>
               </div>}
               {snackEx && <div style={{marginTop:8,paddingTop:8,borderTop:"1px dashed #f0d9b8"}}>
-                <span style={{fontFamily:"Fredoka",fontWeight:600,fontSize:13,color:"#C58A2E"}}>➕ Segundo snack del día</span>
-                <b style={{fontSize:14,display:"block",marginTop:1}}>{MENU_DB.snack[plan.snack2].n}</b>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <span style={{fontFamily:"Fredoka",fontWeight:600,fontSize:13,color:"#C58A2E"}}>➕ Segundo snack del día</span>
+                  <button onClick={()=>toggleEaten(selDay,k+"_x2",snackEx)} style={{background:doneExtra?"#EAF7F2":"#f4f6fb",border:"none",borderRadius:10,padding:"4px 9px",fontSize:11,fontFamily:"Fredoka",cursor:"pointer",color:doneExtra?"#34BC97":"#9aa0b4"}}>{doneExtra?"✓":"Palomear"}</button>
+                </div>
+                <b style={{fontSize:14,display:"block",marginTop:1,textDecoration:doneExtra?"line-through":"none"}}>{MENU_DB.snack[plan.snack2].n}</b>
                 <div className="muted sm" style={{marginTop:1}}>{MENU_DB.snack[plan.snack2].d}</div>
                 <div className="muted sm" style={{marginTop:2,fontFamily:"Fredoka",fontWeight:600,color:"#7a8099"}}>{snackEx.kcal} kcal · Prot {snackEx.p}g · Carbos {snackEx.c}g · Grasa {snackEx.g}g</div>
               </div>}
