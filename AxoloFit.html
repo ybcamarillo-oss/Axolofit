@@ -1570,15 +1570,15 @@ const ACCESSORIES = {
   },
   conejo: {
     label: "Gorro conejo",
-    premium: false
+    premium: true
   },
   gato: {
     label: "Gorro gato",
-    premium: false
+    premium: true
   },
   mariposa: {
     label: "Alas mariposa",
-    premium: false
+    premium: true
   },
   corona: {
     label: "Corona",
@@ -1592,7 +1592,7 @@ const ESTILOS = {
   },
   galan: {
     label: "Galán",
-    premium: false
+    premium: true
   }
 };
 const OUTFITS = {
@@ -1622,19 +1622,19 @@ const OUTFITS = {
   },
   poloRosa: {
     label: "Polo rosa",
-    premium: false
+    premium: true
   },
   chivas: {
     label: "Rojiblanca",
-    premium: false
+    premium: true
   },
   azulDiag: {
     label: "Azul diagonal",
-    premium: false
+    premium: true
   },
   pumas: {
     label: "Felino azul y oro",
-    premium: false
+    premium: true
   }
 };
 const BACKGROUNDS = {
@@ -7783,7 +7783,7 @@ function App() {
       sk: "est",
       map: ESTILOS,
       sel: pet.estilo,
-      onPick: k => updatePet({
+      onPick: k => ESTILOS[k].premium ? setOverlay("paywall") : updatePet({
         ...pet,
         estilo: k
       }),
@@ -7800,7 +7800,7 @@ function App() {
       sk: "acc",
       map: ACCESSORIES,
       sel: pet.accessory,
-      onPick: k => updatePet({
+      onPick: k => ACCESSORIES[k].premium ? setOverlay("paywall") : updatePet({
         ...pet,
         accessory: k
       }),
@@ -7818,7 +7818,7 @@ function App() {
       sk: "out",
       map: OUTFITS,
       sel: pet.outfit,
-      onPick: k => updatePet({
+      onPick: k => OUTFITS[k].premium ? setOverlay("paywall") : updatePet({
         ...pet,
         outfit: k
       }),
@@ -7835,7 +7835,7 @@ function App() {
       sk: "bg",
       map: BACKGROUNDS,
       sel: pet.bg,
-      onPick: k => updatePet({
+      onPick: k => BACKGROUNDS[k].premium ? setOverlay("paywall") : updatePet({
         ...pet,
         bg: k
       }),
