@@ -2228,7 +2228,7 @@ function App() {
   const showToast = useCallback((t) => { setToast(t); setTimeout(() => setToast(null), 2200); }, []);
   const checkGoals = useCallback((nl, nv) => {
     const t = nl.reduce((a, f) => ({ kcal: a.kcal + f.kcal * f.qty, p: a.p + f.p * f.qty }), { kcal: 0, p: 0 });
-    if (t.kcal >= targets.objetivoDeficit * 0.8 && t.p >= targets.prote * 0.85 && nv >= targets.vasos * 0.8 && !celebrated) { setCelebrated(true); setTimeout(() => setOverlay("celebrate"), 350); }
+    if (t.kcal >= targets.objetivoDeficit * 0.8 && !celebrated) { setCelebrated(true); setTimeout(() => setOverlay("celebrate"), 350); }
   }, [targets, celebrated]);
   const addFood = useCallback((food, qty = 1) => {
     const item = { ...food, qty, uid: "local" + uidSeq }; setUidSeq((s) => s + 1);
