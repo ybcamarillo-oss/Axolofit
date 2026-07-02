@@ -1894,8 +1894,21 @@ function App() {
           }));
           setLevel(axo.nivel != null ? axo.nivel : 1);
           setXp(axo.xp != null ? axo.xp : 0);
-          setStreak(axo.racha != null ? axo.racha : 0);
-          setUltimoDia(axo.ultimo_dia || null);
+          const rachaGuardada = axo.racha != null ? axo.racha : 0;
+          const ultDia = axo.ultimo_dia || null;
+          if (rachaGuardada > 0 && ultDia) {
+            const hd = new Date(); const [yy, mm, dd] = ultDia.split("-").map(Number);
+            const dif = Math.floor((new Date(hd.getFullYear(), hd.getMonth(), hd.getDate()) - new Date(yy, mm - 1, dd)) / 86400000);
+            if (dif >= 2) {
+              setStreak(0); setUltimoDia(null);
+              setTimeout(() => showToast("💔 " + ((perfil && perfil.nombre) || "Axo") + " te extrañó… tu racha de " + rachaGuardada + " días se reinició"), 1200);
+              sb.from("axo_state").update({ racha: 0, ultimo_dia: null }).eq("id", uid).then(() => {});
+            } else {
+              setStreak(rachaGuardada); setUltimoDia(ultDia);
+            }
+          } else {
+            setStreak(rachaGuardada); setUltimoDia(ultDia);
+          }
           setSkinsUnlocked(axo.skins ? axo.skins.split(",").filter(Boolean) : []);
         }
         if (comidas && comidas.length > 0) {
@@ -2186,6 +2199,13 @@ function App() {
   const progresoPeso = Math.min(1, Math.max(0, (pesoIni - pa) / Math.max(1, pesoIni - pesoMeta)));
   const chub = Math.max(0.18, 1 - progresoPeso);
   const hungry = log.length === 0;
+  const diasAbandono = (() => {
+    if (!ultimoDia) return 0;
+    const hoyD = new Date(); const [y, m, d] = ultimoDia.split("-").map(Number);
+    const ult = new Date(y, m - 1, d);
+    return Math.floor((new Date(hoyD.getFullYear(), hoyD.getMonth(), hoyD.getDate()) - ult) / 86400000);
+  })();
+  const abandonado = diasAbandono >= 2 && streak === 0 && hungry;
 
   if (phase === "auth")
     return <div className="root"><div className="phone"><AuthScreen onAuth={handleAuth} /></div></div>;
@@ -2211,8 +2231,8 @@ function App() {
       </div>
       <div className="scroll" ref={sRef("home")} onScroll={sSave("home")}>
         <div className="center axo-stage" onClick={blowKiss}>
-          <p className="axo-line">{eating ? "¡Miam! 😋 (se soba la pancita)" : kissing ? "¡" + petName + " te manda un beso! 💗" : celebrated ? "¡" + petName + " está feliz! 💗" : (hungry && streak === 0) ? "¡Acabo de nacer! Dame de comer 🥺" : hungry ? "Tengo hambre… ¿me das de comer? 🥺" : "Tócame para un besito 💗"}</p>
-          <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={computedEvo} rubbing={eating} mood={(celebrated || kissing || eating) ? "amor" : hungry ? "triste" : "feliz"} size={computedEvo === "cria" ? 162 : 210} />
+          <p className="axo-line">{eating ? "¡Miam! 😋 (se soba la pancita)" : kissing ? "¡" + petName + " te manda un beso! 💗" : celebrated ? "¡" + petName + " está feliz! 💗" : abandonado ? ("¿Me olvidaste? Llevo " + diasAbandono + " días esperándote… 🥺💔") : (hungry && streak === 0) ? "¡Acabo de nacer! Dame de comer 🥺" : hungry ? "Tengo hambre… ¿me das de comer? 🥺" : "Tócame para un besito 💗"}</p>
+          <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={computedEvo} rubbing={eating} mood={(celebrated || kissing || eating) ? "amor" : (abandonado || hungry) ? "triste" : "feliz"} size={computedEvo === "cria" ? 162 : 210} />
           {kissing && <Heart className="flying-heart" style={{ left: "56%", top: "44%" }} size={28} color="#FF4D7D" fill="#FF6F9C" />}
         </div>
         {streak === 0 && <p style={{ textAlign: "center", fontSize: 11, color: darkBg ? "#ffffff99" : "#b0a8bb", margin: "4px 0 0" }}>🔥 La racha sube al cumplir tu meta calórica del día</p>}
