@@ -1971,7 +1971,7 @@ function App() {
           setSkinsUnlocked(axo.skins ? axo.skins.split(",").filter(Boolean) : []);
         }
         if (comidas && comidas.length > 0) {
-          setLog(comidas.map((c, i) => ({ id: c.id, n: c.nombre, kcal: c.kcal, p: c.proteina, c: c.carbos, g: c.grasa, qty: 1, uid: i + 1 })));
+          setLog(comidas.map((c) => ({ id: c.id, n: c.nombre, kcal: c.kcal, p: c.proteina, c: c.carbos, g: c.grasa, qty: 1, uid: "db" + c.id })));
         }
         try {
           const sv = localStorage.getItem("axo_screen");
@@ -2215,7 +2215,7 @@ function App() {
     if (t.kcal >= targets.objetivoDeficit * 0.8 && t.p >= targets.prote * 0.85 && nv >= targets.vasos * 0.8 && !celebrated) { setCelebrated(true); setTimeout(() => setOverlay("celebrate"), 350); }
   }, [targets, celebrated]);
   const addFood = useCallback((food, qty = 1) => {
-    const item = { ...food, qty, uid: uidSeq }; setUidSeq((s) => s + 1);
+    const item = { ...food, qty, uid: "local" + uidSeq }; setUidSeq((s) => s + 1);
     setLog((l) => { const nl = [...l, item]; checkGoals(nl, vasos); return nl; }); setEating(true); setScreen("home"); setTimeout(() => setEating(false), 2600);
     if (userId) guardarComida(userId, food);
   }, [uidSeq, vasos, checkGoals, showToast, petName, userId]);
