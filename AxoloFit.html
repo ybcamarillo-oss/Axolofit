@@ -2850,6 +2850,13 @@ function App() {
               </div>}
             </div>;
           })}
+          <button className="btn primary big" style={{marginTop:4}} onClick={()=>{
+            const dp=weekPlan[selDay]; const dF=dayFactor(dp);
+            MEAL_SPLIT.forEach(([k])=>{ const ek=selDay+"_"+k; if(!weekEaten[ek]) toggleEaten(selDay,k,scaleMeal(MENU_DB[k][dp[k]],dF)); });
+            if(dp.fruta!=null){ const ek2=selDay+"_desayuno_x2"; if(!weekEaten[ek2]) toggleEaten(selDay,"desayuno_x2",scaleMeal(FRUTAS[dp.fruta],dF)); }
+            if(dp.snack2!=null){ const ek2=selDay+"_snack_x2"; if(!weekEaten[ek2]) toggleEaten(selDay,"snack_x2",scaleMeal(MENU_DB.snack[dp.snack2],dF)); }
+            showToast("Agregado a tus alimentos de hoy ✅"); setScreen("home");
+          }}>✅ Agrégalo a tus alimentos ingeridos hoy</button>
           <button className="btn primary big" style={{marginTop:4}} onClick={()=>regenDay(selDay)}>🔄 Regenerar {DIAS_FULL[DIAS.indexOf(selDay)]}</button>
           <div style={{marginTop:10,background:"#f6f7fb",borderRadius:16,padding:"10px 12px"}}>
             <p style={{fontFamily:"Fredoka",fontWeight:600,fontSize:14,marginBottom:6}}>Resumen semanal</p>
@@ -2913,7 +2920,7 @@ function App() {
             <b style={{ fontFamily: "'Fredoka'", color: okColor }}>{tot.kcal} kcal</b>
           </div>
           <div className="macro-row" style={{ justifyContent: "flex-start", marginBottom: 10 }}><span style={{ color: "#7C5CFF" }}>P {tot.p}g</span><span style={{ color: "#F2B705" }}>G {tot.g}g</span><span style={{ color: "#34BC97" }}>C {tot.c}g</span><span style={{ color: okColor }}>{diff >= 0 ? "+" : ""}{diff} vs meta</span></div>
-          <button className="btn primary big" onClick={() => { dishes.forEach((x) => addFood({ id: "menu_" + x.k, n: x.d.n, u: "1 porción", kcal: x.d.kcal, p: x.d.p, c: x.d.c, g: x.d.g })); setOverlay(null); setScreen("home"); }}>Añadir todo a hoy</button>
+          <button className="btn primary big" onClick={() => { dishes.forEach((x) => addFood({ id: "menu_" + x.k, n: x.d.n, u: "1 porción", kcal: x.d.kcal, p: x.d.p, c: x.d.c, g: x.d.g })); setOverlay(null); setScreen("home"); }}>✅ Agrégalo a tus alimentos ingeridos hoy</button>
           <button className="btn ghost" style={{ width: "100%", marginTop: 4 }} onClick={regen}>Regenerar menú</button>
         </div>
       </div>
