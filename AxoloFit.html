@@ -1985,6 +1985,7 @@ function App() {
             setStreak(rachaGuardada); setUltimoDia(ultDia);
           }
           setSkinsUnlocked(axo.skins ? axo.skins.split(",").filter(Boolean) : []);
+          if (axo.vasos_fecha === hoyLocal() && axo.vasos_hoy) setVasos(axo.vasos_hoy);
         }
         if (comidas && comidas.length > 0) {
           setLog(comidas.map((c) => ({ id: c.id, n: c.nombre, kcal: c.kcal, p: c.proteina, c: c.carbos, g: c.grasa, qty: 1, uid: "db" + c.id })));
@@ -2240,8 +2241,8 @@ function App() {
     setLog((l) => l.filter((f) => f.uid !== uid));
     if (userId && item && item.id) borrarComida(item.id);
   };
-  const addAgua = () => setVasos((v) => { const nv = Math.min(targets.vasos, v + 1); checkGoals(log, nv); return nv; });
-  const setWater = (i) => { const nv = (i + 1 === vasos ? i : i + 1); setVasos(nv); checkGoals(log, nv); };
+  const addAgua = () => setVasos((v) => { const nv = Math.min(targets.vasos, v + 1); checkGoals(log, nv); if (userId) guardarAxo(userId, { vasos_hoy: nv, vasos_fecha: hoyLocal() }); return nv; });
+  const setWater = (i) => { const nv = (i + 1 === vasos ? i : i + 1); setVasos(nv); checkGoals(log, nv); if (userId) guardarAxo(userId, { vasos_hoy: nv, vasos_fecha: hoyLocal() }); };
   const phrase = useMemo(() => PHRASES[Math.floor(Math.random() * PHRASES.length)], [overlay]);
   const closeCelebrate = () => {
     setOverlay(null);
