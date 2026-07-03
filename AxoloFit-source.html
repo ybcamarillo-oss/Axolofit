@@ -1733,7 +1733,7 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
   const scoreRef=React.useRef(0);
   const [level,setLevel]=useState(1);
   const levelRef=React.useRef(1);
-  const [time,setTime]=useState(20);
+  const [time,setTime]=useState(30);
   const [over,setOver]=useState(false);
   const [levelUp,setLevelUp]=useState(false);
   const [fx,setFx]=useState([]);
@@ -1750,6 +1750,7 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
   const freezeActiveRef=React.useRef(false);
   const freezeUntilRef=React.useRef(0);
   const target=(lv)=>lv*6+4;
+  const dur=(lv)=>lv<=3?30:lv<=7?40:Math.min(60,45+(lv-8)*2);
   React.useEffect(()=>{
     let id=0,tick=0,lastX=0.5;
     const iv=setInterval(()=>{ tick++; setItems(arr=>{
@@ -1847,7 +1848,7 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
       if(t<=1){
         if(scoreRef.current>=target(levelRef.current)){
           levelRef.current+=1; setLevel(levelRef.current); setLevelUp(true); setTimeout(()=>setLevelUp(false),1400);
-          setItems([]); return 20;
+          setItems([]); return dur(levelRef.current);
         } else { clearInterval(tmr); clearInterval(iv); setOver(true); recordBest("catch",scoreRef.current); return 0; }
       }
       return t-1;
