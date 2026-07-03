@@ -2406,7 +2406,7 @@ function App() {
           </div>
           <div className="searchbar"><Search size={18} color="#9aa0b4" /><input placeholder="Busca: tacos, pozole, concha…" value={q} onChange={(e) => setQ(e.target.value)} /></div>
           {results.map((f) => <div key={f.id} className="sug-row"><div><b>{f.n}</b><span className="muted sm"> · {f.u} · {f.kcal} kcal · P{f.p} C{f.c} G{f.g}</span></div><button className="add-btn" onClick={() => addFood(f)}><Plus size={18} /></button></div>)}
-          <button className="btn ghost" style={{ marginTop: 8 }} onClick={() => addFood({ id: "manual", n: "Alimento personalizado", u: "porción", kcal: 250, p: 10, c: 30, g: 8 })}><Pencil size={15} /> Registro manual</button>
+
         
         </div>
       </div>
