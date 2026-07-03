@@ -2190,6 +2190,14 @@ function App() {
   const [log, setLog] = useState([]);
   const [vasos, setVasos] = useState(0);
   const [uidSeq, setUidSeq] = useState(1);
+  const [lbGame, setLbGame] = useState("catch");
+  const [lbRows, setLbRows] = useState(null);
+  useEffect(() => {
+    if (screen !== "leaderboard") return;
+    setLbRows(null);
+    sb.from("leaderboard").select("*").eq("game_key", lbGame).order("score", { ascending: false }).limit(10)
+      .then(({ data, error }) => { setLbRows(error ? [] : (data || [])); });
+  }, [screen, lbGame]);
   const [celebrated, setCelebrated] = useState(false);
   const [kissing, setKissing] = useState(false);
   const [eating, setEating] = useState(false);
@@ -2735,25 +2743,18 @@ function App() {
 
   const JuegosScreen = () => {
     const games=[["game_catch","🍬","Atrapa la comida sana","catch"],["game_memo","🧠","Memorama de comida","memo"],["game_quiz","🥗","¿Saludable o antojo?","quiz"],["game_cal","🔥","¿Más calorías?","cal"],["game_simon","🎵","Axo Dice","simon"]];
-    return (<div className="screen"><Header title="🎮 Juegos" back={()=>setScreen("home")} /><div className="scroll" ref={sRef("arcade")} onScroll={sSave("arcade")}>{games.map(([k,e,t,bk])=>{const rec=best[bk]||0;return <button key={k} className="list-row" onClick={()=>setScreen(k)}><span style={{fontSize:26}}>{e}</span><span style={{flex:1}}><b style={{display:"block",fontFamily:"Fredoka",fontSize:16}}>{t}</b><span className="muted sm">{rec>0?("🏆 Récord: "+rec):"¡Sin récord aún!"}</span></span></button>;})}<button className="btn soft" style={{marginTop:10}} onClick={()=>setScreen("leaderboard")}>🏅 Tabla de récords</button><p className="muted sm" style={{textAlign:"center",marginTop:6}}>Gana XP y supera tu récord para vestir a {petName}.</p><div style={{height:80}}/></div></div>);
+    return (<div className="screen"><Header title="🎮 Juegos" back={()=>setScreen("home")} /><div className="scroll" ref={sRef("arcade")} onScroll={sSave("arcade")}>{games.map(([k,e,t,bk])=>{const rec=best[bk]||0;return <button key={k} className="list-row" onClick={()=>setScreen(k)}><span style={{fontSize:26}}>{e}</span><span style={{flex:1}}><b style={{display:"block",fontFamily:"Fredoka",fontSize:16}}>{t}</b><span className="muted sm">{rec>0?("🏆 Récord: "+rec):"¡Sin récord aún!"}</span></span></button>;})}<button className="btn primary" style={{marginTop:10,width:"100%"}} onClick={()=>setScreen("leaderboard")}>🏅 Tabla de récords</button><p className="muted sm" style={{textAlign:"center",marginTop:6}}>Gana XP y supera tu récord para vestir a {petName}.</p><div style={{height:80}}/></div></div>);
   };
   const LeaderboardScreen = () => {
-    const [lbGame,setLbGame]=useState("catch");
-    const [rows,setRows]=useState(null);
     const games=[["catch","🍬","Atrapa"],["memo","🧠","Memorama"],["quiz","🥗","Antojo"],["cal","🔥","Calorías"],["simon","🎵","Axo Dice"]];
-    useEffect(()=>{
-      setRows(null);
-      sb.from("leaderboard").select("*").eq("game_key",lbGame).order("score",{ascending:false}).limit(10)
-        .then(({data,error})=>{ setRows(error?[]:(data||[])); });
-    },[lbGame]);
     return (<div className="screen"><Header title="🏅 Tabla de récords" back={()=>setScreen("arcade")} />
       <div className="scroll">
         <div style={{display:"flex",gap:6,overflowX:"auto",padding:"2px 2px 10px"}}>
           {games.map(([k,e,t])=><button key={k} onClick={()=>setLbGame(k)} style={{flexShrink:0,border:"none",borderRadius:12,padding:"8px 12px",fontFamily:"Fredoka",fontWeight:700,fontSize:13,cursor:"pointer",background:lbGame===k?"#7C5CFF":"#f4f6fb",color:lbGame===k?"#fff":"#7a8099"}}>{e} {t}</button>)}
         </div>
-        {rows===null && <p className="muted sm" style={{textAlign:"center",marginTop:20}}>Cargando…</p>}
-        {rows && rows.length===0 && <p className="muted sm" style={{textAlign:"center",marginTop:20}}>Nadie tiene récord en este juego todavía. ¡Sé el primero!</p>}
-        {rows && rows.map((r,i)=><div key={r.user_id} className="list-row" style={{background:r.user_id===userId?"#EAF3FF":undefined}}>
+        {lbRows===null && <p className="muted sm" style={{textAlign:"center",marginTop:20}}>Cargando…</p>}
+        {lbRows && lbRows.length===0 && <p className="muted sm" style={{textAlign:"center",marginTop:20}}>Nadie tiene récord en este juego todavía. ¡Sé el primero!</p>}
+        {lbRows && lbRows.map((r,i)=><div key={r.user_id} className="list-row" style={{background:r.user_id===userId?"#EAF3FF":undefined}}>
           <span style={{fontSize:18,fontFamily:"Fredoka",fontWeight:800,width:28,textAlign:"center"}}>{i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</span>
           <span style={{flex:1,fontFamily:"Fredoka",fontWeight:700}}>{r.nombre_axo || "Alguien"}{r.user_id===userId?" (tú)":""}</span>
           <span style={{fontFamily:"Fredoka",fontWeight:800,color:"#7C5CFF"}}>{r.score}</span>
