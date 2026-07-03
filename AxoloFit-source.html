@@ -1744,6 +1744,11 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
   const [magnetActive,setMagnetActive]=useState(false);
   const magnetActiveRef=React.useRef(false);
   const magnetUntilRef=React.useRef(0);
+  const [hasShield,setHasShield]=useState(false);
+  const hasShieldRef=React.useRef(false);
+  const [freezeActive,setFreezeActive]=useState(false);
+  const freezeActiveRef=React.useRef(false);
+  const freezeUntilRef=React.useRef(0);
   const target=(lv)=>lv*6+4;
   React.useEffect(()=>{
     let id=0,tick=0,lastX=0.5;
@@ -1752,12 +1757,13 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
       const speed=3.2+lv*0.7;
       const spawnEvery=Math.max(7,15-lv);
       const magOn=magnetActiveRef.current;
+      const freezeOn=freezeActiveRef.current;
       let next=arr.map(it=>{
         if(it.kind==="sano" && magOn){
           const nx=Math.max(0.06,Math.min(0.94,it.x+(bxRef.current-it.x)*0.18));
           return {...it,y:it.y+it.sp*2,x:nx};
         }
-        return {...it,y:it.y+it.sp};
+        return {...it,y:it.y+it.sp*(freezeOn?0.4:1)};
       });
       if(tick%spawnEvery===0){
         let nx=0.12+Math.random()*0.76;
@@ -1768,37 +1774,57 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
       }
       if(tick%110===0 && lv>=1){
         let nx2=0.15+Math.random()*0.7;
-        const isBomb=Math.random()<0.5;
-        next.push({id:++id,x:nx2,y:0,kind:isBomb?"bomb":"magnet",sp:speed*0.85,e:isBomb?"🍩":"🧲"});
+        const r=Math.random();
+        const kind=r<0.3?"bomb":r<0.53?"magnet":r<0.76?"shield":"freeze";
+        const emoji={bomb:"🍩",magnet:"🧲",shield:"🫧",freeze:"🧊"}[kind];
+        next.push({id:++id,x:nx2,y:0,kind,sp:speed*0.85,e:emoji});
       }
-      const catchY=H-58; let delta=0; const keep=[]; const caughtNow=[]; let comboRoto=false; let bombHit=false; let magnetCaught=false;
+      const catchY=H-58; let delta=0; const keep=[]; const caughtNow=[]; let comboRoto=false; let bombHit=false; let magnetCaught=false; let shieldCaught=false; let shieldBroke=false; let freezeCaught=false;
       next.forEach(it=>{ if(it.y>=catchY && it.y<=catchY+42 && Math.abs(it.x-bxRef.current)<0.13){ caughtNow.push(it); } else if(it.y<H+24){ keep.push(it); } });
       const fxPts=[];
       caughtNow.forEach(it=>{
         if(it.kind==="bomb"){
-          bombHit=true;
-          if(comboRef.current>=3) comboRoto=true;
-          comboRef.current=0;
-          delta-=5;
-          fxPts.push({fxId:"fx"+it.id,x:it.x,sano:false,pts:5,special:"bomb"});
+          if(hasShieldRef.current){
+            hasShieldRef.current=false; setHasShield(false); shieldBroke=true;
+            fxPts.push({fxId:"fx"+it.id,x:it.x,sano:true,pts:0,special:"shieldbreak"});
+          } else {
+            bombHit=true;
+            if(comboRef.current>=3) comboRoto=true;
+            comboRef.current=0;
+            delta-=5;
+            fxPts.push({fxId:"fx"+it.id,x:it.x,sano:false,pts:5,special:"bomb"});
+          }
         } else if(it.kind==="magnet"){
           magnetCaught=true;
           fxPts.push({fxId:"fx"+it.id,x:it.x,sano:true,pts:0,special:"magnet"});
+        } else if(it.kind==="shield"){
+          shieldCaught=true;
+          fxPts.push({fxId:"fx"+it.id,x:it.x,sano:true,pts:0,special:"shield"});
+        } else if(it.kind==="freeze"){
+          freezeCaught=true;
+          fxPts.push({fxId:"fx"+it.id,x:it.x,sano:true,pts:0,special:"freeze"});
         } else if(it.sano){
           comboRef.current+=1;
           const pts=comboRef.current>=8?3:comboRef.current>=4?2:1;
           delta+=pts;
           fxPts.push({fxId:"fx"+it.id,x:it.x,sano:true,pts});
         } else {
-          if(comboRef.current>=3) comboRoto=true;
-          comboRef.current=0;
-          delta-=1;
-          fxPts.push({fxId:"fx"+it.id,x:it.x,sano:false,pts:1});
+          if(hasShieldRef.current){
+            hasShieldRef.current=false; setHasShield(false); shieldBroke=true;
+            fxPts.push({fxId:"fx"+it.id,x:it.x,sano:true,pts:0,special:"shieldbreak"});
+          } else {
+            if(comboRef.current>=3) comboRoto=true;
+            comboRef.current=0;
+            delta-=1;
+            fxPts.push({fxId:"fx"+it.id,x:it.x,sano:false,pts:1});
+          }
         }
       });
       let finalKeep=keep;
       if(bombHit){ finalKeep=keep.filter(it=>it.kind!=="sano"); }
       if(magnetCaught){ magnetActiveRef.current=true; magnetUntilRef.current=Date.now()+5000; setMagnetActive(true); }
+      if(shieldCaught){ hasShieldRef.current=true; setHasShield(true); }
+      if(freezeCaught){ freezeActiveRef.current=true; freezeUntilRef.current=Date.now()+6000; setFreezeActive(true); }
       if(caughtNow.length>0) setCombo(comboRef.current);
       if(delta!==0){ scoreRef.current=Math.max(0,scoreRef.current+delta); setScore(scoreRef.current); }
       if(caughtNow.length>0){
@@ -1809,11 +1835,15 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
         if(comboRoto) showToast("💥 Combo roto");
         if(bombHit) showToast("💥 ¡Bomba de azúcar!");
         if(magnetCaught) showToast("🧲 ¡Imán activado!");
+        if(shieldCaught) showToast("🫧 ¡Escudo activado!");
+        if(shieldBroke) showToast("🫧 El escudo absorbió el golpe");
+        if(freezeCaught) showToast("🧊 ¡Todo más lento!");
       }
       return finalKeep;
     }); },55);
     const tmr=setInterval(()=>setTime(t=>{
       if(magnetActiveRef.current && Date.now()>=magnetUntilRef.current){ magnetActiveRef.current=false; setMagnetActive(false); }
+      if(freezeActiveRef.current && Date.now()>=freezeUntilRef.current){ freezeActiveRef.current=false; setFreezeActive(false); }
       if(t<=1){
         if(scoreRef.current>=target(levelRef.current)){
           levelRef.current+=1; setLevel(levelRef.current); setLevelUp(true); setTimeout(()=>setLevelUp(false),1400);
@@ -1846,11 +1876,13 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
           </div>
           {combo>=2 && <p style={{textAlign:"center",fontFamily:"Fredoka",fontWeight:700,fontSize:comboFlash?18:14,color:"#F2B705",margin:"0 0 4px",transition:"font-size .15s"}}>🔥 Combo x{combo}{combo>=8?" (¡x3 puntos!)":combo>=4?" (x2 puntos)":""}</p>}
           {magnetActive && <p style={{textAlign:"center",fontFamily:"Fredoka",fontWeight:700,fontSize:13,color:"#34BC97",margin:"0 0 4px"}}>🧲 Imán activo</p>}
+          {hasShield && <p style={{textAlign:"center",fontFamily:"Fredoka",fontWeight:700,fontSize:13,color:"#5BB8E0",margin:"0 0 4px"}}>🫧 Escudo activo</p>}
+          {freezeActive && <p style={{textAlign:"center",fontFamily:"Fredoka",fontWeight:700,fontSize:13,color:"#5BB8E0",margin:"0 0 4px"}}>🧊 Todo más lento</p>}
           <div style={{width:"100%",height:5,background:"#dfe9f5",borderRadius:3,marginBottom:8}}><div style={{width:Math.min(100,score/tgt*100)+"%",height:"100%",background:"#34BC97",borderRadius:3,transition:"width .2s"}}/></div>
-          <div onPointerMove={move} onTouchMove={move} style={{position:"relative",width:"100%",height:H,borderRadius:20,overflow:"hidden",background:"linear-gradient(180deg,#C8E8FF,#A5D4F5)",touchAction:"none",cursor:"pointer"}}>
-            {items.map(it=><span key={it.id} style={{position:"absolute",left:(it.x*100)+"%",top:it.y,transform:"translate(-50%,-50%)",fontSize:it.kind==="bomb"||it.kind==="magnet"?34:30,userSelect:"none",filter:it.kind==="bomb"?"drop-shadow(0 0 8px #E0556E)":it.kind==="magnet"?"drop-shadow(0 0 8px #34BC97)":"drop-shadow(0 2px 3px #00000022)"}}>{it.e}</span>)}
-            {fx.map(f=><span key={f.fxId} style={{position:"absolute",left:(f.x*100)+"%",top:H-58,fontFamily:"Fredoka",fontWeight:700,fontSize:20,color:f.special==="bomb"?"#E0556E":f.special==="magnet"?"#34BC97":f.sano?"#34BC97":"#E15B5B",pointerEvents:"none",animation:"catchPop .48s ease-out forwards"}}>{f.special==="bomb"?"-5":f.special==="magnet"?"🧲":f.sano?"+"+f.pts:"-1"}</span>)}
-            <div style={{position:"absolute",bottom:8,left:(bx*100)+"%",transformOrigin:"bottom center",animation:bounce?"catchBounce .22s ease-out":"none",transform:bounce?undefined:"translateX(-50%)"}}><Axo paletteKey={pet.palette} outfit={pet.outfit} estilo={pet.estilo} chub={chub} size={68}/>{magnetActive && <div style={{position:"absolute",inset:-8,borderRadius:"50%",boxShadow:"0 0 0 4px #34BC9755",pointerEvents:"none"}}/>}</div>
+          <div onPointerMove={move} onTouchMove={move} style={{position:"relative",width:"100%",height:H,borderRadius:20,overflow:"hidden",background:"linear-gradient(180deg,#C8E8FF,#A5D4F5)",touchAction:"none",cursor:"pointer",boxShadow:freezeActive?"inset 0 0 24px 6px #BEE6FFcc":"none",transition:"box-shadow .3s"}}>
+            {items.map(it=><span key={it.id} style={{position:"absolute",left:(it.x*100)+"%",top:it.y,transform:"translate(-50%,-50%)",fontSize:["bomb","magnet","shield","freeze"].includes(it.kind)?34:30,userSelect:"none",filter:it.kind==="bomb"?"drop-shadow(0 0 8px #E0556E)":it.kind==="magnet"?"drop-shadow(0 0 8px #34BC97)":it.kind==="shield"||it.kind==="freeze"?"drop-shadow(0 0 8px #5BB8E0)":"drop-shadow(0 2px 3px #00000022)"}}>{it.e}</span>)}
+            {fx.map(f=><span key={f.fxId} style={{position:"absolute",left:(f.x*100)+"%",top:H-58,fontFamily:"Fredoka",fontWeight:700,fontSize:20,color:f.special==="bomb"?"#E0556E":f.special==="magnet"||f.special==="shield"||f.special==="shieldbreak"||f.special==="freeze"?"#5BB8E0":f.sano?"#34BC97":"#E15B5B",pointerEvents:"none",animation:"catchPop .48s ease-out forwards"}}>{f.special==="bomb"?"-5":f.special==="magnet"?"🧲":f.special==="shield"?"🫧":f.special==="shieldbreak"?"🫧💥":f.special==="freeze"?"🧊":f.sano?"+"+f.pts:"-1"}</span>)}
+            <div style={{position:"absolute",bottom:8,left:(bx*100)+"%",transformOrigin:"bottom center",animation:bounce?"catchBounce .22s ease-out":"none",transform:bounce?undefined:"translateX(-50%)"}}><Axo paletteKey={pet.palette} outfit={pet.outfit} estilo={pet.estilo} chub={chub} size={68}/>{magnetActive && <div style={{position:"absolute",inset:-8,borderRadius:"50%",boxShadow:"0 0 0 4px #34BC9755",pointerEvents:"none"}}/>}{hasShield && <div style={{position:"absolute",inset:-14,borderRadius:"50%",boxShadow:"0 0 0 3px #5BB8E088",pointerEvents:"none"}}/>}</div>
             {levelUp && <div style={{position:"absolute",top:0,right:0,bottom:0,left:0,display:"flex",alignItems:"center",justifyContent:"center",background:"#ffffffaa"}}><span className="display" style={{fontSize:30,color:"#7C5CFF"}}>¡Nivel {level}! 🎉</span></div>}
           </div>
           <p className="muted sm" style={{textAlign:"center",marginTop:10}}>Llega a {tgt} pts antes de que acabe el tiempo · 🏆 {best}</p>
