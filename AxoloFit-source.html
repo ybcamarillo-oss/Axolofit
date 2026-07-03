@@ -204,6 +204,15 @@ const SUPABASE_URL = "https://lxenslqgcmkonkhbvfhl.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4ZW5zbHFnY21rb25raGJ2ZmhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MDcyMjQsImV4cCI6MjA5Njk4MzIyNH0.w062y4j9GPUdAGAIh8x8vXX6EYBTKknY0c5_MhyP5OI";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 const GEMINI_PROXY = "https://axolofit.vercel.app/api/gemini";
+const VAPID_PUBLIC = "BGyLhv-_ZDk_lbr2FDGTdm631bpLPAIontgERzE7jSBWNwFCURFq8LOJJXcuKIaBF6JdeQEKdn1ZrxIOMR38ufE";
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+  return outputArray;
+}
 // Muestra un estimado como rango (la IA estima, no mide) — más honesto y menos ansiógeno
 const rango = (v) => { const lo = Math.round(v * 0.85 / 5) * 5; const hi = Math.round(v * 1.15 / 5) * 5; return lo + "–" + hi; };
 
@@ -2192,6 +2201,21 @@ function App() {
   const [uidSeq, setUidSeq] = useState(1);
   const [lbGame, setLbGame] = useState("catch");
   const [lbRows, setLbRows] = useState(null);
+  const [pushStatus, setPushStatus] = useState(typeof Notification !== "undefined" ? Notification.permission : "unsupported");
+  const activarPush = async () => {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window) || typeof Notification === "undefined") { showToast("Tu navegador no soporta notificaciones 😕"); return; }
+    try {
+      const perm = await Notification.requestPermission();
+      setPushStatus(perm);
+      if (perm !== "granted") { showToast("No diste permiso de notificaciones"); return; }
+      const reg = await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC) });
+      const json = sub.toJSON();
+      await sb.from("push_subscriptions").upsert({ user_id: userId, endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth }, { onConflict: "endpoint" });
+      showToast("🔔 Notificaciones activadas");
+    } catch (e) { showToast("No se pudo activar: " + e.message); }
+  };
   useEffect(() => {
     if (screen !== "leaderboard") return;
     setLbRows(null);
@@ -2506,6 +2530,7 @@ function App() {
       <div className="scroll" ref={sRef("more")} onScroll={sSave("more")}>
         <div className="card upsell"><div className="card-h"><Crown size={18} color="#F2B705" /> AxoloFit Premium</div><p className="muted sm">IA por foto ilimitada · recetas infinitas · skins y especies raras · informes avanzados · minijuegos exclusivos.</p><button className="btn primary" onClick={() => setOverlay("paywall")}>Ver planes</button></div>
         <button className="list-row" onClick={() => setOverlay("prefs")}>🥗 Preferencias y alergias</button>
+        <button className="list-row" onClick={activarPush}>🔔 {pushStatus === "granted" ? "Notificaciones activadas ✓" : pushStatus === "denied" ? "Notificaciones bloqueadas (revisa tu navegador)" : "Activar notificaciones"}</button>
         <button className="list-row" onClick={() => setOverlay("privacy")}><ShieldCheck size={18} /> Aviso de privacidad</button>
         <button className="list-row" onClick={() => showToast("Línea de la Vida (SSA): 800 911 2000 · 24/7")}><Heart size={18} /> Apoyo y bienestar</button>
         <button className="list-row" onClick={() => { setPhase("onboarding"); setCelebrated(false); }}><Pencil size={18} /> Rehacer mi perfil</button>
