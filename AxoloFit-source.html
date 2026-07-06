@@ -1581,39 +1581,126 @@ const KCAL_PAIRS = [
 ];
 
 function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, recordBest }) {
-  const [i, setI] = useState(0);
+  const [level] = useState(1);
+  const durQ=(lv)=>lv<=3?30:lv<=7?40:45;
+  const [gameTimer, setGameTimer] = useState(durQ(level));
   const [score, setScore] = useState(0);
-  const [done, setDone] = useState(false);
-  const [racha, setRacha] = useState(0);
-  const [rachaFlash, setRachaFlash] = useState(false);
-  const answer = (sano) => {
-    const correcto = sano === GAME_ITEMS[i].sano;
-    const ns = correcto ? score + 1 : score;
-    setScore(ns);
-    if (correcto) { setRacha((r) => { const nr = r + 1; if (nr === 3 || nr === 5) { setRachaFlash(true); setTimeout(() => setRachaFlash(false), 600); } return nr; }); }
-    else setRacha(0);
-    if (i + 1 >= GAME_ITEMS.length) { setDone(true); recordBest("quiz", ns); } else setI((x) => x + 1);
+  const [combo, setCombo] = useState(0);
+  const [over, setOver] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
+  const [progress, setProgress] = useState(1);
+  const [flash, setFlash] = useState(null);
+  const scoreRef = React.useRef(0);
+  const itemRef = React.useRef(null);
+  const idRef = React.useRef(0);
+  const expireTimerRef = React.useRef(null);
+  const startRef = React.useRef(null);
+  const overRef = React.useRef(false);
+  const LIFETIME_MS = 1600;
+
+  const spawnNext = () => {
+    if (overRef.current) return;
+    const pick = GAME_ITEMS[Math.floor(Math.random() * GAME_ITEMS.length)];
+    const id = ++idRef.current;
+    const newItem = { id, ...pick, bornAt: Date.now(), lifetime: LIFETIME_MS };
+    itemRef.current = newItem;
+    setCurrentItem(newItem);
+    setProgress(1);
+    expireTimerRef.current = setTimeout(() => {
+      if (itemRef.current && itemRef.current.id === id) handleExpire(newItem);
+    }, LIFETIME_MS);
   };
+
+  const nextAfterDelay = () => { setTimeout(() => { if (!overRef.current) spawnNext(); }, 250); };
+
+  const handleExpire = (it) => {
+    itemRef.current = null; setCurrentItem(null);
+    if (it.sano) {
+      setCombo(0); setFlash({ type: "missed", text: "-2s" });
+      setGameTimer(t => { const nt = Math.max(0, t - 2); if (nt <= 0) endRound(); return nt; });
+    } else {
+      scoreRef.current += 2; setScore(scoreRef.current);
+      setFlash({ type: "dodge", text: "+2" });
+    }
+    setTimeout(() => setFlash(null), 500);
+    nextAfterDelay();
+  };
+
+  const resolveItem = (action) => {
+    const it = itemRef.current; if (!it || overRef.current) return;
+    clearTimeout(expireTimerRef.current);
+    itemRef.current = null; setCurrentItem(null);
+    const correcto = (action === "tap" && it.sano) || (action === "swipe" && !it.sano);
+    if (correcto) {
+      scoreRef.current += 10; setScore(scoreRef.current);
+      setCombo(c => c + 1);
+      setFlash({ type: "ok", text: "+10" });
+    } else {
+      setCombo(0); setFlash({ type: "bad", text: "-3s" });
+      setGameTimer(t => { const nt = Math.max(0, t - 3); if (nt <= 0) endRound(); return nt; });
+    }
+    setTimeout(() => setFlash(null), 500);
+    nextAfterDelay();
+  };
+
+  const endRound = () => {
+    overRef.current = true; setOver(true);
+    clearTimeout(expireTimerRef.current);
+    itemRef.current = null; setCurrentItem(null);
+    recordBest("quiz", scoreRef.current);
+  };
+
+  React.useEffect(() => {
+    spawnNext();
+    const tmr = setInterval(() => {
+      setGameTimer(t => { if (t <= 1 && !overRef.current) { endRound(); return 0; } return t; });
+    }, 1000);
+    const prog = setInterval(() => {
+      if (itemRef.current) {
+        const p = Math.max(0, 1 - (Date.now() - itemRef.current.bornAt) / itemRef.current.lifetime);
+        setProgress(p);
+      }
+    }, 80);
+    return () => { clearInterval(tmr); clearInterval(prog); clearTimeout(expireTimerRef.current); };
+  }, []);
+
+  const onDown = (e) => { const p = e.touches ? e.touches[0] : e; startRef.current = { x: p.clientX, y: p.clientY }; };
+  const onUp = (e) => {
+    if (!startRef.current || !itemRef.current) return;
+    const p = e.changedTouches ? e.changedTouches[0] : e;
+    const dx = p.clientX - startRef.current.x, dy = p.clientY - startRef.current.y;
+    const dist = Math.hypot(dx, dy);
+    startRef.current = null;
+    resolveItem(dist > 28 ? "swipe" : "tap");
+  };
+
   return (
     <div className="screen" style={{background:"linear-gradient(180deg,#FFF4EC,#E7F7F4)"}}>
       <Header title="🥗 ¿Saludable o antojo?" back={()=>setScreen("arcade")} />
       <div className="scroll" style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",paddingTop:20}}>
-        {done ? (<div className="center" style={{padding:"20px 0"}}>
+        {over ? (<div className="center" style={{padding:"20px 0"}}>
           <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="amor" size={150} />
-          <h2 className="display" style={{fontSize:26,margin:"8px 0 4px"}}>¡{score}/{GAME_ITEMS.length} correctas!</h2>
+          <h2 className="display" style={{fontSize:26,margin:"8px 0 4px"}}>¡{score} puntos!</h2>
           {score>=best && score>0 && <p className="display" style={{color:"#F2B705",fontSize:15}}>🏆 ¡Nuevo récord!</p>}
-          {score<best && best-score<=2 && <p className="muted sm" style={{color:"#E79FAE",fontWeight:700}}>😬 ¡Te faltó{best-score===1?"":"n"} {best-score} para tu récord!</p>}
-          <p className="muted" style={{marginBottom:16}}>Ganaste +{score * 10} XP · 🏆 {Math.max(best,score)}</p>
-          <button className="btn primary big" onClick={() => { setXp((x) => Math.min(99, x + score * 10)); showToast("+" + score * 10 + " XP 🥗"); setScreen("arcade"); }}>Reclamar y volver</button>
+          {score<best && best-score<=20 && <p className="muted sm" style={{color:"#E79FAE",fontWeight:700}}>😬 ¡Te faltaron {best-score} puntos para tu récord!</p>}
+          <p className="muted" style={{marginBottom:16}}>Ganaste +{Math.round(score/2)} XP · 🏆 {Math.max(best,score)}</p>
+          <button className="btn primary big" onClick={() => { setXp((x) => Math.min(99, x + Math.round(score/2))); showToast("+" + Math.round(score/2) + " XP 🥗"); setScreen("arcade"); }}>Reclamar y volver</button>
         </div>) : (<div className="center" style={{padding:"20px 16px",width:"100%"}}>
-          <p className="muted sm" style={{marginBottom:6}}>{i + 1} de {GAME_ITEMS.length}</p>
-          {racha>=2 && <p style={{fontFamily:"Fredoka",fontWeight:700,fontSize:rachaFlash?17:13,color:"#F2B705",margin:"0 0 4px",transition:"font-size .15s"}}>🔥 Racha x{racha}</p>}
-          <div style={{width:"100%",height:6,background:"#eef0f6",borderRadius:4,marginBottom:24}}><div style={{width:((i+1)/GAME_ITEMS.length*100)+"%",height:"100%",background:"#FF6F9C",borderRadius:4}}/></div>
-          <h2 className="display" style={{fontSize:28,margin:"0 0 32px"}}>{GAME_ITEMS[i].n}</h2>
-          <div style={{display:"flex",gap:12,width:"100%"}}>
-            <button className="btn primary big" style={{background:"linear-gradient(180deg,#5FD0AE,#34BC97)",boxShadow:"none"}} onClick={()=>answer(true)}>🥗 Saludable</button>
-            <button className="btn primary big" style={{background:"linear-gradient(180deg,#FFB36B,#FF9036)",boxShadow:"none"}} onClick={()=>answer(false)}>🍩 Antojo</button>
+          <div style={{display:"flex",justifyContent:"space-between",width:"100%",marginBottom:10}}>
+            <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:flash&&flash.type==="bad"||flash&&flash.type==="missed"?"#E15B5B":"#334"}}>⏱ {gameTimer}s</span>
+            <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:"#34BC97"}}>{score} pts</span>
+            {combo>=2 && <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:"#F2B705"}}>🔥 x{combo}</span>}
           </div>
+          <div style={{width:"100%",height:6,background:"#eef0f6",borderRadius:4,marginBottom:28}}><div style={{width:(gameTimer/durQ(level)*100)+"%",height:"100%",background:"#FF6F9C",borderRadius:4,transition:"width .2s"}}/></div>
+          {currentItem && <div
+            onPointerDown={onDown} onTouchStart={onDown}
+            onPointerUp={onUp} onTouchEnd={onUp}
+            style={{width:"100%",padding:"28px 16px",borderRadius:20,background:"#fff",boxShadow:"0 6px 18px #00000014",textAlign:"center",touchAction:"none",cursor:"pointer",userSelect:"none"}}>
+            <h2 className="display" style={{fontSize:26,margin:"0 0 18px"}}>{currentItem.n}</h2>
+            <div style={{width:"100%",height:8,background:"#eef0f6",borderRadius:4,overflow:"hidden"}}><div style={{width:(progress*100)+"%",height:"100%",background:progress<0.3?"#E15B5B":"#5FD0AE",borderRadius:4}}/></div>
+          </div>}
+          {flash && <p style={{fontFamily:"Fredoka",fontWeight:700,fontSize:16,margin:"10px 0 0",color:flash.type==="ok"?"#34BC97":flash.type==="dodge"?"#34BC97":"#E15B5B"}}>{flash.text}</p>}
+          <p className="muted sm" style={{marginTop:18}}>👆 Toca si es sano · 👉 Desliza si es antojo</p>
         </div>)}
       </div>
     </div>
