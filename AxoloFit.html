@@ -190,6 +190,7 @@ html,body { height:100%; }
 .foco-bulb { animation: bulbGlow 1.6s ease-in-out infinite; }
 .foco-shine { animation: glowShine 1.6s ease-in-out infinite; }
 @keyframes flutter { 0%,100%{ transform: scaleX(1) } 50%{ transform: scaleX(0.92) } }
+@keyframes clockShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 40%{transform:translateX(4px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }
 .mari-wings { animation: flutter 2.6s ease-in-out infinite; transform-origin: 100px 150px; transform-box: view-box; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
@@ -1586,11 +1587,14 @@ function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, rec
   const [gameTimer, setGameTimer] = useState(durQ(level));
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
+  const [comboFlash, setComboFlash] = useState(false);
+  const [clockShake, setClockShake] = useState(false);
   const [over, setOver] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
   const [progress, setProgress] = useState(1);
   const [flash, setFlash] = useState(null);
   const scoreRef = React.useRef(0);
+  const comboRef = React.useRef(0);
   const itemRef = React.useRef(null);
   const idRef = React.useRef(0);
   const expireTimerRef = React.useRef(null);
@@ -1616,8 +1620,9 @@ function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, rec
   const handleExpire = (it) => {
     itemRef.current = null; setCurrentItem(null);
     if (it.sano) {
-      setCombo(0); setFlash({ type: "missed", text: "-2s" });
+      comboRef.current = 0; setCombo(0); setFlash({ type: "missed", text: "-2s" });
       setGameTimer(t => { const nt = Math.max(0, t - 2); if (nt <= 0) endRound(); return nt; });
+      setClockShake(true); setTimeout(() => setClockShake(false), 400);
     } else {
       scoreRef.current += 2; setScore(scoreRef.current);
       setFlash({ type: "dodge", text: "+2" });
@@ -1632,12 +1637,17 @@ function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, rec
     itemRef.current = null; setCurrentItem(null);
     const correcto = (action === "tap" && it.sano) || (action === "swipe" && !it.sano);
     if (correcto) {
-      scoreRef.current += 10; setScore(scoreRef.current);
-      setCombo(c => c + 1);
-      setFlash({ type: "ok", text: "+10" });
+      comboRef.current += 1; setCombo(comboRef.current);
+      const mult = comboRef.current >= 8 ? 3 : comboRef.current >= 4 ? 2 : 1;
+      const pts = 10 * mult;
+      scoreRef.current += pts; setScore(scoreRef.current);
+      setFlash({ type: "ok", text: "+" + pts });
+      if ([4, 8].includes(comboRef.current)) { setComboFlash(true); setTimeout(() => setComboFlash(false), 700); }
     } else {
-      setCombo(0); setFlash({ type: "bad", text: "-3s" });
+      comboRef.current = 0; setCombo(0);
+      setFlash({ type: "bad", text: "-3s" });
       setGameTimer(t => { const nt = Math.max(0, t - 3); if (nt <= 0) endRound(); return nt; });
+      setClockShake(true); setTimeout(() => setClockShake(false), 400);
     }
     setTimeout(() => setFlash(null), 500);
     nextAfterDelay();
@@ -1687,9 +1697,9 @@ function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, rec
           <button className="btn primary big" onClick={() => { setXp((x) => Math.min(99, x + Math.round(score/2))); showToast("+" + Math.round(score/2) + " XP 🥗"); setScreen("arcade"); }}>Reclamar y volver</button>
         </div>) : (<div className="center" style={{padding:"20px 16px",width:"100%"}}>
           <div style={{display:"flex",justifyContent:"space-between",width:"100%",marginBottom:10}}>
-            <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:flash&&flash.type==="bad"||flash&&flash.type==="missed"?"#E15B5B":"#334"}}>⏱ {gameTimer}s</span>
+            <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:clockShake?"#E15B5B":"#334",display:"inline-block",animation:clockShake?"clockShake .4s ease-out":"none"}}>⏱ {gameTimer}s</span>
             <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:"#34BC97"}}>{score} pts</span>
-            {combo>=2 && <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:15,color:"#F2B705"}}>🔥 x{combo}</span>}
+            {combo>=2 && <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:comboFlash?18:15,color:"#F2B705",transition:"font-size .15s"}}>🔥 x{combo}{combo>=8?" (x3)":combo>=4?" (x2)":""}</span>}
           </div>
           <div style={{width:"100%",height:6,background:"#eef0f6",borderRadius:4,marginBottom:28}}><div style={{width:(gameTimer/durQ(level)*100)+"%",height:"100%",background:"#FF6F9C",borderRadius:4,transition:"width .2s"}}/></div>
           {currentItem && <div
@@ -1699,7 +1709,7 @@ function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, rec
             <h2 className="display" style={{fontSize:26,margin:"0 0 18px"}}>{currentItem.n}</h2>
             <div style={{width:"100%",height:8,background:"#eef0f6",borderRadius:4,overflow:"hidden"}}><div style={{width:(progress*100)+"%",height:"100%",background:progress<0.3?"#E15B5B":"#5FD0AE",borderRadius:4}}/></div>
           </div>}
-          {flash && <p style={{fontFamily:"Fredoka",fontWeight:700,fontSize:16,margin:"10px 0 0",color:flash.type==="ok"?"#34BC97":flash.type==="dodge"?"#34BC97":"#E15B5B"}}>{flash.text}</p>}
+          {flash && <p style={{fontFamily:"Fredoka",fontWeight:700,fontSize:flash.type==="bad"||flash.type==="missed"?22:16,margin:"10px 0 0",color:flash.type==="ok"?"#34BC97":flash.type==="dodge"?"#34BC97":"#E15B5B"}}>{flash.text}</p>}
           <p className="muted sm" style={{marginTop:18}}>👆 Toca si es sano · 👉 Desliza si es antojo</p>
         </div>)}
       </div>
