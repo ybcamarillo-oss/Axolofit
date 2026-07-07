@@ -1892,6 +1892,9 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
   const [lives,setLives]=useState(3);
   const livesRef=React.useRef(3);
   const [lifeLostFlash,setLifeLostFlash]=useState(false);
+  const nutrientesRef=React.useRef(0);
+  const bestComboRef=React.useRef(0);
+  const [runKey,setRunKey]=useState(0);
   const target=(lv)=>lv*6+4;
   const dur=(lv)=>lv<=3?30:lv<=7?40:Math.min(60,45+(lv-8)*2);
   React.useEffect(()=>{
@@ -1956,6 +1959,8 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
           fxPts.push({fxId:"fx"+it.id,x:it.x,sano:true,pts:0,special:"hourglass"});
         } else if(it.sano){
           comboRef.current+=1;
+          nutrientesRef.current+=1;
+          if(comboRef.current>bestComboRef.current) bestComboRef.current=comboRef.current;
           const pts=comboRef.current>=8?3:comboRef.current>=4?2:1;
           delta+=pts;
           fxPts.push({fxId:"fx"+it.id,x:it.x,sano:true,pts});
@@ -2032,20 +2037,52 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
       return t-1;
     }),1000);
     return()=>{clearInterval(iv);clearInterval(tmr);};
-  },[]);
+  },[runKey]);
   const move=(e)=>{ const r=e.currentTarget.getBoundingClientRect(); const cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left; const ff=Math.max(.06,Math.min(.94,cx/r.width)); bxRef.current=ff; setBx(ff); };
+  const retry=()=>{
+    setXp(x=>Math.min(99,x+score*5));
+    scoreRef.current=0; setScore(0);
+    levelRef.current=1; setLevel(1);
+    comboRef.current=0; setCombo(0);
+    livesRef.current=3; setLives(3);
+    comboBrokenThisLevelRef.current=false; suddenDeathUsedRef.current=false;
+    magnetActiveRef.current=false; setMagnetActive(false);
+    hasShieldRef.current=false; setHasShield(false);
+    freezeActiveRef.current=false; setFreezeActive(false);
+    setFeverActive(false);
+    nutrientesRef.current=0; bestComboRef.current=0;
+    setItems([]); setFx([]);
+    setTime(dur(1));
+    setOver(false);
+    setRunKey(k=>k+1);
+  };
   const tgt=target(level);
   return (
     <div className="screen" style={{background:"linear-gradient(180deg,#EAF6FF,#D7ECFF)"}}>
       <Header title="🍬 Atrapa lo sano" back={()=>setScreen("arcade")} />
       {over ? (<div className="center" style={{padding:"30px 16px"}}>
-        <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="amor" size={150} />
-        <h2 className="display" style={{fontSize:26,margin:"8px 0 2px"}}>¡{score} puntos!</h2>
-        <p className="muted" style={{marginBottom:4}}>Llegaste al nivel {level} · +{score*5} XP</p>
+        <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="amor" size={130} />
+        <h2 className="display" style={{fontSize:22,margin:"8px 0 2px"}}>¡Buen intento! Tu cuerpo necesita una recarga de energía</h2>
+        <p className="muted" style={{marginBottom:10}}>Llegaste al nivel {level}</p>
+        <div style={{display:"flex",gap:10,width:"100%",maxWidth:320,marginBottom:10}}>
+          <div style={{flex:1,background:"#fff",borderRadius:14,padding:"10px 6px",textAlign:"center",boxShadow:"0 4px 10px #00000010"}}>
+            <div style={{fontSize:20,fontWeight:700,fontFamily:"Fredoka",color:"#34BC97"}}>{score}</div>
+            <div className="muted sm">Puntos</div>
+          </div>
+          <div style={{flex:1,background:"#fff",borderRadius:14,padding:"10px 6px",textAlign:"center",boxShadow:"0 4px 10px #00000010"}}>
+            <div style={{fontSize:20,fontWeight:700,fontFamily:"Fredoka",color:"#5FA8E8"}}>{nutrientesRef.current}</div>
+            <div className="muted sm">Nutrientes</div>
+          </div>
+          <div style={{flex:1,background:"#fff",borderRadius:14,padding:"10px 6px",textAlign:"center",boxShadow:"0 4px 10px #00000010"}}>
+            <div style={{fontSize:20,fontWeight:700,fontFamily:"Fredoka",color:"#F2B705"}}>🔥{bestComboRef.current}</div>
+            <div className="muted sm">Mejor racha</div>
+          </div>
+        </div>
         {score>=best && score>0 && <p className="display" style={{color:"#F2B705",fontSize:16,marginBottom:6}}>🏆 ¡Nuevo récord!</p>}
         {score<best && best-score<=3 && <p className="muted sm" style={{marginBottom:6,color:"#E79FAE",fontWeight:700}}>😬 ¡Te faltó{best-score===1?"":"n"} {best-score} para tu récord!</p>}
         {score<best && best-score>3 && <p className="muted sm" style={{marginBottom:6}}>Récord: {best}</p>}
-        <button className="btn primary big" onClick={()=>{ setXp(x=>Math.min(99,x+score*5)); showToast("+"+score*5+" XP 🍬"); setScreen("arcade"); }}>Reclamar y volver</button>
+        <button className="btn primary big" style={{width:"100%",maxWidth:280,marginBottom:8}} onClick={retry}>🔁 Intentar de nuevo</button>
+        <button className="btn ghost" style={{width:"100%",maxWidth:280}} onClick={()=>{ setXp(x=>Math.min(99,x+score*5)); showToast("+"+score*5+" XP 🍬"); setScreen("arcade"); }}>Reclamar y volver</button>
       </div>) : (
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"0 8px",position:"relative"}}>
           <div style={{display:"flex",justifyContent:"space-between",width:"100%",padding:"4px 8px 6px",fontFamily:"Fredoka",fontWeight:700}}>
