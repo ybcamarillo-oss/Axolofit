@@ -222,6 +222,7 @@ function AuthScreen({ onAuth }) {
   const [modo, setModo] = useState("login"); // "login" | "registro" | "reset"
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
+  const [pass2, setPass2] = useState("");
   const [nombre, setNombre] = useState("");
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
@@ -268,6 +269,7 @@ function AuthScreen({ onAuth }) {
     setError(null);
     if (!email || !pass) { setError("Completa email y contraseña."); return; }
     if (modo === "registro" && !nombre) { setError("¿Cómo te llamamos?"); return; }
+    if (modo === "registro" && pass !== pass2) { setError("Las contraseñas no coinciden."); return; }
     setCargando(true);
     try {
       if (modo === "login") {
@@ -324,11 +326,12 @@ function AuthScreen({ onAuth }) {
   const handleNuevaPass = async () => {
     setError(null);
     if (!pass || pass.length < 6) { setError("Mínimo 6 caracteres."); return; }
+    if (pass !== pass2) { setError("Las contraseñas no coinciden."); return; }
     setCargando(true);
     try {
       const { error: e } = await sb.auth.updateUser({ password: pass });
       if (e) throw e;
-      setModo("login"); setResetEnviado(false); setOtpVerificado(false); setOtpCode(""); setPass("");
+      setModo("login"); setResetEnviado(false); setOtpVerificado(false); setOtpCode(""); setPass(""); setPass2("");
       setError(null);
       showToast && showToast("¡Contraseña actualizada! Ya puedes iniciar sesión 🔐");
     } catch (e) {
@@ -360,6 +363,18 @@ function AuthScreen({ onAuth }) {
     </div>
   );
 
+  const passConfirmJSX = (
+    <div style={{ position: "relative", marginBottom: 10 }}>
+      <input
+        style={{ ...inputStyle, marginBottom: 0, paddingRight: 48, border: pass2 && pass !== pass2 ? "2px solid #E15B5B" : inputStyle.border }}
+        placeholder="Repite la contraseña"
+        type={showPass ? "text" : "password"}
+        value={pass2}
+        onChange={e => setPass2(e.target.value)}
+      />
+    </div>
+  );
+
   if (confirmado) return (
     <div className="screen center" style={{ background: "linear-gradient(180deg,#F3ECFF,#E7F7F4)", gap: 12 }}>
       <Axo paletteKey="durazno" size={160} mood="amor" />
@@ -388,6 +403,7 @@ function AuthScreen({ onAuth }) {
           <button className="btn ghost" style={{ width: "100%", maxWidth: 280, marginTop: 8 }} onClick={() => { setResetEnviado(false); setOtpCode(""); setOtpError(null); }}>← Cambiar email</button>
         </>) : (<>
           {passInputJSX}
+          {passConfirmJSX}
           {error && <p style={{ color: "#c0392b", fontSize: 13, fontWeight: 700, marginBottom: 10, textAlign: "center" }}>{error}</p>}
           <button className="btn primary big" onClick={handleNuevaPass} disabled={cargando} style={{ width: "100%", maxWidth: 280 }}>
             {cargando ? "Guardando…" : "Guardar nueva contraseña 🔐"}
@@ -422,6 +438,7 @@ function AuthScreen({ onAuth }) {
           </>)}
           {resetEnviado && otpVerificado && (<>
             {passInputJSX}
+            {passConfirmJSX}
             {error && <p style={{ color: "#c0392b", fontSize: 13, fontWeight: 700, marginBottom: 10, textAlign: "center" }}>{error}</p>}
             <button className="btn primary big" onClick={handleNuevaPass} disabled={cargando}>
               {cargando ? "Guardando…" : "Guardar nueva contraseña 🔐"}
@@ -447,12 +464,13 @@ function AuthScreen({ onAuth }) {
         <input style={inputStyle} placeholder="Email" type="email" value={email}
           onChange={e => setEmail(e.target.value)} autoCapitalize="none" />
         {passInputJSX}
+        {modo === "registro" && passConfirmJSX}
         {error && <p style={{ color: "#c0392b", fontSize: 13, fontWeight: 700, marginBottom: 10, textAlign: "center" }}>{error}</p>}
         <button className="btn primary big" onClick={handleSubmit} disabled={cargando}>
           {cargando ? "Cargando…" : modo === "login" ? "Entrar" : "Crear cuenta"}
         </button>
         <button className="btn ghost" style={{ width: "100%", marginTop: 8 }}
-          onClick={() => { setModo(modo === "login" ? "registro" : "login"); setError(null); }}>
+          onClick={() => { setModo(modo === "login" ? "registro" : "login"); setError(null); setPass2(""); }}>
           {modo === "login" ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión"}
         </button>
         {modo === "login" && (
@@ -1582,43 +1600,59 @@ const KCAL_PAIRS = [
 ];
 
 function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, recordBest }) {
-  const [level] = useState(1);
+  const [level, setLevel] = useState(1);
   const durQ=(lv)=>lv<=3?30:lv<=7?40:45;
+  const targetQ=(lv)=>lv*60+40;
+  const lifetimeFor=(lv)=>Math.max(700,1600-(lv-1)*120);
+  const gapFor=(lv)=>Math.max(80,250-(lv-1)*20);
+  const maxConcurrent=(lv)=>lv>=8?3:lv>=4?2:1;
   const [gameTimer, setGameTimer] = useState(durQ(level));
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [comboFlash, setComboFlash] = useState(false);
   const [clockShake, setClockShake] = useState(false);
+  const [levelUp, setLevelUp] = useState(false);
   const [over, setOver] = useState(false);
-  const [currentItem, setCurrentItem] = useState(null);
-  const [progress, setProgress] = useState(1);
+  const [items, setItems] = useState([]);
+  const [tick, setTick] = useState(0);
   const [flash, setFlash] = useState(null);
   const scoreRef = React.useRef(0);
   const comboRef = React.useRef(0);
-  const itemRef = React.useRef(null);
+  const levelRef = React.useRef(1);
+  const itemsRef = React.useRef([]);
   const idRef = React.useRef(0);
-  const expireTimerRef = React.useRef(null);
-  const startRef = React.useRef(null);
+  const lastSpawnRef = React.useRef(0);
+  const startRef = React.useRef({});
   const overRef = React.useRef(false);
-  const LIFETIME_MS = 1600;
 
-  const spawnNext = () => {
+  const checkLevelUp = () => {
+    if (scoreRef.current >= targetQ(levelRef.current)) {
+      levelRef.current += 1; setLevel(levelRef.current);
+      setGameTimer(durQ(levelRef.current));
+      setLevelUp(true); setTimeout(() => setLevelUp(false), 1400);
+    }
+  };
+
+  const removeItem = (id) => {
+    itemsRef.current = itemsRef.current.filter(x => x.id !== id);
+    setItems(itemsRef.current);
+  };
+
+  const spawnOne = () => {
     if (overRef.current) return;
     const pick = GAME_ITEMS[Math.floor(Math.random() * GAME_ITEMS.length)];
     const id = ++idRef.current;
-    const newItem = { id, ...pick, bornAt: Date.now(), lifetime: LIFETIME_MS };
-    itemRef.current = newItem;
-    setCurrentItem(newItem);
-    setProgress(1);
-    expireTimerRef.current = setTimeout(() => {
-      if (itemRef.current && itemRef.current.id === id) handleExpire(newItem);
-    }, LIFETIME_MS);
+    const lifetime = lifetimeFor(levelRef.current);
+    const timeoutId = setTimeout(() => handleExpire(id), lifetime);
+    const newItem = { id, ...pick, bornAt: Date.now(), lifetime, timeoutId };
+    itemsRef.current = [...itemsRef.current, newItem];
+    setItems(itemsRef.current);
+    lastSpawnRef.current = Date.now();
   };
 
-  const nextAfterDelay = () => { setTimeout(() => { if (!overRef.current) spawnNext(); }, 250); };
-
-  const handleExpire = (it) => {
-    itemRef.current = null; setCurrentItem(null);
+  const handleExpire = (id) => {
+    const it = itemsRef.current.find(x => x.id === id); if (!it) return;
+    removeItem(id);
     if (it.sano) {
       comboRef.current = 0; setCombo(0); setFlash({ type: "missed", text: "-2s" });
       setGameTimer(t => { const nt = Math.max(0, t - 2); if (nt <= 0) endRound(); return nt; });
@@ -1626,15 +1660,15 @@ function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, rec
     } else {
       scoreRef.current += 2; setScore(scoreRef.current);
       setFlash({ type: "dodge", text: "+2" });
+      checkLevelUp();
     }
     setTimeout(() => setFlash(null), 500);
-    nextAfterDelay();
   };
 
-  const resolveItem = (action) => {
-    const it = itemRef.current; if (!it || overRef.current) return;
-    clearTimeout(expireTimerRef.current);
-    itemRef.current = null; setCurrentItem(null);
+  const resolveItem = (id, action) => {
+    const it = itemsRef.current.find(x => x.id === id); if (!it || overRef.current) return;
+    clearTimeout(it.timeoutId);
+    removeItem(id);
     const correcto = (action === "tap" && it.sano) || (action === "swipe" && !it.sano);
     if (correcto) {
       comboRef.current += 1; setCombo(comboRef.current);
@@ -1643,6 +1677,7 @@ function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, rec
       scoreRef.current += pts; setScore(scoreRef.current);
       setFlash({ type: "ok", text: "+" + pts });
       if ([4, 8].includes(comboRef.current)) { setComboFlash(true); setTimeout(() => setComboFlash(false), 700); }
+      checkLevelUp();
     } else {
       comboRef.current = 0; setCombo(0);
       setFlash({ type: "bad", text: "-3s" });
@@ -1650,38 +1685,37 @@ function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, rec
       setClockShake(true); setTimeout(() => setClockShake(false), 400);
     }
     setTimeout(() => setFlash(null), 500);
-    nextAfterDelay();
   };
 
   const endRound = () => {
     overRef.current = true; setOver(true);
-    clearTimeout(expireTimerRef.current);
-    itemRef.current = null; setCurrentItem(null);
+    itemsRef.current.forEach(x => clearTimeout(x.timeoutId));
+    itemsRef.current = []; setItems([]);
     recordBest("quiz", scoreRef.current);
   };
 
   React.useEffect(() => {
-    spawnNext();
     const tmr = setInterval(() => {
       setGameTimer(t => { if (t <= 1 && !overRef.current) { endRound(); return 0; } return t; });
     }, 1000);
-    const prog = setInterval(() => {
-      if (itemRef.current) {
-        const p = Math.max(0, 1 - (Date.now() - itemRef.current.bornAt) / itemRef.current.lifetime);
-        setProgress(p);
+    const spawner = setInterval(() => {
+      if (overRef.current) return;
+      if (itemsRef.current.length < maxConcurrent(levelRef.current) && Date.now() - lastSpawnRef.current >= gapFor(levelRef.current)) {
+        spawnOne();
       }
-    }, 80);
-    return () => { clearInterval(tmr); clearInterval(prog); clearTimeout(expireTimerRef.current); };
+    }, 120);
+    const prog = setInterval(() => { if (!overRef.current) setTick(t => t + 1); }, 80);
+    return () => { clearInterval(tmr); clearInterval(spawner); clearInterval(prog); itemsRef.current.forEach(x => clearTimeout(x.timeoutId)); };
   }, []);
 
-  const onDown = (e) => { const p = e.touches ? e.touches[0] : e; startRef.current = { x: p.clientX, y: p.clientY }; };
-  const onUp = (e) => {
-    if (!startRef.current || !itemRef.current) return;
+  const onDown = (id) => (e) => { const p = e.touches ? e.touches[0] : e; startRef.current[id] = { x: p.clientX, y: p.clientY }; };
+  const onUp = (id) => (e) => {
+    const s = startRef.current[id]; if (!s) return;
     const p = e.changedTouches ? e.changedTouches[0] : e;
-    const dx = p.clientX - startRef.current.x, dy = p.clientY - startRef.current.y;
+    const dx = p.clientX - s.x, dy = p.clientY - s.y;
     const dist = Math.hypot(dx, dy);
-    startRef.current = null;
-    resolveItem(dist > 28 ? "swipe" : "tap");
+    delete startRef.current[id];
+    resolveItem(id, dist > 28 ? "swipe" : "tap");
   };
 
   return (
@@ -1702,15 +1736,21 @@ function QuizScreen({ pet, chub, petName, setScreen, setXp, showToast, best, rec
             {combo>=2 && <span style={{fontFamily:"Fredoka",fontWeight:700,fontSize:comboFlash?18:15,color:"#F2B705",transition:"font-size .15s"}}>🔥 x{combo}{combo>=8?" (x3)":combo>=4?" (x2)":""}</span>}
           </div>
           <div style={{width:"100%",height:6,background:"#eef0f6",borderRadius:4,marginBottom:28}}><div style={{width:(gameTimer/durQ(level)*100)+"%",height:"100%",background:"#FF6F9C",borderRadius:4,transition:"width .2s"}}/></div>
-          {currentItem && <div
-            onPointerDown={onDown} onTouchStart={onDown}
-            onPointerUp={onUp} onTouchEnd={onUp}
-            style={{width:"100%",padding:"28px 16px",borderRadius:20,background:"#fff",boxShadow:"0 6px 18px #00000014",textAlign:"center",touchAction:"none",cursor:"pointer",userSelect:"none"}}>
-            <h2 className="display" style={{fontSize:26,margin:"0 0 18px"}}>{currentItem.n}</h2>
-            <div style={{width:"100%",height:8,background:"#eef0f6",borderRadius:4,overflow:"hidden"}}><div style={{width:(progress*100)+"%",height:"100%",background:progress<0.3?"#E15B5B":"#5FD0AE",borderRadius:4}}/></div>
-          </div>}
+          <div style={{position:"relative",width:"100%",display:"flex",flexDirection:"column",gap:10}}>
+            {items.map(it => {
+              const p = Math.max(0, 1 - (Date.now() - it.bornAt) / it.lifetime);
+              return <div key={it.id}
+                onPointerDown={onDown(it.id)} onTouchStart={onDown(it.id)}
+                onPointerUp={onUp(it.id)} onTouchEnd={onUp(it.id)}
+                style={{width:"100%",padding:"20px 16px",borderRadius:20,background:"#fff",boxShadow:"0 6px 18px #00000014",textAlign:"center",touchAction:"none",cursor:"pointer",userSelect:"none"}}>
+                <h2 className="display" style={{fontSize:22,margin:"0 0 14px"}}>{it.n}</h2>
+                <div style={{width:"100%",height:8,background:"#eef0f6",borderRadius:4,overflow:"hidden"}}><div style={{width:(p*100)+"%",height:"100%",background:p<0.3?"#E15B5B":"#5FD0AE",borderRadius:4}}/></div>
+              </div>;
+            })}
+            {levelUp && <div style={{position:"absolute",top:0,right:0,bottom:0,left:0,display:"flex",alignItems:"center",justifyContent:"center",background:"#ffffffdd",borderRadius:20,minHeight:80}}><span className="display" style={{fontSize:26,color:"#7C5CFF"}}>¡Nivel {level}! 🎉</span></div>}
+          </div>
           {flash && <p style={{fontFamily:"Fredoka",fontWeight:700,fontSize:flash.type==="bad"||flash.type==="missed"?22:16,margin:"10px 0 0",color:flash.type==="ok"?"#34BC97":flash.type==="dodge"?"#34BC97":"#E15B5B"}}>{flash.text}</p>}
-          <p className="muted sm" style={{marginTop:18}}>👆 Toca si es sano · 👉 Desliza si es antojo</p>
+          <p className="muted sm" style={{marginTop:18}}>Nivel {level} · 👆 Toca si es sano · 👉 Desliza si es antojo</p>
         </div>)}
       </div>
     </div>
