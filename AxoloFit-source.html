@@ -1889,10 +1889,14 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
   const [feverActive,setFeverActive]=useState(false);
   const comboBrokenThisLevelRef=React.useRef(false);
   const suddenDeathUsedRef=React.useRef(false);
+  const [lives,setLives]=useState(3);
+  const livesRef=React.useRef(3);
+  const [lifeLostFlash,setLifeLostFlash]=useState(false);
   const target=(lv)=>lv*6+4;
   const dur=(lv)=>lv<=3?30:lv<=7?40:Math.min(60,45+(lv-8)*2);
   React.useEffect(()=>{
     let id=0,tick=0,lastX=0.5;
+    const endGame=()=>{ clearInterval(iv); clearInterval(tmr); setOver(true); recordBest("catch",scoreRef.current); };
     const iv=setInterval(()=>{ tick++; setItems(arr=>{
       const lv=levelRef.current;
       const speed=3.2+lv*0.7;
@@ -1917,13 +1921,13 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
         let nx2=0.15+Math.random()*0.7;
         const r=Math.random();
         const kind=lv>=4
-          ? (r<0.26?"bomb":r<0.46?"magnet":r<0.66?"shield":r<0.86?"freeze":"hourglass")
+          ? (r<0.18?"bomb":r<0.40?"magnet":r<0.62?"shield":r<0.84?"freeze":"hourglass")
           : (r<0.3?"bomb":r<0.53?"magnet":r<0.76?"shield":"freeze");
         const emoji={bomb:"🍩",magnet:"🧲",shield:"🫧",freeze:"🧊",hourglass:"⏳"}[kind];
         next.push({id:++id,x:nx2,y:0,kind,sp:speed*0.85,e:emoji});
       }
-      const catchY=H-58; let delta=0; const keep=[]; const caughtNow=[]; let comboRoto=false; let bombHit=false; let magnetCaught=false; let shieldCaught=false; let shieldBroke=false; let freezeCaught=false; let hourglassCaught=false;
-      next.forEach(it=>{ if(it.y>=catchY && it.y<=catchY+42 && Math.abs(it.x-bxRef.current)<0.13){ caughtNow.push(it); } else if(it.y<H+24){ keep.push(it); } });
+      const catchY=H-58; let delta=0; const keep=[]; const caughtNow=[]; const missed=[]; let comboRoto=false; let bombHit=false; let magnetCaught=false; let shieldCaught=false; let shieldBroke=false; let freezeCaught=false; let hourglassCaught=false; let junkHitReal=false;
+      next.forEach(it=>{ if(it.y>=catchY && it.y<=catchY+42 && Math.abs(it.x-bxRef.current)<0.13){ caughtNow.push(it); } else if(it.y<H+24){ keep.push(it); } else { missed.push(it); } });
       const fxPts=[];
       caughtNow.forEach(it=>{
         if(it.kind==="bomb"){
@@ -1963,17 +1967,36 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
             if(comboRef.current>=3) comboRoto=true;
             comboRef.current=0;
             comboBrokenThisLevelRef.current=true;
+            junkHitReal=true;
             delta-=1;
             fxPts.push({fxId:"fx"+it.id,x:it.x,sano:false,pts:1});
           }
         }
       });
       let finalKeep=keep;
+      if(bombHit && levelRef.current>=4){
+        setFx(f=>[...f,...fxPts]);
+        showToast("💥 ¡Bomba de azúcar! Fin del juego");
+        endGame();
+        return keep;
+      }
       if(bombHit){ finalKeep=keep.filter(it=>it.kind!=="sano"); setTime(t=>Math.max(1,t-4)); }
       if(magnetCaught){ magnetActiveRef.current=true; magnetUntilRef.current=Date.now()+5000; setMagnetActive(true); }
       if(shieldCaught){ hasShieldRef.current=true; setHasShield(true); }
       if(freezeCaught){ freezeActiveRef.current=true; freezeUntilRef.current=Date.now()+6000; setFreezeActive(true); }
       if(hourglassCaught){ setTime(t=>t+5); }
+      if(levelRef.current>=4){
+        const missedSano=missed.filter(it=>it.kind==="sano").length;
+        let lifeLoss=missedSano+(junkHitReal?1:0);
+        if(lifeLoss>0){
+          livesRef.current=Math.max(0,livesRef.current-lifeLoss);
+          setLives(livesRef.current);
+          setLifeLostFlash(true); setTimeout(()=>setLifeLostFlash(false),400);
+          if(missedSano>0) showToast("💔 ¡Se te cayó un alimento sano!");
+          else if(junkHitReal) showToast("💔 ¡Eso no era sano!");
+          if(livesRef.current<=0){ endGame(); return finalKeep; }
+        }
+      }
       if(caughtNow.length>0) setCombo(comboRef.current);
       if(delta!==0){ scoreRef.current=Math.max(0,scoreRef.current+delta); setScore(scoreRef.current); }
       if(caughtNow.length>0){
@@ -1998,6 +2021,7 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
         if(scoreRef.current>=target(levelRef.current)){
           levelRef.current+=1; setLevel(levelRef.current); setLevelUp(true); setTimeout(()=>setLevelUp(false),1400);
           setItems([]); comboBrokenThisLevelRef.current=false; suddenDeathUsedRef.current=false; setFeverActive(false);
+          if(levelRef.current===4){ livesRef.current=3; setLives(3); }
           return dur(levelRef.current);
         } else if(!comboBrokenThisLevelRef.current && !suddenDeathUsedRef.current && comboRef.current>0){
           suddenDeathUsedRef.current=true; setFeverActive(true);
@@ -2026,6 +2050,7 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"0 8px",position:"relative"}}>
           <div style={{display:"flex",justifyContent:"space-between",width:"100%",padding:"4px 8px 6px",fontFamily:"Fredoka",fontWeight:700}}>
             <span style={{color:"#7C5CFF"}}>Nivel {level}</span>
+            {level>=4 && <span style={{fontSize:16,animation:lifeLostFlash?"clockShake .4s ease-out":"none"}}>{"❤️".repeat(Math.max(0,lives))}{"🖤".repeat(Math.max(0,3-lives))}</span>}
             <span style={{color:"#E79FAE"}}>⏱️ {time}s</span>
             <span style={{color:"#34BC97"}}>🍬 {score}/{tgt}</span>
           </div>
