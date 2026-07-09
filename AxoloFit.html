@@ -1226,17 +1226,39 @@ function Ring({ progress, size = 78, stroke = 9, color = "#E79FAE", track = "#00
 
 /* ---------- MINI CHART ---------- */
 function MiniChart({ data }) {
-  const w = 320, h = 160, pad = 26;
+  const w = 340, h = 190, padX = 26, padTop = 46, padBottom = 26;
   const ys = data.map((d) => d.peso), min = Math.min(...ys) - 0.3, max = Math.max(...ys) + 0.3;
-  const px = (i) => data.length <= 1 ? w / 2 : pad + i * ((w - 2 * pad) / (data.length - 1));
-  const py = (v) => h - pad - ((v - min) / (max - min)) * (h - 2 * pad);
-  const pts = data.map((d, i) => px(i) + "," + py(d.peso)).join(" ");
+  const innerH = h - padTop - padBottom;
+  const px = (i) => data.length <= 1 ? w / 2 : padX + i * ((w - 2 * padX) / (data.length - 1));
+  const py = (v) => padTop + innerH - ((v - min) / (max - min)) * innerH;
+  const pts = data.map((d, i) => ({ x: px(i), y: py(d.peso) }));
+  const linePath = pts.reduce((acc, p, i) => {
+    if (i === 0) return "M " + p.x + " " + p.y;
+    const prev = pts[i - 1]; const midX = (prev.x + p.x) / 2;
+    return acc + " C " + midX + " " + prev.y + ", " + midX + " " + p.y + ", " + p.x + " " + p.y;
+  }, "");
+  const areaPath = linePath + " L " + pts[pts.length - 1].x + " " + (h - padBottom) + " L " + pts[0].x + " " + (h - padBottom) + " Z";
+  const last = pts[pts.length - 1];
+  const bubbleW = 62, bubbleH = 30;
+  const bubbleX = Math.min(Math.max(last.x - bubbleW / 2, 4), w - bubbleW - 4);
+  const bubbleY = Math.max(last.y - bubbleH - 14, 2);
   return (
-    <svg viewBox={"0 0 " + w + " " + h} style={{ width: "100%", height: 180 }}>
-      {[0, 1, 2].map((k) => <line key={k} x1={pad} x2={w - pad} y1={pad + k * (h - 2 * pad) / 2} y2={pad + k * (h - 2 * pad) / 2} stroke="#0000000a" />)}
-      <polyline points={pts} fill="none" stroke="#E79FAE" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      {data.map((d, i) => <circle key={i} cx={px(i)} cy={py(d.peso)} r="4" fill="#E79FAE" />)}
+    <svg viewBox={"0 0 " + w + " " + h} style={{ width: "100%", height: 200 }}>
+      <defs>
+        <linearGradient id="pesoFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#E79FAE" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#E79FAE" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {[0, 1, 2].map((k) => <line key={k} x1={padX} x2={w - padX} y1={padTop + k * innerH / 2} y2={padTop + k * innerH / 2} stroke="#0000000a" />)}
+      <path d={areaPath} fill="url(#pesoFill)" stroke="none" />
+      <path d={linePath} fill="none" stroke="#E79FAE" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      {pts.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={i === pts.length - 1 ? 5 : 3.5} fill="#fff" stroke="#E79FAE" strokeWidth="2.5" />)}
       {data.map((d, i) => <text key={"t" + i} x={px(i)} y={h - 6} textAnchor="middle" fontSize="11" fill="#9aa0b4" fontFamily="Nunito">{d.d}</text>)}
+      <line x1={last.x} y1={bubbleY + bubbleH} x2={last.x} y2={last.y - 6} stroke="#E79FAE" strokeWidth="1.5" strokeDasharray="2,3" />
+      <rect x={bubbleX} y={bubbleY} width={bubbleW} height={bubbleH} rx="10" fill="#E79FAE" />
+      <text x={bubbleX + bubbleW / 2} y={bubbleY + 12} textAnchor="middle" fontSize="8.5" fill="#fff" fontFamily="Fredoka" fontWeight="600" opacity="0.9">Tu peso</text>
+      <text x={bubbleX + bubbleW / 2} y={bubbleY + 24} textAnchor="middle" fontSize="12" fill="#fff" fontFamily="Fredoka" fontWeight="700">{data[data.length - 1].peso.toFixed(1)}kg</text>
     </svg>
   );
 }
@@ -2320,14 +2342,27 @@ function App() {
   };
 
   /* --- Guardar comida en Supabase --- */
-  const guardarComida = async (uid, food) => {
+  const guardarComida = async (uid, food, fecha) => {
     await sb.from("food_log").insert({
       user_id: uid, nombre: food.n,
       kcal: food.kcal, proteina: food.p,
       carbos: food.c, grasa: food.g,
-      comida: "libre", fecha: hoyLocal(),
+      comida: "libre", fecha: fecha,
     });
   };
+
+  /* --- Cargar comidas de un día específico (para navegar el historial) --- */
+  const [viewDate, setViewDate] = useState(() => hoyLocal());
+  const primerCargaLogRef = React.useRef(true);
+  const cargarComidasDia = async (uid, fecha) => {
+    const { data } = await sb.from("food_log").select("*").eq("user_id", uid).eq("fecha", fecha).order("created_at");
+    setLog((data || []).map((c) => ({ id: c.id, n: c.nombre, kcal: c.kcal, p: c.proteina, c: c.carbos, g: c.grasa, qty: 1, uid: "db" + c.id })));
+  };
+  React.useEffect(() => {
+    if (!userId) return;
+    if (primerCargaLogRef.current) { primerCargaLogRef.current = false; return; }
+    cargarComidasDia(userId, viewDate);
+  }, [viewDate]);
 
   /* --- Borrar comida de Supabase --- */
   const borrarComida = async (foodId) => {
@@ -2365,6 +2400,8 @@ function App() {
   const [totalComidas, setTotalComidas] = useState(0);
   const DIAS = ["L","M","X","J","V","S","D"];
   const DIAS_LABEL = ["L","Ma","Mi","J","V","S","D"];
+  const MESES_CORTO = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  const fmtFecha = (f) => { const [y, m, dd] = f.split("-").map(Number); return dd + " de " + MESES_CORTO[m - 1]; };
   const DIAS_FULL = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
   const [prefs, setPrefs] = useState({ veg: false, evitar: [], lowcarb: false });
   const allowedIdx = (k) => { const arr = MENU_DB[k].map((it, idx) => ({ it, idx })).filter(({ it }) => (!prefs.veg || it.veg) && (prefs.lowcarb ? it.c <= 16 : !it.lc) && !it.con.some((c) => prefs.evitar.includes(c))).map((o) => o.idx); return arr.length ? arr : MENU_DB[k].map((_, i) => i); };
@@ -2561,9 +2598,9 @@ function App() {
   }, [targets, celebrated]);
   const addFood = useCallback((food, qty = 1) => {
     const item = { ...food, qty, uid: "local" + uidSeq }; setUidSeq((s) => s + 1);
-    setLog((l) => { const nl = [...l, item]; checkGoals(nl, vasos); return nl; }); setEating(true); setScreen("home"); setTimeout(() => setEating(false), 2600);
-    if (userId) guardarComida(userId, food);
-  }, [uidSeq, vasos, checkGoals, showToast, petName, userId]);
+    setLog((l) => { const nl = [...l, item]; if (viewDate === hoyLocal()) checkGoals(nl, vasos); return nl; }); setEating(true); setScreen("home"); setTimeout(() => setEating(false), 2600);
+    if (userId) guardarComida(userId, food, viewDate);
+  }, [uidSeq, vasos, checkGoals, showToast, petName, userId, viewDate]);
   const removeFood = (uid) => {
     const item = log.find(f => f.uid === uid);
     setLog((l) => l.filter((f) => f.uid !== uid));
@@ -2635,13 +2672,37 @@ function App() {
       if (userId && variedad) await guardarAxo(userId, { variedad, accesorio: "ninguno", outfit: "ninguno", nivel: level, xp, racha: streak });
     }} /></div></div>;
 
-  const HomeScreen = () => (
+  const HomeScreen = () => {
+    const hoyDate = new Date();
+    const dow = hoyDate.getDay();
+    const diffLunes = dow === 0 ? -6 : 1 - dow;
+    const lunes = new Date(hoyDate); lunes.setDate(hoyDate.getDate() + diffLunes);
+    const weekDates = Array.from({ length: 7 }, (_, i) => { const d = new Date(lunes); d.setDate(lunes.getDate() + i); return d; });
+    const hoyStrCmp = hoyLocal();
+    return (
     <div className="screen" style={{ background: "linear-gradient(180deg," + bg.from + "," + bg.to + ")", color: darkBg ? "#fff" : "#2A2D43" }}>
       <div className="home-top">
         <div className="streak-pill"><Flame size={16} color="#FF7A3D" /> {streak} días</div>
         <div className="lvl-pill">Nivel {level}<span className="xp-track"><span className="xp-fill" style={{ width: xp + "%" }} /></span></div>
       </div>
       <div className="scroll" ref={sRef("home")} onScroll={sSave("home")}>
+        <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+          {weekDates.map((d, i) => {
+            const dStr = hoyLocal(d);
+            const isSelected = dStr === viewDate;
+            const isFuture = dStr > hoyStrCmp;
+            return (
+              <button key={dStr}
+                onClick={() => { if (!isFuture) setViewDate(dStr); }}
+                disabled={isFuture}
+                style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2, padding: "8px 2px", borderRadius: 14, border: "none", cursor: isFuture ? "default" : "pointer", background: isSelected ? "#7C5CFF" : "#fff", color: isSelected ? "#fff" : isFuture ? "#c7cad6" : "#334", opacity: isFuture ? 0.5 : 1, fontFamily: "Fredoka", fontWeight: 700, boxShadow: isSelected ? "0 4px 10px #7C5CFF44" : "0 2px 6px #00000010" }}>
+                <span style={{ fontSize: 11 }}>{DIAS_LABEL[i]}</span>
+                <span style={{ fontSize: 16 }}>{d.getDate()}</span>
+              </button>
+            );
+          })}
+        </div>
+        {viewDate !== hoyStrCmp && <p className="muted sm" style={{ textAlign: "center", marginBottom: 8 }}>📅 Viendo {fmtFecha(viewDate)} — puedes registrar lo que comiste ese día</p>}
         <div className="center axo-stage" onClick={blowKiss}>
           <p className="axo-line">{eating ? "¡Miam! 😋 (se soba la pancita)" : kissing ? "¡" + petName + " te manda un beso! 💗" : celebrated ? "¡" + petName + " está feliz! 💗" : abandonado ? ("¿Me olvidaste? Llevo " + diasAbandono + " días esperándote… 🥺💔") : (hungry && streak === 0) ? "¡Acabo de nacer! Dame de comer 🥺" : hungry ? "Tengo hambre… ¿me das de comer? 🥺" : "Tócame para un besito 💗"}</p>
           <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} evo={computedEvo} rubbing={eating} mood={(celebrated || kissing || eating) ? "amor" : (abandonado || hungry) ? "triste" : "feliz"} size={computedEvo === "cria" ? 162 : 210} />
@@ -2686,7 +2747,7 @@ function App() {
           </div>
         )}
         <div className="card">
-          <div className="card-h">Hoy comiste</div>
+          <div className="card-h">{viewDate === hoyStrCmp ? "Hoy comiste" : "Comiste el " + fmtFecha(viewDate)}</div>
           {log.length === 0 && <p className="muted sm">Aún nada. Toca el botón rosa para registrar.</p>}
           {log.map((f) => <div key={f.uid} className="log-row"><div><b>{f.n}</b><span className="muted sm"> · {f.qty > 1 ? f.qty + "× " : ""}{f.kcal * f.qty} kcal</span></div><button className="x-btn" onClick={() => removeFood(f.uid)}><X size={16} /></button></div>)}
           
@@ -2707,7 +2768,8 @@ function App() {
       </div>
       <button className="fab" onClick={() => setScreen("log")}><Plus size={22} /><span style={{fontFamily:"Fredoka",fontWeight:600,fontSize:13,marginLeft:2}}>Registrar</span></button>
     </div>
-  );
+    );
+  };
 
   const LogScreen = () => {
     const q = searchQ; const setQ = setSearchQ;
@@ -2717,6 +2779,7 @@ function App() {
       <div className="screen">
         <Header title="Registrar comida" back={() => setScreen("home")} />
         <div className="scroll" ref={sRef("log")} onScroll={sSave("log")}>
+          {viewDate !== hoyLocal() && <p className="muted sm" style={{ textAlign: "center", background: "#FFF4E0", borderRadius: 10, padding: "6px 10px", margin: "0 0 8px" }}>📅 Registrando para el {fmtFecha(viewDate)}</p>}
           <div className="center axo-stage" style={{ marginBottom: 2 }}>
             <p className="axo-line">{eating ? "¡Miam, miam! 😋 (se soba la pancita)" : hungry ? "¡Tengo hambre! ¿me das de comer? 🥺" : "¿Qué vamos a comer?"}</p>
             <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood={eating ? "amor" : hungry ? "triste" : "feliz"} rubbing={eating} size={120} />
