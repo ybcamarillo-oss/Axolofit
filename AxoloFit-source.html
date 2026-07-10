@@ -2344,6 +2344,22 @@ function App() {
     await sb.from("axo_state").upsert({ id: uid, ...axoData });
   };
 
+  /* --- Renombrar Axo sin rehacer perfil (actualiza ambas tablas) --- */
+  const renombrarAxo = async (nuevoNombre) => {
+    const nombre = (nuevoNombre || "").trim();
+    if (!nombre) { showToast("Escribe un nombre 🥺"); return false; }
+    setPetName(nombre);
+    if (userId) {
+      const [r1, r2] = await Promise.all([
+        sb.from("profiles").update({ nombre }).eq("id", userId),
+        sb.from("axo_state").update({ nombre_axo: nombre }).eq("id", userId),
+      ]);
+      if (r1.error || r2.error) { console.error("Error al renombrar:", r1.error, r2.error); showToast("⚠️ No se guardó el nombre, revisa tu conexión"); return false; }
+    }
+    showToast("¡Listo! Ahora se llama " + nombre + " 💗");
+    return true;
+  };
+
   /* --- Guardar comida en Supabase --- */
   const guardarComida = async (uid, food, fecha) => {
     await sb.from("food_log").insert({
@@ -2564,6 +2580,7 @@ function App() {
   const blowKiss = () => { setKissing(true); setTimeout(() => setKissing(false), 1700); };
   React.useEffect(() => { const iv = setInterval(() => { setKissing(true); setTimeout(() => setKissing(false), 1500); }, 13000); return () => clearInterval(iv); }, []);
   const [overlay, setOverlay] = useState(null);
+  const [nombreEdit, setNombreEdit] = useState("");
   const [toast, setToast] = useState(null);
   const [reflexionPicked, setReflexionPicked] = useState(null);
   const [selDay, setSelDay] = useState("L");
@@ -2672,7 +2689,7 @@ function App() {
       scrollPositions.current = {};
       try { window.scrollTo(0, 0); } catch(e) {}
       if (userId) await guardarPerfil(userId, p, name);
-      if (userId && variedad) await guardarAxo(userId, { variedad, accesorio: "ninguno", outfit: "ninguno", nivel: level, xp, racha: streak });
+      if (userId && variedad) await guardarAxo(userId, { nombre_axo: name, variedad, accesorio: "ninguno", outfit: "ninguno", nivel: level, xp, racha: streak });
     }} /></div></div>;
 
   const HomeScreen = () => {
@@ -2896,6 +2913,7 @@ function App() {
         <button className="list-row" onClick={activarPush}>🔔 {pushStatus === "granted" ? "Notificaciones activadas ✓" : pushStatus === "denied" ? "Notificaciones bloqueadas (revisa tu navegador)" : "Activar notificaciones"}</button>
         <button className="list-row" onClick={() => setOverlay("privacy")}><ShieldCheck size={18} /> Aviso de privacidad</button>
         <button className="list-row" onClick={() => showToast("Línea de la Vida (SSA): 800 911 2000 · 24/7")}><Heart size={18} /> Apoyo y bienestar</button>
+        <button className="list-row" onClick={() => { setNombreEdit(petName); setOverlay("rename"); }}>✏️ Cambiar el nombre de {petName}</button>
         <button className="list-row" onClick={() => { setPhase("onboarding"); setCelebrated(false); }}><Pencil size={18} /> Rehacer mi perfil</button>
         <button className="list-row" style={{ color: "#c0392b" }} onClick={async () => { await sb.auth.signOut(); setUserId(null); setPhase("auth"); }}>🚪 Cerrar sesión</button>
         <div className="studio"><StudioLogo /><p className="muted sm" style={{ textAlign: "center" }}>AxoloFit es un producto de Ricky Rabbit Dev Studio.</p><p className="muted sm" style={{ textAlign: "center", marginTop: 6, fontSize: 11, opacity: 0.7 }}>Herramienta de seguimiento y educación nutricional. No sustituye la atención profesional.</p></div>
@@ -3430,6 +3448,17 @@ function App() {
         {overlay === "recipe" && Recipe()}
         {overlay === "reflexion" && Reflexion()}
         {overlay === "menu" && Menu()}
+        {overlay === "rename" && (
+          <div className="overlay" onClick={() => setOverlay(null)}>
+            <div className="sheet" onClick={(e) => e.stopPropagation()}>
+              <button className="sheet-x" onClick={() => setOverlay(null)}><X size={20} /></button>
+              <p className="detect-h">✏️ Cambiar nombre</p>
+              <p className="muted sm" style={{ marginBottom: 14 }}>Ponle el nombre que quieras. No pierdes tu progreso ni tu racha.</p>
+              <input value={nombreEdit} onChange={(e) => setNombreEdit(e.target.value)} maxLength={20} placeholder="Nombre de tu Axo" style={{ width: "100%", padding: "14px 16px", borderRadius: 14, border: "2px solid #e6e9f2", fontFamily: "Fredoka", fontWeight: 600, fontSize: 16, marginBottom: 16, outline: "none", boxSizing: "border-box" }} />
+              <button className="btn primary big" style={{ width: "100%" }} onClick={async () => { const ok = await renombrarAxo(nombreEdit); if (ok) setOverlay(null); }}>Guardar nombre</button>
+            </div>
+          </div>
+        )}
         {overlay === "prefs" && (
           <div className="overlay" onClick={() => setOverlay(null)}>
             <div className="sheet tall" onClick={(e) => e.stopPropagation()}>
