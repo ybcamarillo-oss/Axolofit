@@ -2063,7 +2063,7 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
       if(t<=1){
         if(scoreRef.current>=target(levelRef.current)){
           levelRef.current+=1; setLevel(levelRef.current); setLevelUp(true); setTimeout(()=>setLevelUp(false),1400);
-          setItems([]); comboBrokenThisLevelRef.current=false; suddenDeathUsedRef.current=false; setFeverActive(false);
+          comboBrokenThisLevelRef.current=false; suddenDeathUsedRef.current=false; setFeverActive(false);
           if(levelRef.current===4){ livesRef.current=3; setLives(3); }
           return dur(levelRef.current);
         } else if(!comboBrokenThisLevelRef.current && !suddenDeathUsedRef.current && comboRef.current>0){
@@ -2096,7 +2096,7 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
   };
   const tgt=target(level);
   return (
-    <div className="screen" style={{background:"linear-gradient(180deg,#EAF6FF,#D7ECFF)"}}>
+    <div className="screen" style={{background:"linear-gradient(180deg,#EAF6FF,#D7ECFF)",paddingBottom:"calc(72px + env(safe-area-inset-bottom))"}}>
       <Header title="🍬 Atrapa lo sano" back={()=>setScreen("arcade")} />
       {over ? (<div className="center" style={{padding:"30px 16px"}}>
         <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="amor" size={130} />
@@ -2135,7 +2135,7 @@ function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
           {freezeActive && <p style={{textAlign:"center",fontFamily:"Fredoka",fontWeight:700,fontSize:13,color:"#5BB8E0",margin:"0 0 4px"}}>🧊 Todo más lento</p>}
           {feverActive && <p style={{textAlign:"center",fontFamily:"Fredoka",fontWeight:700,fontSize:14,color:"#B8860B",margin:"0 0 4px"}}>🌟 ¡Fiebre Dorada!</p>}
           <div style={{width:"100%",height:5,background:"#dfe9f5",borderRadius:3,marginBottom:8}}><div style={{width:Math.min(100,score/tgt*100)+"%",height:"100%",background:"#34BC97",borderRadius:3,transition:"width .2s"}}/></div>
-          <div ref={gameBoxRef} onPointerMove={move} onTouchMove={move} style={{position:"relative",width:"100%",flex:1,minHeight:0,borderRadius:20,overflow:"hidden",background:feverActive?"linear-gradient(180deg,#FFE9A8,#F2C744)":"linear-gradient(180deg,#C8E8FF,#A5D4F5)",touchAction:"none",cursor:"pointer",boxShadow:feverActive?"inset 0 0 30px 8px #FFD86Bcc":freezeActive?"inset 0 0 24px 6px #BEE6FFcc":"none",transition:"box-shadow .3s, background .3s"}}>
+          <div ref={gameBoxRef} onPointerMove={move} onTouchMove={move} onContextMenu={(e)=>e.preventDefault()} style={{position:"relative",width:"100%",flex:1,minHeight:0,borderRadius:20,overflow:"hidden",background:feverActive?"linear-gradient(180deg,#FFE9A8,#F2C744)":"linear-gradient(180deg,#C8E8FF,#A5D4F5)",touchAction:"none",cursor:"pointer",userSelect:"none",WebkitUserSelect:"none",MozUserSelect:"none",msUserSelect:"none",WebkitTouchCallout:"none",boxShadow:feverActive?"inset 0 0 30px 8px #FFD86Bcc":freezeActive?"inset 0 0 24px 6px #BEE6FFcc":"none",transition:"box-shadow .3s, background .3s"}}>
             {items.map(it=><span key={it.id} style={{position:"absolute",left:(it.x*100)+"%",top:it.y,transform:"translate(-50%,-50%)",fontSize:["bomb","magnet","shield","freeze","hourglass"].includes(it.kind)?34:30,userSelect:"none",filter:it.kind==="bomb"?"drop-shadow(0 0 8px #E0556E)":it.kind==="magnet"?"drop-shadow(0 0 8px #34BC97)":it.kind==="shield"||it.kind==="freeze"?"drop-shadow(0 0 8px #5BB8E0)":it.kind==="hourglass"?"drop-shadow(0 0 8px #9C6ADE)":"drop-shadow(0 2px 3px #00000022)"}}>{it.e}</span>)}
             {fx.map(f=><span key={f.fxId} style={{position:"absolute",left:(f.x*100)+"%",top:H-58,fontFamily:"Fredoka",fontWeight:700,fontSize:20,color:f.special==="bomb"?"#E0556E":f.special==="magnet"||f.special==="shield"||f.special==="shieldbreak"||f.special==="freeze"?"#5BB8E0":f.special==="hourglass"?"#9C6ADE":f.sano?"#34BC97":"#E15B5B",pointerEvents:"none",animation:"catchPop .48s ease-out forwards"}}>{f.special==="bomb"?"-5 / -4s":f.special==="magnet"?"🧲":f.special==="shield"?"🫧":f.special==="shieldbreak"?"🫧💥":f.special==="freeze"?"🧊":f.special==="hourglass"?"+5s ⏳":f.sano?"+"+f.pts:"-1"}</span>)}
             <div style={{position:"absolute",bottom:16,left:(bx*100)+"%",transformOrigin:"bottom center",animation:bounce?"catchBounce .22s ease-out":"none",transform:bounce?undefined:"translateX(-50%)"}}><Axo paletteKey={pet.palette} outfit={pet.outfit} estilo={pet.estilo} chub={chub} size={64}/>{magnetActive && <div style={{position:"absolute",inset:-8,borderRadius:"50%",boxShadow:"0 0 0 4px #34BC9755",pointerEvents:"none"}}/>}{hasShield && <div style={{position:"absolute",inset:-14,borderRadius:"50%",boxShadow:"0 0 0 3px #5BB8E088",pointerEvents:"none"}}/>}</div>
