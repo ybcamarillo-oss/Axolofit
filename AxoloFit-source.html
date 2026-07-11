@@ -1885,6 +1885,209 @@ function SimonScreen({ pet, chub, petName, setScreen, setXp, showToast, best, re
   );
 }
 
+function DueloScreen({ pet, chub, petName, setScreen, setXp, showToast, best, recordBest }) {
+  // Pool de comida chatarra objetivo (izquierda). kcal reales aproximados.
+  const JUNK = [
+    { e: "🥤", n: "Refresco", kcal: 140 },
+    { e: "🍩", n: "Dona", kcal: 250 },
+    { e: "🍟", n: "Papas fritas", kcal: 320 },
+    { e: "🍔", n: "Hamburguesa", kcal: 550 },
+    { e: "🍕", n: "Rebanada de pizza", kcal: 290 },
+    { e: "🌭", n: "Hot dog", kcal: 300 },
+    { e: "🍰", n: "Rebanada de pastel", kcal: 380 },
+    { e: "🍫", n: "Chocolate", kcal: 230 },
+  ];
+  // Opciones saludables (derecha). Las "trampa" tienen más kcal de lo que aparentan.
+  const HEALTHY = [
+    { e: "🍓", n: "Fresas", kcal: 15, trampa: false },
+    { e: "🥦", n: "Brócoli", kcal: 20, trampa: false },
+    { e: "🥬", n: "Lechuga", kcal: 10, trampa: false },
+    { e: "🍎", n: "Manzana", kcal: 52, trampa: false },
+    { e: "🥕", n: "Zanahoria", kcal: 25, trampa: false },
+    { e: "🍅", n: "Jitomate", kcal: 18, trampa: false },
+    { e: "🥒", n: "Pepino", kcal: 12, trampa: false },
+    { e: "🍊", n: "Naranja", kcal: 47, trampa: false },
+    { e: "🥑", n: "Aguacate", kcal: 160, trampa: true },
+    { e: "🥜", n: "Cacahuates", kcal: 170, trampa: true },
+    { e: "🧀", n: "Queso", kcal: 110, trampa: true },
+    { e: "🥗", n: "Ensalada con aderezo", kcal: 190, trampa: true },
+  ];
+
+  const durRonda = (lv) => lv <= 3 ? 10 : lv <= 7 ? 8 : 5;
+  const targetFor = (lv) => {
+    const facil = JUNK.filter(j => j.kcal <= 250);
+    const medio = JUNK.filter(j => j.kcal > 250 && j.kcal <= 380);
+    const dificil = JUNK;
+    const pool = lv <= 3 ? facil : lv <= 7 ? medio : dificil;
+    return pool[Math.floor(Math.random() * pool.length)];
+  };
+  const opcionesFor = (lv) => {
+    // niveles altos: opciones de paso pequeño y con más trampas
+    let candidatos;
+    if (lv <= 3) candidatos = HEALTHY.filter(h => !h.trampa && h.kcal >= 15);
+    else if (lv <= 7) candidatos = HEALTHY; // mezcla, con trampas
+    else candidatos = HEALTHY.filter(h => h.kcal <= 60 || h.trampa); // pasos chicos + trampas
+    const shuffled = [...candidatos].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3);
+  };
+
+  const [level, setLevel] = useState(1);
+  const [target, setTarget] = useState(() => targetFor(1));
+  const [opciones, setOpciones] = useState(() => opcionesFor(1));
+  const [current, setCurrent] = useState(0);
+  const [roundTimer, setRoundTimer] = useState(() => durRonda(1));
+  const [score, setScore] = useState(0);
+  const [over, setOver] = useState(false);
+  const [win, setWin] = useState(false);
+  const [rondas, setRondas] = useState(0);
+  const [shake, setShake] = useState(false);
+  const [confetti, setConfetti] = useState(false);
+  const scoreRef = React.useRef(0);
+  const levelRef = React.useRef(1);
+  const currentRef = React.useRef(0);
+  const targetRef = React.useRef(target);
+  const overRef = React.useRef(false);
+  const transicionRef = React.useRef(false);
+
+  const nuevaRonda = (lv) => {
+    const t = targetFor(lv);
+    targetRef.current = t;
+    currentRef.current = 0;
+    setTarget(t);
+    setOpciones(opcionesFor(lv));
+    setCurrent(0);
+    setConfetti(false);
+    setRoundTimer(durRonda(lv));
+    transicionRef.current = false;
+  };
+
+  const ganarRonda = () => {
+    if (transicionRef.current) return;
+    transicionRef.current = true;
+    setConfetti(true);
+    const pts = 10 + level * 2;
+    scoreRef.current += pts; setScore(scoreRef.current);
+    setRondas(r => r + 1);
+    showToast("💥 ¡Más volumen, menos calorías! +" + pts);
+    setTimeout(() => {
+      if (overRef.current) return;
+      levelRef.current += 1; setLevel(levelRef.current);
+      nuevaRonda(levelRef.current);
+    }, 1200);
+  };
+
+  const perderRonda = () => {
+    if (transicionRef.current) return;
+    transicionRef.current = true;
+    overRef.current = true;
+    setShake(true); setTimeout(() => setShake(false), 500);
+    setOver(true);
+    recordBest("duelo", scoreRef.current);
+  };
+
+  const tapOpcion = (op) => {
+    if (transicionRef.current || overRef.current) return;
+    currentRef.current += op.kcal;
+    setCurrent(currentRef.current);
+    if (currentRef.current >= targetRef.current.kcal) ganarRonda();
+  };
+
+  React.useEffect(() => {
+    const tmr = setInterval(() => {
+      setRoundTimer(t => {
+        if (transicionRef.current || overRef.current) return t;
+        if (t <= 1) { perderRonda(); return 0; }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(tmr);
+  }, []);
+
+  const retry = () => {
+    setXp(x => Math.min(99, x + score * 3));
+    scoreRef.current = 0; setScore(0);
+    levelRef.current = 1; setLevel(1);
+    setRondas(0);
+    overRef.current = false; setOver(false);
+    nuevaRonda(1);
+  };
+
+  const pct = Math.min(100, Math.round(currentRef.current / targetRef.current.kcal * 100));
+  const tilt = Math.max(-14, Math.min(14, (currentRef.current - target.kcal) / target.kcal * 20));
+  const urgente = roundTimer <= 3 && !over;
+
+  return (
+    <div className="screen" style={{ background: urgente ? "linear-gradient(180deg,#FFE4E4,#FFD0D0)" : "linear-gradient(180deg,#FFF4EC,#E7F7F4)", transition: "background .3s", paddingBottom: "calc(72px + env(safe-area-inset-bottom))" }}>
+      <Header title="⚖️ Duelo de Calorías" back={() => setScreen("arcade")} />
+      <div className="scroll" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        {over ? (
+          <div className="center" style={{ padding: "30px 16px" }}>
+            <Axo paletteKey={pet.palette} accessory={pet.accessory} outfit={pet.outfit} estilo={pet.estilo} chub={chub} mood="triste" size={130} />
+            <h2 className="display" style={{ fontSize: 22, margin: "8px 0 2px" }}>¡Se acabó el tiempo!</h2>
+            <p className="muted" style={{ marginBottom: 10 }}>La chatarra te ganó esta vez 😅</p>
+            <div style={{ display: "flex", gap: 10, width: "100%", maxWidth: 300, marginBottom: 12 }}>
+              <div style={{ flex: 1, background: "#fff", borderRadius: 14, padding: "10px 6px", textAlign: "center", boxShadow: "0 4px 10px #00000010" }}>
+                <div style={{ fontSize: 20, fontWeight: 700, fontFamily: "Fredoka", color: "#34BC97" }}>{score}</div>
+                <div className="muted sm">Puntos</div>
+              </div>
+              <div style={{ flex: 1, background: "#fff", borderRadius: 14, padding: "10px 6px", textAlign: "center", boxShadow: "0 4px 10px #00000010" }}>
+                <div style={{ fontSize: 20, fontWeight: 700, fontFamily: "Fredoka", color: "#F2B705" }}>{rondas}</div>
+                <div className="muted sm">Duelos ganados</div>
+              </div>
+            </div>
+            {score >= best && score > 0 && <p className="display" style={{ color: "#F2B705", fontSize: 16, marginBottom: 6 }}>🏆 ¡Nuevo récord!</p>}
+            {score < best && best - score <= 3 && <p className="muted sm" style={{ marginBottom: 6, color: "#E79FAE", fontWeight: 700 }}>😬 ¡Te faltó{best - score === 1 ? "" : "n"} {best - score} para tu récord!</p>}
+            {score < best && best - score > 3 && <p className="muted sm" style={{ marginBottom: 6 }}>Récord: {best}</p>}
+            <button className="btn primary big" style={{ width: "100%", maxWidth: 280, marginBottom: 8 }} onClick={retry}>🔁 Intentar de nuevo</button>
+            <button className="btn ghost" style={{ width: "100%", maxWidth: 280 }} onClick={() => { setXp(x => Math.min(99, x + score * 3)); showToast("+" + score * 3 + " XP ⚖️"); setScreen("arcade"); }}>Reclamar y volver</button>
+          </div>
+        ) : (
+          <div className="center" style={{ padding: "12px 16px", width: "100%" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", width: "100%", marginBottom: 8, fontFamily: "Fredoka", fontWeight: 700 }}>
+              <span style={{ color: "#7C5CFF" }}>Nivel {level}</span>
+              <span style={{ color: urgente ? "#E15B5B" : "#E79FAE", animation: urgente ? "clockShake .4s ease-out infinite" : "none" }}>⏱️ {roundTimer}s</span>
+              <span style={{ color: "#34BC97" }}>{score} pts</span>
+            </div>
+            <p className="muted sm" style={{ textAlign: "center", marginBottom: 10 }}>Empata o supera las calorías de la chatarra antes de que se acabe el tiempo</p>
+            {/* Balanza */}
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", gap: 8, width: "100%", marginBottom: 14, transform: "rotate(" + tilt + "deg)", transition: "transform .3s ease-out", transformOrigin: "center top" }}>
+              {/* Plato izquierdo: chatarra */}
+              <div style={{ flex: 1, background: "#fff", borderRadius: 18, padding: "14px 8px", textAlign: "center", boxShadow: "0 6px 16px #00000010", animation: confetti ? "catchBounce .4s ease-out" : "none" }}>
+                <div style={{ fontSize: confetti ? 30 : 46, transition: "font-size .4s", filter: confetti ? "grayscale(1) opacity(0.4)" : "none" }}>{target.e}</div>
+                <div style={{ fontFamily: "Fredoka", fontWeight: 700, fontSize: 13, color: "#E15B5B", marginTop: 4 }}>{target.kcal} kcal</div>
+                <div className="muted sm" style={{ fontSize: 11 }}>{target.n}</div>
+              </div>
+              <div style={{ alignSelf: "center", fontSize: 24, fontFamily: "Fredoka", fontWeight: 700, color: "#9aa0b4" }}>⚖️</div>
+              {/* Plato derecho: acumulado */}
+              <div style={{ flex: 1, background: pct >= 100 ? "#E7F9F1" : "#fff", borderRadius: 18, padding: "14px 8px", textAlign: "center", boxShadow: "0 6px 16px #00000010", transition: "background .3s" }}>
+                <div style={{ fontSize: 46 }}>🥗</div>
+                <div style={{ fontFamily: "Fredoka", fontWeight: 700, fontSize: 13, color: "#34BC97", marginTop: 4 }}>{current} kcal</div>
+                <div className="muted sm" style={{ fontSize: 11 }}>tu plato</div>
+              </div>
+            </div>
+            {/* Barra de progreso hacia el objetivo */}
+            <div style={{ width: "100%", height: 8, background: "#eef0f6", borderRadius: 4, marginBottom: 16, overflow: "hidden" }}>
+              <div style={{ width: pct + "%", height: "100%", background: pct >= 100 ? "#34BC97" : "#5FD0AE", borderRadius: 4, transition: "width .25s" }} />
+            </div>
+            {/* Opciones saludables */}
+            <div style={{ display: "flex", gap: 10, width: "100%" }}>
+              {opciones.map((op, i) => (
+                <button key={i} onClick={() => tapOpcion(op)} disabled={transicionRef.current}
+                  style={{ flex: 1, background: "#fff", border: "2px solid #e6e9f2", borderRadius: 16, padding: "16px 6px", textAlign: "center", cursor: "pointer", boxShadow: "0 4px 10px #00000010" }}>
+                  <div style={{ fontSize: 34 }}>{op.e}</div>
+                  <div style={{ fontFamily: "Fredoka", fontWeight: 700, fontSize: 12, color: "#34BC97", marginTop: 4 }}>+{op.kcal}</div>
+                  <div className="muted sm" style={{ fontSize: 10 }}>{op.n}</div>
+                </button>
+              ))}
+            </div>
+            <p className="muted sm" style={{ textAlign: "center", marginTop: 14 }}>Toca los alimentos para llenar tu plato 🥗</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function CatchScreen({ pet, chub, petName, setScreen, setXp, showToast, best, recordBest }) {
   const [H,setH]=useState(340);
   const HRef=React.useRef(340);
@@ -3148,11 +3351,11 @@ function App() {
 
 
   const JuegosScreen = () => {
-    const games=[["game_catch","🍬","Atrapa la comida sana","catch"],["game_memo","🧠","Memorama de comida","memo"],["game_quiz","🥗","¿Saludable o antojo?","quiz"],["game_cal","🔥","¿Más calorías?","cal"],["game_simon","🎵","Axo Dice","simon"]];
+    const games=[["game_catch","🍬","Atrapa la comida sana","catch"],["game_duelo","⚖️","Duelo de Calorías","duelo"],["game_memo","🧠","Memorama de comida","memo"],["game_quiz","🥗","¿Saludable o antojo?","quiz"],["game_cal","🔥","¿Más calorías?","cal"],["game_simon","🎵","Axo Dice","simon"]];
     return (<div className="screen"><Header title="🎮 Juegos" back={()=>setScreen("home")} /><div className="scroll" ref={sRef("arcade")} onScroll={sSave("arcade")}>{games.map(([k,e,t,bk])=>{const rec=best[bk]||0;return <button key={k} className="list-row" onClick={()=>setScreen(k)}><span style={{fontSize:26}}>{e}</span><span style={{flex:1}}><b style={{display:"block",fontFamily:"Fredoka",fontSize:16}}>{t}</b><span className="muted sm">{rec>0?("🏆 Récord: "+rec):"¡Sin récord aún!"}</span></span></button>;})}<button className="btn primary" style={{marginTop:10,width:"100%"}} onClick={()=>setScreen("leaderboard")}>🏅 Tabla de récords</button><p className="muted sm" style={{textAlign:"center",marginTop:6}}>Gana XP y supera tu récord para vestir a {petName}.</p><div style={{height:80}}/></div></div>);
   };
   const LeaderboardScreen = () => {
-    const games=[["catch","🍬","Atrapa"],["memo","🧠","Memorama"],["quiz","🥗","Antojo"],["cal","🔥","Calorías"],["simon","🎵","Axo Dice"]];
+    const games=[["catch","🍬","Atrapa"],["duelo","⚖️","Duelo"],["memo","🧠","Memorama"],["quiz","🥗","Antojo"],["cal","🔥","Calorías"],["simon","🎵","Axo Dice"]];
     return (<div className="screen"><Header title="🏅 Tabla de récords" back={()=>setScreen("arcade")} />
       <div className="scroll">
         <div style={{display:"flex",gap:6,overflowX:"auto",padding:"2px 2px 10px"}}>
@@ -3374,6 +3577,7 @@ function App() {
         {screen === "game_quiz" && <QuizScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.quiz||0} recordBest={recordBest} />}
         {screen === "game_memo" && <MemoScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.memo||0} recordBest={recordBest} />}
         {screen === "game_catch" && <CatchScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.catch||0} recordBest={recordBest} />}
+        {screen === "game_duelo" && <DueloScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.duelo||0} recordBest={recordBest} />}
         {screen === "game_cal" && <CalScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.cal||0} recordBest={recordBest} />}
         {screen === "game_simon" && <SimonScreen pet={pet} chub={chub} petName={petName} setScreen={setScreen} setXp={setXp} showToast={showToast} best={best.simon||0} recordBest={recordBest} />}
         {screen === "log" && LogScreen()}
