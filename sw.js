@@ -1,7 +1,20 @@
 // Service Worker para AxoloFit PWA
-const CACHE_NAME = 'axolofit-v53';
+const CACHE_NAME = 'axolofit-v54';
+
+// Archivos base que queremos disponibles aunque falle la red
+const CORE_ASSETS = [
+  '/Axolofit/AxoloFit.html',
+  '/Axolofit/manifest.json',
+  '/Axolofit/axo-icon-192.png',
+  '/Axolofit/axo-icon-512.png',
+];
 
 self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(CORE_ASSETS))
+      .catch(() => {}) // si falla la precarga, no bloqueamos la instalación
+  );
   self.skipWaiting();
 });
 
@@ -51,13 +64,27 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
 
   // Solo manejamos GET de nuestro mismo origen.
-  // Todo lo demás (POST al proxy de Gemini, llamadas a Supabase, etc.)
+  // Todo lo demás (POST al proxy de Gemini, llamadas a Supabase, CDNs, etc.)
   // pasa de largo sin que el SW lo toque.
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) {
     return;
   }
 
   event.respondWith(
-    fetch(req).catch(() => caches.match(req))
+    fetch(req)
+      .then((res) => {
+        // Guardamos una copia buena en caché para la próxima vez
+        if (res && res.status === 200 && res.type === 'basic') {
+          const copia = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copia)).catch(() => {});
+        }
+        return res;
+      })
+      .catch(() => {
+        // Si la red falla, servimos lo que tengamos guardado.
+        // Si tampoco hay nada en caché, dejamos que el navegador
+        // maneje el error normalmente en vez de romper la carga.
+        return caches.match(req).then((cacheado) => cacheado || Response.error());
+      })
   );
 });
