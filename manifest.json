@@ -1,15 +1,30 @@
 {
   "name": "AxoloFit",
   "short_name": "AxoloFit",
-  "start_url": "/Axolofit/AxoloFit.html",
-  "scope": "/Axolofit/",
+  "start_url": "/AxoloFit.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#FCEFF1",
   "theme_color": "#E79FAE",
   "orientation": "portrait",
   "icons": [
-    { "src": "axo-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "axo-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "axo-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/axo-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/axo-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/axo-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
