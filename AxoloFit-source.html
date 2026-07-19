@@ -4,9 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>AxoloFit</title>
-<link rel="manifest" href="/Axolofit/manifest.json" />
+<link rel="manifest" href="/manifest.json" />
 <meta name="theme-color" content="#E79FAE" />
-<link rel="apple-touch-icon" href="/Axolofit/axo-icon-192.png" />
+<link rel="apple-touch-icon" href="/axo-icon-192.png" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
@@ -3561,7 +3561,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(<ErrorBoundary><App 
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/Axolofit/sw.js", { scope: "/Axolofit/" })
+    navigator.serviceWorker.register("/sw.js", { scope: "/" })
       .then((reg) => console.log("Service worker registrado:", reg.scope))
       .catch((err) => console.error("Fallo al registrar el service worker:", err));
   });
