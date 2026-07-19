@@ -1,12 +1,12 @@
 // Service Worker para AxoloFit PWA
-const CACHE_NAME = 'axolofit-v54';
+const CACHE_NAME = 'axolofit-v55';
 
 // Archivos base que queremos disponibles aunque falle la red
 const CORE_ASSETS = [
-  '/Axolofit/AxoloFit.html',
-  '/Axolofit/manifest.json',
-  '/Axolofit/axo-icon-192.png',
-  '/Axolofit/axo-icon-512.png',
+  '/AxoloFit.html',
+  '/manifest.json',
+  '/axo-icon-192.png',
+  '/axo-icon-512.png',
 ];
 
 self.addEventListener('install', (event) => {
@@ -36,9 +36,9 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'Axo te extraña 🥺';
   const options = {
     body: data.body || '¡No olvides registrar tu comida de hoy!',
-    icon: '/Axolofit/axo-icon-192.png',
-    badge: '/Axolofit/axo-icon-192.png',
-    data: { url: data.url || '/Axolofit/AxoloFit.html' }
+    icon: '/axo-icon-192.png',
+    badge: '/axo-icon-192.png',
+    data: { url: data.url || '/AxoloFit.html' }
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
@@ -48,7 +48,7 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const targetUrl = event.notification.data && event.notification.data.url
     ? event.notification.data.url
-    : '/Axolofit/AxoloFit.html';
+    : '/AxoloFit.html';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
