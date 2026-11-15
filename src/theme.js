@@ -11,6 +11,12 @@ export const C = {
   card: '#ffffffcc',
   bgFrom: '#E7F7F4',
   bgTo: '#CDEFE9',
+  purple: '#7C5CFF',
+  blue: '#3FA9F5',
+  gold: '#F2B705',
+  red: '#E0556E',
+  soft: '#f4f6fb',
+  gray: '#9aa0b4',
 };
 
 export const F = {
@@ -18,23 +24,11 @@ export const F = {
   displaySemi: 'Fredoka_600SemiBold',
   body: 'Nunito_600SemiBold',
   bodyBold: 'Nunito_800ExtraBold',
+  bodyBlack: 'Nunito_800ExtraBold',
 };
 
-export const PALETTES = {
-  durazno: { body: '#F0C3AC', gill: '#DD9E83', blush: '#EE9A86' },
-  rosa: { body: '#F4B7C6', gill: '#E388A0', blush: '#EE8FA5' },
-  menta: { body: '#A9E3D0', gill: '#4FBFA0', blush: '#7FD9BD' },
-  cielo: { body: '#B4D4FB', gill: '#6FA3F0', blush: '#8FBDF5' },
-  morado: { body: '#C9A7F0', gill: '#8E5BD0', blush: '#BC8FE6' },
-  dorado: { body: '#FFE08A', gill: '#F2B705', blush: '#FFD15C' },
-  galaxia: { body: '#C9B6FF', gill: '#7C5CFF', blush: '#A98FFF' },
-  leucistico: { body: '#FBE7EA', gill: '#FF7088', blush: '#F6C9D2' },
-  albino: { body: '#F7E6A0', gill: '#EFC850', blush: '#F2DA8A' },
-  melanico: { body: '#5E5E6B', gill: '#3F3F4A', blush: '#73737F' },
-  salvaje: { body: '#9C8B63', gill: '#6E5E3C', blush: '#8A7A52' },
-  cobre: { body: '#C98E63', gill: '#A8693F', blush: '#BE8055' },
-  arcoiris: { body: '#C9A7F0', gill: '#8E5BD0', blush: '#FFB3D9' },
-};
+// Los colores de Axo vienen de la PWA (src/data.js)
+export { PALETTES } from './data';
 
 // Misma regla de evolución que la PWA (por días de racha).
 export const evoPorRacha = (racha) =>

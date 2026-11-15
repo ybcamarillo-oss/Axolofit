@@ -40,6 +40,14 @@
           "defaultChannel": "axo-avisos",
           "enableRemoteNotifications": false
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "AxoloFit usa la cámara para que tomes foto de tu comida y la IA calcule sus calorías.",
+          "photosPermission": "AxoloFit usa tus fotos para que elijas una imagen de tu comida y la IA calcule sus calorías.",
+          "microphonePermission": false
+        }
       ]
     ],
     "web": {

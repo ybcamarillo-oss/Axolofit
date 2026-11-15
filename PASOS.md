@@ -37,7 +37,21 @@ Desde ahí, cada cambio que llegue a la rama `nativa` se publica solo y la app i
 Solo si agregamos una librería nativa o cambiamos íconos o permisos. Se repite el último comando desde Codespaces.
 
 ## Qué probar en el teléfono
-- Al abrir por primera vez, Axo nace del huevo. Para verlo otra vez: botón **Nacer**.
-- Botones **Comer**, **Feliz**, **Con hambre** y **Etapa** (bebé, joven, adulto): son temporales, solo para revisar las caras.
-- Toca **Activar avisos** y acepta el permiso. Luego **Probar aviso (5 s)** y minimiza la app: debe llegar una notificación de Axo.
-- Avisos programados: 9:00, 14:30 y 20:30 todos los días, y uno de "te extraño" a los 2 días sin abrir la app.
+- **Cuenta:** crear cuenta, cuestionario completo y ver nacer a Axo. Cerrar sesión y volver a entrar.
+- **Inicio:** tocar a Axo (salta y manda beso), marcar vasos de agua, agregar un antojo con el botón **+** (Axo come y se soba la pancita).
+- **Registrar:** buscar una comida, **Describir** (IA) y **Foto** (IA, pide permiso de cámara).
+- **Meta del día:** al llegar al 80% de tus calorías sale la celebración, sube la racha y el nivel.
+- **Semana:** palomear platillos, cambiar uno, regenerar el día, cambiar preferencias.
+- **Progreso:** registrar tu peso y ver la gráfica.
+- **Juegos:** los 5 juegos y la tabla de récords.
+- **Axo:** cambiar color, accesorio, outfit y fondo.
+- **Avisos:** activar avisos y, en Ajustes, tocar "Avisos activados · toca para probar" y minimizar la app.
+
+## Cómo está organizado el código
+- `App.js`: arranque, barra de abajo y qué pantalla se muestra.
+- `src/store.js`: el "cerebro": datos del usuario, comidas, racha, nivel y todo lo que se guarda en Supabase.
+- `src/data.js`: comidas, menús, recetas y cálculos, copiados tal cual de la PWA.
+- `src/plan.js`: lógica del plan semanal.
+- `src/screens/`: una pantalla por archivo. `src/overlays.js`: las ventanas que suben desde abajo.
+- `src/components/`: el dibujo de Axo (`axoParts.js`), su animación (`Axo.js`) y el huevo (`Nacimiento.js`).
+- `src/notifications.js`: avisos. `src/ui.js`: botones, tarjetas y demás piezas visuales.

@@ -11,7 +11,8 @@ import Animated, {
   withDelay,
   Easing,
 } from 'react-native-reanimated';
-import Axo, { Layer, VB_W, VB_H, coloresAxo } from './Axo';
+import Axo from './Axo';
+import { Layer, VB_W, VB_H, coloresAxo } from './axoParts';
 
 // El huevo tiembla, se rompe y sale Axo bebé con su cara de recién nacido.
 // `size` es el tamaño normal de Axo. El huevo es MÁS GRANDE que Axo:
@@ -25,7 +26,27 @@ const ZIG = 'L62 111 L75 124 L88 111 L100 124 L112 111 L125 124 L138 111';
 // El cascarón se agranda dentro del lienzo para llenarlo
 const HUEVO_T = 'translate(100 205) scale(1.36) translate(-100 -200)';
 
-export default function Nacimiento({ paletteKey = 'durazno', size = 200, onListo, faseFija }) {
+const Manchas = ({ arriba, color }) => (
+  <G fill={color} opacity={0.35}>
+    {arriba ? (
+      <>
+        <Ellipse cx={80} cy={84} rx={7} ry={5} />
+        <Ellipse cx={118} cy={76} rx={5} ry={4} />
+        <Ellipse cx={128} cy={98} rx={4} ry={3} />
+      </>
+    ) : (
+      <>
+        <Ellipse cx={72} cy={146} rx={6} ry={4.5} />
+        <Ellipse cx={122} cy={158} rx={8} ry={5.5} />
+        <Ellipse cx={96} cy={172} rx={4} ry={3} />
+      </>
+    )}
+  </G>
+);
+
+
+// espera=true: el huevo solo se mece (todavía no nace); al pasar a false empieza a nacer.
+export default function Nacimiento({ paletteKey = 'durazno', size = 200, onListo, faseFija, espera = false }) {
   const w = size * K;
   const h = w * (VB_H / VB_W);
   const axoH = size * (VB_H / VB_W);
@@ -51,6 +72,10 @@ export default function Nacimiento({ paletteKey = 'durazno', size = 200, onListo
       return;
     }
     const e = Easing.inOut(Easing.sin);
+    if (espera) {
+      wobble.value = withRepeat(withSequence(withTiming(0.5, { duration: 420, easing: e }), withTiming(-0.5, { duration: 420, easing: e })), -1, false);
+      return;
+    }
     wobble.value = withSequence(
       // primero se mece despacito…
       withRepeat(withSequence(withTiming(0.6, { duration: 300, easing: e }), withTiming(-0.6, { duration: 300, easing: e })), 2, false),
@@ -76,7 +101,7 @@ export default function Nacimiento({ paletteKey = 'durazno', size = 200, onListo
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, []);
+  }, [espera]);
 
   const full = { position: 'absolute', left: 0, top: 0, width: w, height: h };
   const eggStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${wobble.value * 6}deg` }] }));
@@ -94,24 +119,6 @@ export default function Nacimiento({ paletteKey = 'durazno', size = 200, onListo
   }));
 
   const cascaron = { fill: '#FFF8EE', stroke: line, strokeWidth: 2.4, strokeLinejoin: 'round' };
-  const Manchas = ({ arriba }) => (
-    <G fill={pal.gill} opacity={0.35}>
-      {arriba ? (
-        <>
-          <Ellipse cx={80} cy={84} rx={7} ry={5} />
-          <Ellipse cx={118} cy={76} rx={5} ry={4} />
-          <Ellipse cx={128} cy={98} rx={4} ry={3} />
-        </>
-      ) : (
-        <>
-          <Ellipse cx={72} cy={146} rx={6} ry={4.5} />
-          <Ellipse cx={122} cy={158} rx={8} ry={5.5} />
-          <Ellipse cx={96} cy={172} rx={4} ry={3} />
-        </>
-      )}
-    </G>
-  );
-
   return (
     <View style={{ width: w, height: h }}>
       <Layer w={w} h={h}>
@@ -136,7 +143,7 @@ export default function Nacimiento({ paletteKey = 'durazno', size = 200, onListo
           <Layer w={w} h={h}>
             <G transform={HUEVO_T}>
               <Path d={`M49 119 ${ZIG} L151 119 C151 166 129 200 100 200 C71 200 49 166 49 119 Z`} {...cascaron} />
-              <Manchas />
+              <Manchas color={pal.gill} />
             </G>
           </Layer>
         </Animated.View>
@@ -145,7 +152,7 @@ export default function Nacimiento({ paletteKey = 'durazno', size = 200, onListo
             <G transform={HUEVO_T}>
               <Path d="M49 119 C49 77 71 56 100 56 C129 56 151 77 151 119 L138 111 L125 124 L112 111 L100 124 L88 111 L75 124 L62 111 Z" {...cascaron} />
               <Path d="M70 80 C78 68 90 63 102 63" stroke="#ffffff" strokeWidth={5} fill="none" strokeLinecap="round" />
-              <Manchas arriba />
+              <Manchas arriba color={pal.gill} />
             </G>
           </Layer>
         </Animated.View>
