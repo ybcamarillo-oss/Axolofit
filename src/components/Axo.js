@@ -261,7 +261,8 @@ export default function Axo({ paletteKey = 'durazno', mood = 'feliz', evo = 'cri
   const mouthStyle = useAnimatedStyle(() => ({ transform: [{ scaleY: chew.value }] }));
   const rubStyle = useAnimatedStyle(() => {
     const a = rub.value * 2 * Math.PI;
-    return { transform: [{ translateX: Math.cos(a) * w * 0.03 }, { translateY: Math.sin(a) * w * 0.024 }] };
+    // gira y se estira un poquito desde el hombro: la manita dibuja un círculo sobre la panza
+    return { transform: [{ rotate: `${Math.sin(a) * 13}deg` }, { scaleY: 1 + Math.cos(a) * 0.07 }] };
   });
   const shadowStyle = useAnimatedStyle(() => ({ transform: [{ scaleX: 1 + (bob.value + jump.value) / 110 }] }));
   const twinkleStyle = useAnimatedStyle(() => ({ opacity: twinkle.value }));
@@ -282,8 +283,20 @@ export default function Axo({ paletteKey = 'durazno', mood = 'feliz', evo = 'cri
 
   // Cuerpo
   const armY = E.armY;
-  const bellyY = E.pera ? E.bottom - (E.bottom - E.top) * 0.4 : E.bcy + 7;
   const armX = E.armX;
+  const bellyY = E.pera ? E.bottom - (E.bottom - E.top) * 0.4 : E.bcy + 7;
+  // Brazos al comer: van del hombro a la mano, así nunca se despegan del cuerpo
+  const comeDy = E.dy + (1 - E.s) * 30;
+  const brazoDe = (sx, sy, hx2, hy2) => {
+    const dx = hx2 - sx;
+    const dy2 = hy2 - sy;
+    const len = Math.hypot(dx, dy2);
+    return { cx: (sx + hx2) / 2, cy: (sy + hy2) / 2, ry: len / 2 + 5, ang: (Math.atan2(-dx, dy2) * 180) / Math.PI };
+  };
+  const hombroD = { x: 100 + armX - 3, y: armY - 8 };
+  const hombroI = { x: 100 - armX + 3, y: armY - 8 };
+  const bSoba = brazoDe(hombroD.x, hombroD.y, E.pera ? 110 : 106, bellyY + (E.pera ? -3 : 5));
+  const bManzana = brazoDe(hombroI.x, hombroI.y, 87, 141 + comeDy);
   const bw = E.brx;
   const bh = E.pera ? E.bottom - E.top : 0;
   const low = E.pera ? E.bottom - bh * 0.4 : 0;
@@ -411,24 +424,23 @@ export default function Axo({ paletteKey = 'durazno', mood = 'feliz', evo = 'cri
           {/* comiendo: una manita sostiene la manzanita y la otra se soba la pancita */}
           {come && (
             <Layer w={w} h={h}>
-              <G transform={`translate(0 ${E.dy + (1 - E.s) * 30})`}>
+              <G transform={`translate(0 ${comeDy})`}>
                 <Circle cx={100} cy={137} r={11} fill="#F26D6D" stroke="#B8404A" strokeWidth={2.4} />
                 <Circle cx={109} cy={129} r={5} fill={pal.body} />
                 <Path d="M100 127 Q101 121 105 119" stroke="#7A4B2A" strokeWidth={2.2} fill="none" strokeLinecap="round" />
                 <Path d="M101 122 Q94 116 89 121 Q95 125 101 122 Z" fill="#6CC28A" stroke="#3E9460" strokeWidth={1.4} />
                 <Circle cx={95} cy={133} r={2.2} fill="#fff" opacity={0.6} />
-                <Ellipse cx={86} cy={142} rx={8} ry={7} {...brazo} />
                 <Circle cx={74} cy={122} r={1.8} fill="#F7B26B" />
                 <Circle cx={128} cy={125} r={1.5} fill="#F7B26B" />
                 <Circle cx={122} cy={119} r={1.2} fill="#F7B26B" />
               </G>
+              <Ellipse cx={bManzana.cx} cy={bManzana.cy} rx={7.5} ry={bManzana.ry} {...brazo} transform={`rotate(${bManzana.ang} ${bManzana.cx} ${bManzana.cy})`} />
             </Layer>
           )}
           {come && (
-            <Animated.View style={[full, rubStyle]}>
+            <Animated.View style={[full, rubStyle, { transformOrigin: [px(hombroD.x), py(hombroD.y), 0] }]}>
               <Layer w={w} h={h}>
-                <Ellipse cx={109} cy={bellyY + 3} rx={11} ry={7.5} {...brazo} transform={`rotate(-24 109 ${bellyY + 3})`} />
-                <Path d={`M100 ${bellyY - 1} q3 -4 7 -2`} stroke={line} strokeWidth={1.6} fill="none" strokeLinecap="round" opacity={0.6} />
+                <Ellipse cx={bSoba.cx} cy={bSoba.cy} rx={7.5} ry={bSoba.ry} {...brazo} transform={`rotate(${bSoba.ang} ${bSoba.cx} ${bSoba.cy})`} />
               </Layer>
             </Animated.View>
           )}
