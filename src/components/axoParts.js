@@ -72,14 +72,14 @@ export function Layer({ w, h, children }) {
 const ETAPAS = {
   cria: { s: 1, dy: 0, bcy: 163, brx: 31, bry: 30, gk: 1, tail: 1, feetY: 192, arm: 12, armX: 28, armY: 162, hojas4: false },
   // joven y adulto: cuerpo en forma de pera, gordito y sentado (top/bottom = alto, sw = hombros)
-  joven: { s: 0.92, dy: -11, pera: true, top: 121, bottom: 197, brx: 35, sw: 15, gk: 1.22, tail: 1.22, feetY: 196, arm: 13, armX: 28, armY: 153, hojas4: false },
-  adulto: { s: 0.84, dy: -21, pera: true, top: 110, bottom: 199, brx: 41, sw: 17, gk: 1.42, tail: 1.42, feetY: 198, arm: 15, armX: 32, armY: 146, hojas4: true },
+  joven: { s: 0.92, dy: -11, pera: true, top: 121, bottom: 197, brx: 35, sw: 15, gk: 1.22, tail: 1.15, feetY: 196, arm: 13, armX: 28, armY: 153, hojas4: false },
+  adulto: { s: 0.84, dy: -21, pera: true, top: 110, bottom: 199, brx: 41, sw: 17, gk: 1.42, tail: 1.3, feetY: 198, arm: 15, armX: 32, armY: 146, hojas4: true },
 };
 
-// Colita de ajolote: plana como aleta, se curva hacia arriba y termina en punta.
-// ALETA es la membrana (color de las branquias) y TAIL el centro (color del cuerpo), que se va afinando.
-const ALETA = 'M118 178 C 130 176 138 166 142 154 C 147 140 158 128 174 119 C 178 146 176 172 162 184 C 150 196 132 200 116 197 Z';
-const TAIL = 'M114 180 C 126 181 140 174 147 164 C 152 156 158 140 171 124 C 168 144 166 162 157 172 C 148 184 130 195 114 194 Z';
+// Colita: chiquita, sale de lado, se afina hasta terminar en punta y lleva
+// tres piquitos (cresta) arriba, del color de las branquias.
+const CRESTA = ['M123 175 L129 165 L135 175 Z', 'M135 175 L142 164 L147 173 Z', 'M146 172 L153 161 L157 168 Z'];
+const TAIL = 'M112 194 C 134 196 153 188 163 159 C 151 171 138 174 112 171 Z';
 const HEAD = 'M34 92 C34 58 62 40 100 40 C138 40 166 58 166 92 C166 123 140 139 100 139 C60 139 34 123 34 92 Z';
 
 // Toda la geometría que depende del color, la etapa y qué tan llenito está (chub 0..1; 1 = como al inicio)
@@ -266,9 +266,11 @@ export function Cuerpo({ g, outfit }) {
   return (
     <G>
       <G transform={g.tailT}>
-        <Path d={ALETA} fill={g.gill} stroke={g.line} strokeWidth={SW / E.tail} strokeLinejoin="round" />
-        <Path d={TAIL} fill={g.body} stroke={g.line} strokeWidth={2.2 / E.tail} strokeLinejoin="round" />
-        <Path d="M124 187 C 138 186 149 176 155 161" stroke="#ffffff" strokeWidth={2.6} fill="none" strokeLinecap="round" opacity={0.4} />
+        {CRESTA.map((d) => (
+          <Path key={d} d={d} fill={g.gill} stroke={g.line} strokeWidth={2.2 / E.tail} strokeLinejoin="round" />
+        ))}
+        <Path d={TAIL} fill={g.body} stroke={g.line} strokeWidth={SW / E.tail} strokeLinejoin="round" />
+        <Path d="M124 191 C 137 191 147 186 154 176" stroke="#ffffff" strokeWidth={2.4} fill="none" strokeLinecap="round" opacity={0.4} />
       </G>
       {!E.pera && pies}
       <Path d={g.bodyD} fill={g.body} stroke={g.line} strokeWidth={SW} strokeLinejoin="round" />
