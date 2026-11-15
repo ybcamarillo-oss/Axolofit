@@ -1,0 +1,17 @@
+# Cada vez que llegan cambios a la rama "nativa" en GitHub, Expo publica una actualización
+# y la app instalada en tu teléfono la descarga sola al abrirla (cerrar y abrir 2 veces).
+# Solo sirve para cambios de código JavaScript. Si agregamos una librería nativa,
+# hay que compilar un APK nuevo (te aviso cuando pase).
+name: Publicar actualizacion
+
+on:
+  push:
+    branches: ['nativa']
+
+jobs:
+  update:
+    name: Update
+    type: update
+    params:
+      # "main" aquí es el canal de actualizaciones de Expo (el que usa el APK), no la rama de GitHub.
+      branch: main

@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "AxoloFit",
+    "slug": "axolofit",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.rickyrabbit.axolofit"
+    },
+    "android": {
+      "package": "com.rickyrabbit.axolofit",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundImage": "./assets/adaptive-bg.png",
+        "backgroundColor": "#F6DACB"
+      }
+    },
+    "plugins": [
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#FCEDE2"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#E79FAE",
+          "defaultChannel": "axo-avisos",
+          "enableRemoteNotifications": false
+        }
+      ]
+    ],
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
