@@ -483,30 +483,27 @@ function Carita({ y, gato }) {
   );
 }
 
-// Una tira larga del gorro que cuelga y termina en patita con almohadillas.
+// Una tira larga de la capucha: cuelga por delante y termina en patita con almohadillas.
 function Tira({ x }) {
+  const lados = `M${x - 9.5} 127 L${x - 9.5} 161 C${x - 16} 165 ${x - 16} 185 ${x} 185 C${x + 16} 185 ${x + 16} 165 ${x + 9.5} 161 L${x + 9.5} 127`;
   return (
     <G>
-      <Path d={`M${x - 9.5} 96 L${x - 9.5} 157 C${x - 16} 161 ${x - 16} 181 ${x} 181 C${x + 16} 181 ${x + 16} 161 ${x + 9.5} 157 L${x + 9.5} 96 Z`} fill={PELUCHE} stroke={PELUCHE_BORDE} strokeWidth={2.4} strokeLinejoin="round" />
-      <Path d={`M${x - 5} 124 L${x - 5} 151`} stroke={PELUCHE_SOMBRA} strokeWidth={3} strokeLinecap="round" />
-      <Ellipse cx={x} cy={172.5} rx={5.6} ry={4.4} fill={PELUCHE_ROSA} />
-      <Circle cx={x - 6.4} cy={165.4} r={2.2} fill={PELUCHE_ROSA} />
-      <Circle cx={x} cy={163.4} r={2.2} fill={PELUCHE_ROSA} />
-      <Circle cx={x + 6.4} cy={165.4} r={2.2} fill={PELUCHE_ROSA} />
+      {/* sin línea arriba: la tira se funde con la capucha */}
+      <Path d={`${lados} Z`} fill={PELUCHE} />
+      <Path d={lados} fill="none" stroke={PELUCHE_BORDE} strokeWidth={2.4} strokeLinejoin="round" strokeLinecap="round" />
+      <Path d={`M${x - 5} 142 L${x - 5} 157`} stroke={PELUCHE_SOMBRA} strokeWidth={3} strokeLinecap="round" />
+      <Ellipse cx={x} cy={176.5} rx={5.6} ry={4.4} fill={PELUCHE_ROSA} />
+      <Circle cx={x - 6.4} cy={169.4} r={2.2} fill={PELUCHE_ROSA} />
+      <Circle cx={x} cy={167.4} r={2.2} fill={PELUCHE_ROSA} />
+      <Circle cx={x + 6.4} cy={169.4} r={2.2} fill={PELUCHE_ROSA} />
     </G>
   );
 }
 
-// Parte del accesorio que va DETRÁS de la cabeza y las branquias (las tiras del gorro).
-export function AccesorioAtras({ g, k }) {
-  if (k !== 'conejo' && k !== 'gato') return null;
-  return (
-    <G transform={g.headT}>
-      <Tira x={47} />
-      <Tira x={153} />
-    </G>
-  );
-}
+// Capucha de peluche: envuelve casi toda la cabeza y deja un hueco para la carita.
+const CAPUCHA = 'M26 92 C26 52 58 28 100 28 C142 28 174 52 174 92 C174 128 144 146 100 146 C56 146 26 128 26 92 Z';
+const CARA = 'M40 99 C40 81 60 70 100 70 C140 70 160 81 160 99 C160 121 138 133 100 133 C62 133 40 121 40 99 Z';
+const CARA_SOMBRA = 'M36.5 99 C36.5 79 58 66.5 100 66.5 C142 66.5 163.5 79 163.5 99 C163.5 123 140 136.5 100 136.5 C60 136.5 36.5 123 36.5 99 Z';
 
 export function Accesorio({ g, k, estilo }) {
   const partes = [];
@@ -589,11 +586,16 @@ export function Accesorio({ g, k, estilo }) {
             </G>
           </G>
         )}
-        {/* gorro de peluche: cubre la cabeza por arriba y a los lados */}
-        <Path d="M29 94 C23 49 57 28 100 28 C143 28 177 49 171 94 C161 74 135 67 100 67 C65 67 39 74 29 94 Z" {...st} strokeWidth={2.6} />
-        <Path d="M33 87 C44 71 68 63 100 63 C132 63 156 71 167 87" stroke={PELUCHE_SOMBRA} strokeWidth={5} fill="none" strokeLinecap="round" />
-        <Path d="M52 44 C62 36 76 33 90 32" stroke="#fff" strokeWidth={3} fill="none" strokeLinecap="round" opacity={0.9} />
-        <Carita y={46} gato={!conejo} />
+        {/* capucha: cubre casi toda la cabeza, con hueco para la carita */}
+        <Path d={`${CAPUCHA} ${CARA}`} fillRule="evenodd" fill={PELUCHE} />
+        <Path d={CARA_SOMBRA} stroke={PELUCHE_SOMBRA} strokeWidth={3.4} fill="none" />
+        <Path d={CAPUCHA} fill="none" stroke={PELUCHE_BORDE} strokeWidth={2.6} strokeLinejoin="round" />
+        <Path d={CARA} fill="none" stroke={PELUCHE_BORDE} strokeWidth={2.2} strokeLinejoin="round" />
+        <Path d="M50 46 C60 37 75 33 90 32" stroke="#fff" strokeWidth={3} fill="none" strokeLinecap="round" opacity={0.9} />
+        {/* tiras: cuelgan por delante, cosidas a los lados de la capucha */}
+        <Tira x={50} />
+        <Tira x={150} />
+        <Carita y={47} gato={!conejo} />
       </G>
     );
   }
@@ -615,7 +617,6 @@ export function AxoMini({ paletteKey = 'durazno', mood = 'feliz', evo = 'cria', 
       {accessory === 'mariposa' && <Alas g={g} />}
       <Cuerpo g={g} outfit={outfit} />
       {!come && <Brazos g={g} pose={mood === 'nace' || mood === 'amor' ? 'arriba' : 'abajo'} outfit={outfit} />}
-      <AccesorioAtras g={g} k={accessory} />
       <Branquias g={g} side="left" />
       <Branquias g={g} side="right" />
       <CabezaBase g={g} mood={mood} />

@@ -28,7 +28,6 @@ import {
   Ojos,
   Boca,
   Accesorio,
-  AccesorioAtras,
   AxoMini,
 } from './axoParts';
 
@@ -165,11 +164,6 @@ export default function Axo({
 
         {/* cabeza (se ladea suavemente) */}
         <Animated.View style={[full, headStyle, { transformOrigin: [w / 2, py(139 + E.dy), 0] }]}>
-          {(accessory === 'conejo' || accessory === 'gato') && (
-            <Layer w={w} h={h}>
-              <AccesorioAtras g={g} k={accessory} />
-            </Layer>
-          )}
           <Animated.View style={[full, leftGill, { transformOrigin: [hx(40), hy(84), 0] }]}>
             <Layer w={w} h={h}>
               <Branquias g={g} side="left" />
