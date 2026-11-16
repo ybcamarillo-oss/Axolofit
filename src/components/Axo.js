@@ -22,7 +22,6 @@ import {
   Alas,
   Cuerpo,
   Frente,
-  HOMBRO,
   Brazos,
   Comiendo,
   BrazoSoba,
@@ -221,13 +220,13 @@ export default function Axo({
         {/* comiendo: una manita sostiene la manzanita y la otra se soba la pancita */}
         {come && (
           <Layer w={w} h={h}>
-            <Comiendo g={g} />
+            <Comiendo g={g} outfit={outfit} />
           </Layer>
         )}
         {come && (
-          <Animated.View style={[full, rubStyle, { transformOrigin: [hx(HOMBRO.x), hy(HOMBRO.y), 0] }]}>
+          <Animated.View style={[full, rubStyle, { transformOrigin: [hx(g.hombroD.x), hy(g.hombroD.y), 0] }]}>
             <Layer w={w} h={h}>
-              <BrazoSoba g={g} />
+              <BrazoSoba g={g} outfit={outfit} />
             </Layer>
           </Animated.View>
         )}

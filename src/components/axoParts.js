@@ -132,6 +132,9 @@ export function geom({ paletteKey = 'durazno', evo = 'cria', chub = 1 }) {
     Y: (y) => SUELO + (y - PISO) * k,
     sombra: { cy: SUELO + 1, rx: 46 * k, ry: 7 * k },
     cara: CARAS[stage],
+    // hombros: pegados a la orilla del torso (cambian con lo ancho del cuerpo)
+    hombroD: { x: 100 + tRx * 0.64, y: 134 },
+    hombroI: { x: 100 - tRx * 0.64, y: 146 },
     clipId: `c${stage}${Math.round(c * 100)}`,
   };
 }
@@ -224,21 +227,32 @@ export function Brazos({ g, pose = 'abajo' }) {
   );
 }
 
-// Un bracito con manita, con una rayita del color de las branquias para que se distinga del cuerpo
-function Manita({ g, lado }) {
-  const d = lado === 'der' ? 1 : -1;
-  const x = (v) => 100 + d * v;
+// Color de la tela en el hombro según la ropa (para que el brazo salga de la manga)
+const TELA = { jersey: '#006847', sarape: '#F3E2C7', hoodieRojo: '#D7263D', hoodieAzul: '#2E6FD6', playeraRaya: '#F7F7F7', poloRosa: '#F3A6BE', chivas: '#FFFFFF', azulDiag: '#5FB4E4', pumas: '#FFFFFF' };
+
+// Un bracito que SALE DEL CUERPO: va del hombro a la manita. Del lado del hombro no lleva rayita,
+// así se funde con el cuerpo y no parece una pieza flotando; la rayita solo rodea la manita.
+function Bracito({ g, hombro, mano, outfit }) {
+  const dx = mano.x - hombro.x;
+  const dy = mano.y - hombro.y;
+  const L = Math.hypot(dx, dy);
+  const ang = (Math.atan2(-dx, dy) * 180) / Math.PI;
+  const a = 8; // medio ancho del brazo
+  const tela = TELA[outfit];
   return (
-    <G>
-      <Ellipse cx={x(12)} cy={146} rx={8} ry={14} fill={g.body} stroke={g.pal.gill} strokeWidth={2} transform={`rotate(${-38 * d} ${x(12)} 146)`} />
-      <Circle cx={x(6)} cy={155} r={8} fill={g.body} stroke={g.pal.gill} strokeWidth={2} />
-      <Ellipse cx={x(9)} cy={152} rx={2.6} ry={2} fill="#ffffff" opacity={0.45} />
+    <G transform={`translate(${hombro.x} ${hombro.y}) rotate(${ang})`}>
+      <Path d={`M${-a} -4 Q0 -11 ${a} -4 L${a} ${L} L${-a} ${L} Z`} fill={g.body} />
+      <Path d={`M${-a} ${L * 0.14} L${-a} ${L}`} stroke={g.pal.gill} strokeWidth={2} strokeLinecap="round" />
+      <Path d={`M${a} ${L * 0.14} L${a} ${L}`} stroke={g.pal.gill} strokeWidth={2} strokeLinecap="round" />
+      <Circle cx={0} cy={L} r={8.2} fill={g.body} stroke={g.pal.gill} strokeWidth={2} />
+      <Ellipse cx={-2.6} cy={L - 2.6} rx={2.6} ry={2} fill="#ffffff" opacity={0.45} />
+      {tela && <Path d={`M${-a - 1.5} -5 Q0 -13 ${a + 1.5} -5 L${a + 1.5} ${L * 0.34} L${-a - 1.5} ${L * 0.34} Z`} fill={tela} />}
     </G>
   );
 }
 
 /* ---------- COMIENDO: una manita sostiene la manzanita ---------- */
-export function Comiendo({ g }) {
+export function Comiendo({ g, outfit }) {
   return (
     <G>
       <G transform={g.faceT}>
@@ -252,19 +266,18 @@ export function Comiendo({ g }) {
         <Circle cx={122} cy={119} r={1.2} fill="#F7B26B" />
       </G>
       <G transform={g.T}>
-        <Ellipse cx={84} cy={143} rx={8} ry={13} fill={g.body} stroke={g.pal.gill} strokeWidth={2} transform="rotate(24 84 143)" />
-        <Circle cx={90} cy={133} r={7.5} fill={g.body} stroke={g.pal.gill} strokeWidth={2} />
+        <Bracito g={g} hombro={g.hombroI} mano={{ x: 90, y: 134 }} outfit={outfit} />
       </G>
     </G>
   );
 }
 
-// La otra manita se soba la pancita (Axo.js la hace girar desde el hombro: g.hombro)
-export const HOMBRO = { x: 118, y: 132 };
-export function BrazoSoba({ g }) {
+// La otra manita se soba la pancita. Axo.js hace girar este bracito desde el hombro (g.hombroD),
+// por eso el hombro se queda pegado al cuerpo y solo la manita se mueve sobre la panza.
+export function BrazoSoba({ g, outfit }) {
   return (
     <G transform={g.T}>
-      <Manita g={g} lado="der" />
+      <Bracito g={g} hombro={g.hombroD} mano={{ x: 107, y: 158 }} outfit={outfit} />
     </G>
   );
 }
@@ -705,8 +718,8 @@ export function AxoMini({ paletteKey = 'durazno', mood = 'feliz', evo = 'cria', 
       <Boca g={g} mood={mood} />
       <Frente g={g} outfit={outfit} />
       <Accesorio g={g} k={accessory} estilo={estilo} />
-      {come && <Comiendo g={g} />}
-      {come && <BrazoSoba g={g} />}
+      {come && <Comiendo g={g} outfit={outfit} />}
+      {come && <BrazoSoba g={g} outfit={outfit} />}
     </Svg>
   );
 }
