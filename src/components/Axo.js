@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Pressable, View } from 'react-native';
+import { F } from '../theme';
 import Svg, { Ellipse, Path } from 'react-native-svg';
 import Animated, {
   useSharedValue,
@@ -124,6 +125,15 @@ export default function Axo({
     // gira y se estira un poquito desde el hombro: la manita dibuja un círculo sobre la panza
     return { transform: [{ rotate: `${Math.sin(a) * 13}deg` }, { scaleY: 1 + Math.cos(a) * 0.07 }] };
   });
+  // "miam, miam": dos palabritas que brotan a los lados de la cabeza, una y luego la otra
+  const miamIzq = useAnimatedStyle(() => {
+    const p = rub.value < 0.5 ? rub.value * 2 : 0;
+    return { opacity: Math.sin(p * Math.PI), transform: [{ translateY: -p * 12 }, { rotate: '-12deg' }, { scale: 0.8 + p * 0.3 }] };
+  });
+  const miamDer = useAnimatedStyle(() => {
+    const p = rub.value >= 0.5 ? (rub.value - 0.5) * 2 : 0;
+    return { opacity: Math.sin(p * Math.PI), transform: [{ translateY: -p * 12 }, { rotate: '11deg' }, { scale: 0.8 + p * 0.3 }] };
+  });
   const shadowStyle = useAnimatedStyle(() => ({ transform: [{ scaleX: 1 + (bob.value + jump.value) / 110 }] }));
   const twinkleStyle = useAnimatedStyle(() => ({ opacity: twinkle.value }));
   const heartStyle = useAnimatedStyle(() => ({
@@ -138,6 +148,7 @@ export default function Axo({
   const hx = (x) => px(g.X(x));
   const hy = (y) => py(g.Y(y));
   const full = { position: 'absolute', left: 0, top: 0, width: w, height: h };
+  const miamTxt = { position: 'absolute', width: w * 0.3, textAlign: 'center', fontFamily: F.display, fontSize: Math.max(11, w * 0.085), color: '#E0607E' };
 
   const cuello = { transformOrigin: [w / 2, hy(130), 0] };
   const contenido = (
@@ -241,6 +252,18 @@ export default function Axo({
             <Path d={estrella(100, 16, 7)} fill="#FFD86B" />
           </Layer>
         </Animated.View>
+      )}
+
+      {/* "miam, miam" mientras come */}
+      {come && (
+        <>
+          <Animated.Text pointerEvents="none" style={[miamTxt, { left: hx(34) - w * 0.15, top: hy(30) - w * 0.1 }, miamIzq]}>
+            miam
+          </Animated.Text>
+          <Animated.Text pointerEvents="none" style={[miamTxt, { left: hx(166) - w * 0.15, top: hy(20) - w * 0.1 }, miamDer]}>
+            miam
+          </Animated.Text>
+        </>
       )}
 
       {/* corazón al tocarlo */}

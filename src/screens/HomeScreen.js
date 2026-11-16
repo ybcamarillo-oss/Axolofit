@@ -23,7 +23,7 @@ export default function HomeScreen() {
   const frase = a.naciendo
     ? '¡' + petName + ' está naciendo! ✨'
     : eating
-    ? '¡Miam! 😋 (se soba la pancita)'
+    ? '¡Miam, miam! 😋 (se soba la pancita)'
     : kissing
     ? '¡' + petName + ' te manda un beso! 💗'
     : celebrated
