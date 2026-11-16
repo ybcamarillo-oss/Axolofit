@@ -27,6 +27,14 @@ const PISO = 232; // piso en el dibujo original
 const SUELO = 220 - (240 - PISO) * K0; // piso en el lienzo de la app
 const ESCALA = { cria: 0.86, joven: 0.93, adulto: 1 }; // la diferencia grande de tamaño la pone cada pantalla
 
+// La carita crece con Axo: de bebé tiene ojos enormes y bajos, cachetes grandes y boquita chiquita;
+// de adulto los ojos son más chicos y altos, con cachetes discretos y sonrisa amplia.
+const CARAS = {
+  cria: { r: 14.5, y: 97, dx: 31, brx: 13.5, bry: 8.5, bop: 0.82, by: 112 },
+  joven: { r: 12.5, y: 93.5, dx: 30, brx: 11.5, bry: 7, bop: 0.78, by: 109.5 },
+  adulto: { r: 10.5, y: 90, dx: 28, brx: 10, bry: 5.8, bop: 0.62, by: 107 },
+};
+
 const FROND = 'M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z';
 const MANCHAS = [[72, 72, 3], [88, 62, 2.4], [112, 64, 3.2], [126, 80, 2.6], [80, 102, 3], [118, 106, 2.8], [100, 90, 2.4], [90, 122, 3], [112, 130, 2.6], [100, 150, 2.8], [78, 140, 2.4], [122, 146, 2.4], [64, 86, 2.2], [134, 96, 2.2]];
 const ESTRELLAS = [[70, 62, 1.6], [118, 56, 2.1], [132, 84, 1.4], [64, 96, 1.7], [92, 54, 1.4], [138, 106, 1.5], [58, 76, 1.2], [108, 72, 1.2], [78, 126, 1.7], [122, 136, 1.9], [96, 162, 1.5], [128, 158, 1.2], [74, 152, 1.3], [100, 114, 1.4]];
@@ -123,6 +131,7 @@ export function geom({ paletteKey = 'durazno', evo = 'cria', chub = 1 }) {
     X: (x) => 100 + (x - 100) * k,
     Y: (y) => SUELO + (y - PISO) * k,
     sombra: { cy: SUELO + 1, rx: 46 * k, ry: 7 * k },
+    cara: CARAS[stage],
     clipId: `c${stage}${Math.round(c * 100)}`,
   };
 }
@@ -280,6 +289,7 @@ export function Branquias({ g, side }) {
 export function CabezaBase({ g, mood }) {
   const { paletteKey, pal } = g;
   const come = mood === 'come';
+  const f = g.cara;
   return (
     <G>
       <G transform={g.T}>
@@ -304,8 +314,8 @@ export function CabezaBase({ g, mood }) {
         </G>
       </G>
       <G transform={g.faceT}>
-        <Ellipse cx={54} cy={109} rx={come ? 14 : 11.5} ry={come ? 9.5 : 7} fill={BLUSH} opacity={0.78} />
-        <Ellipse cx={146} cy={109} rx={come ? 14 : 11.5} ry={come ? 9.5 : 7} fill={BLUSH} opacity={0.78} />
+        <Ellipse cx={54} cy={f.by} rx={f.brx + (come ? 2.5 : 0)} ry={f.bry + (come ? 2.5 : 0)} fill={BLUSH} opacity={f.bop} />
+        <Ellipse cx={146} cy={f.by} rx={f.brx + (come ? 2.5 : 0)} ry={f.bry + (come ? 2.5 : 0)} fill={BLUSH} opacity={f.bop} />
         {mood === 'triste' && <Path d="M56 114 C53 120 52 124 56 126 C60 124 59 120 56 114 Z" fill="#9BD4F5" stroke="#6FB6E0" strokeWidth={1} />}
       </G>
     </G>
@@ -486,37 +496,41 @@ function OjoGrande({ cx, cy, r = 13 }) {
 }
 
 export function Ojos({ g, mood }) {
+  const f = g.cara;
+  const xi = 100 - f.dx;
+  const xd = 100 + f.dx;
   let c;
   if (mood === 'come' || mood === 'amor') {
     c = (
       <G>
-        <Path d={arco(70, 95)} stroke={INK} strokeWidth={3.6} fill="none" strokeLinecap="round" />
-        <Path d={arco(130, 95)} stroke={INK} strokeWidth={3.6} fill="none" strokeLinecap="round" />
+        <Path d={arco(xi, f.y + 2)} stroke={INK} strokeWidth={3.6} fill="none" strokeLinecap="round" />
+        <Path d={arco(xd, f.y + 2)} stroke={INK} strokeWidth={3.6} fill="none" strokeLinecap="round" />
       </G>
     );
   } else if (mood === 'triste') {
-    c = (
-      <G>
-        <Path d="M58 80 L77 75" stroke={INK} strokeWidth={2.6} strokeLinecap="round" opacity={0.75} />
-        <Path d="M123 75 L142 80" stroke={INK} strokeWidth={2.6} strokeLinecap="round" opacity={0.75} />
-        <OjoGrande cx={70} cy={95} r={12} />
-        <OjoGrande cx={130} cy={95} r={12} />
-        <Ellipse cx={70} cy={104} rx={7.5} ry={2.4} fill="#BFE6FF" opacity={0.8} />
-        <Ellipse cx={130} cy={104} rx={7.5} ry={2.4} fill="#BFE6FF" opacity={0.8} />
+    const r = f.r - 1;
+    const y = f.y + 2;
+    return (
+      <G transform={g.faceT}>
+        <Path d={`M${xi - 12} ${y - r - 3} L${xi + 7} ${y - r - 8}`} stroke={INK} strokeWidth={2.6} strokeLinecap="round" opacity={0.75} />
+        <Path d={`M${xd - 7} ${y - r - 8} L${xd + 12} ${y - r - 3}`} stroke={INK} strokeWidth={2.6} strokeLinecap="round" opacity={0.75} />
+        <OjoGrande cx={xi} cy={y} r={r} />
+        <OjoGrande cx={xd} cy={y} r={r} />
+        <Ellipse cx={xi} cy={y + r * 0.75} rx={r * 0.62} ry={2.4} fill="#BFE6FF" opacity={0.8} />
+        <Ellipse cx={xd} cy={y + r * 0.75} rx={r * 0.62} ry={2.4} fill="#BFE6FF" opacity={0.8} />
       </G>
     );
   } else {
     // feliz y nace: ojos grandes con brillos
     c = (
       <G>
-        <OjoGrande cx={70} cy={93} />
-        <OjoGrande cx={130} cy={93} />
+        <OjoGrande cx={xi} cy={f.y} r={f.r} />
+        <OjoGrande cx={xd} cy={f.y} r={f.r} />
       </G>
     );
   }
   return <G transform={g.faceT}>{c}</G>;
 }
-
 export function Boca({ g, mood }) {
   let c;
   if (mood === 'nace') {
@@ -538,7 +552,13 @@ export function Boca({ g, mood }) {
   } else if (mood === 'triste') {
     c = <Path d="M93 112 Q100 105.5 107 112" stroke={INK} strokeWidth={2.8} fill="none" strokeLinecap="round" />;
   } else {
-    c = <Path d="M90 106 Q95 113.5 100 106 Q105 113.5 110 106" stroke={INK} strokeWidth={2.8} fill="none" strokeLinecap="round" strokeLinejoin="round" />;
+    const d =
+      g.stage === 'cria'
+        ? 'M92.5 109 Q96.2 114.5 100 109 Q103.8 114.5 107.5 109' // boquita chiquita de bebé
+        : g.stage === 'adulto'
+          ? 'M87 104 Q100 117 113 104' // sonrisa amplia
+          : 'M90 106 Q95 113.5 100 106 Q105 113.5 110 106';
+    c = <Path d={d} stroke={INK} strokeWidth={2.8} fill="none" strokeLinecap="round" strokeLinejoin="round" />;
   }
   return <G transform={g.faceT}>{c}</G>;
 }
