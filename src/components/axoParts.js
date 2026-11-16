@@ -133,8 +133,8 @@ export function geom({ paletteKey = 'durazno', evo = 'cria', chub = 1 }) {
     sombra: { cy: SUELO + 1, rx: 46 * k, ry: 7 * k },
     cara: CARAS[stage],
     // hombros: pegados a la orilla del torso (cambian con lo ancho del cuerpo)
-    hombroD: { x: 100 + tRx * 0.64, y: 134 },
-    hombroI: { x: 100 - tRx * 0.64, y: 146 },
+    hombroD: { x: 100 + tRx * 0.76, y: 139 },
+    hombroI: { x: 100 - tRx * 0.76, y: 139 },
     clipId: `c${stage}${Math.round(c * 100)}`,
   };
 }
@@ -208,37 +208,47 @@ function Cielo({ abajo }) {
   );
 }
 
-/* ---------- BRACITOS (suaves: solo se insinúan sobre la pancita) ---------- */
-function Brazos({ g, pose = 'abajo' }) {
-  return pose === 'arriba' ? (
-    <G>
-      <Ellipse cx={61} cy={124} rx={8.5} ry={14} fill={g.body} transform="rotate(52 61 124)" />
-      <Ellipse cx={139} cy={124} rx={8.5} ry={14} fill={g.body} transform="rotate(-52 139 124)" />
-    </G>
-  ) : (
-    <G>
-      <Ellipse cx={80} cy={128} rx={9} ry={13} fill={g.body} transform="rotate(-34 80 128)" />
-      <Ellipse cx={122} cy={158} rx={9} ry={13} fill={g.body} transform="rotate(28 122 158)" />
-    </G>
-  );
-}
-
-// Bracito suave, apenas insinuado como en el dibujo original: un óvalo del color del cuerpo,
-// sin rayita y sin manita aparte. Se nota porque pasa por encima de la pancita clara.
-// Va del hombro hacia donde apoya la mano; como es del color del cuerpo, nunca se ve suelto.
-// Con ropa, el bracito es la manga: toma el color de la tela, apenas más oscuro para que se insinúe.
+/* ---------- BRACITOS (como en el ícono original: dos rayitas y una manita de tres deditos) ---------- */
+// Con ropa, el bracito es la manga: toma el color de la tela y solo la manita queda del color de Axo.
 const TELA = { jersey: '#006847', sarape: '#F3E2C7', hoodieRojo: '#D7263D', hoodieAzul: '#2E6FD6', playeraRaya: '#F7F7F7', poloRosa: '#F3A6BE', chivas: '#FFFFFF', azulDiag: '#5FB4E4', pumas: '#FFFFFF' };
 
+// Va del hombro (pegado a la orilla del cuerpo, sin rayita de ese lado) hasta la manita.
 function Bracito({ g, hombro, mano, outfit }) {
   const dx = mano.x - hombro.x;
   const dy = mano.y - hombro.y;
   const L = Math.hypot(dx, dy);
-  const ang = (Math.atan2(-dx, dy) * 180) / Math.PI;
+  const ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const m = L - 7; // donde empieza la manita
   const tela = TELA[outfit];
+  const raya = { stroke: tela ? '#00000038' : g.pal.gill, strokeWidth: 2, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const manita = `M${m} -5 Q${L - 5.5} -8.6 ${L - 1.5} -6.6 Q${L + 2.6} -5.4 ${L + 0.4} -2.3 Q${L + 4.6} 0 ${L + 0.4} 2.3 Q${L + 2.6} 5.4 ${L - 1.5} 6.6 Q${L - 5.5} 8.6 ${m} 5`;
   return (
     <G transform={`translate(${hombro.x} ${hombro.y}) rotate(${ang})`}>
-      <Ellipse cx={0} cy={L / 2} rx={9} ry={L / 2 + 5} fill={tela || g.body} />
-      {tela && <Ellipse cx={0} cy={L / 2} rx={9} ry={L / 2 + 5} fill="#000000" opacity={0.13} />}
+      <Path d={`M0 -8 Q${L / 2} -6.2 ${m} -5 L${m} 5 Q${L / 2} 6.2 0 8 Z`} fill={tela || g.body} />
+      <Path d={`M0 -8 Q${L / 2} -6.2 ${m} -5`} {...raya} />
+      <Path d={`M${m} 5 Q${L / 2} 6.2 0 8`} {...raya} />
+      <Path d={`${manita} Z`} fill={g.body} />
+      <Path d={manita} stroke={g.pal.gill} strokeWidth={2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </G>
+  );
+}
+
+// Bracitos de siempre: abrazando la pancita (como en el ícono) o levantados (amor / recién nacido)
+function Brazos({ g, pose = 'abajo', outfit }) {
+  const i = g.hombroI;
+  const d = g.hombroD;
+  if (pose === 'arriba') {
+    return (
+      <G>
+        <Bracito g={g} hombro={{ x: i.x + 4, y: 134 }} mano={{ x: i.x - 15, y: 113 }} outfit={outfit} />
+        <Bracito g={g} hombro={{ x: d.x - 4, y: 134 }} mano={{ x: d.x + 15, y: 113 }} outfit={outfit} />
+      </G>
+    );
+  }
+  return (
+    <G>
+      <Bracito g={g} hombro={i} mano={{ x: 92, y: 151 }} outfit={outfit} />
+      <Bracito g={g} hombro={d} mano={{ x: 108, y: 151 }} outfit={outfit} />
     </G>
   );
 }
@@ -258,7 +268,7 @@ export function Comiendo({ g, outfit }) {
         <Circle cx={122} cy={119} r={1.2} fill="#F7B26B" />
       </G>
       <G transform={g.T}>
-        <Bracito g={g} hombro={g.hombroI} mano={{ x: 92, y: 132 }} outfit={outfit} />
+        <Bracito g={g} hombro={g.hombroI} mano={{ x: 90, y: 133 }} outfit={outfit} />
       </G>
     </G>
   );
@@ -269,7 +279,7 @@ export function Comiendo({ g, outfit }) {
 export function BrazoSoba({ g, outfit }) {
   return (
     <G transform={g.T}>
-      <Bracito g={g} hombro={g.hombroD} mano={{ x: 108, y: 160 }} outfit={outfit} />
+      <Bracito g={g} hombro={g.hombroD} mano={{ x: 107, y: 158 }} outfit={outfit} />
     </G>
   );
 }
@@ -327,14 +337,13 @@ export function CabezaBase({ g, mood }) {
   );
 }
 
-/* ---------- PANCITA, BRACITOS y ROPA (van encima de la cabeza, como en el dibujo original) ---------- */
+/* ---------- PANCITA, ROPA y BRACITOS (van encima de la cabeza; los bracitos, encima de la ropa) ---------- */
 // brazos: 'abajo' | 'arriba' | null (null cuando come: ahí los bracitos van aparte, animados)
 export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
   const { tRx } = g;
   return (
     <G transform={g.T}>
       <Ellipse cx={100} cy={150} rx={g.bRx} ry={30} fill="#ffffff" opacity={0.4} />
-      {brazos && <Brazos g={g} pose={brazos} />}
       {outfit === "jersey" && (() => { const jw = tRx * 1.28; const cx = 100; return (
         <G>
           {/* cuerpo verde */}
@@ -482,6 +491,7 @@ export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
           </G>
         );
       })()}
+      {brazos && <Brazos g={g} pose={brazos} outfit={outfit} />}
     </G>
   );
 }
