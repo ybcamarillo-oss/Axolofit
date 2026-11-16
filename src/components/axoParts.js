@@ -455,14 +455,55 @@ export function Boca({ g, mood }) {
 }
 
 /* ---------- ACCESORIOS (cabeza) y ESTILO ---------- */
-function Carita({ y }) {
-  // carita del gorro (conejo/gato): ojitos, naricita y bigotes
+const PELUCHE = '#FFFFFF';
+const PELUCHE_SOMBRA = '#EFEAF3';
+const PELUCHE_BORDE = '#B7AEC2';
+const PELUCHE_ROSA = '#FFB3CB';
+
+// Carita bordada del gorro de peluche: ojitos ovalados con brillo y boquita.
+function Carita({ y, gato }) {
   return (
     <G>
-      <Circle cx={90} cy={y} r={2} fill={INK} />
-      <Circle cx={110} cy={y} r={2} fill={INK} />
-      <Path d={`M97.5 ${y + 3} L102.5 ${y + 3} L100 ${y + 6} Z`} fill="#FF8FB0" />
-      <Path d={`M84 ${y + 4} L76 ${y + 3} M84 ${y + 6} L77 ${y + 8} M116 ${y + 4} L124 ${y + 3} M116 ${y + 6} L123 ${y + 8}`} stroke={INK} strokeWidth={1} strokeLinecap="round" opacity={0.6} />
+      <Ellipse cx={88} cy={y} rx={2.9} ry={3.9} fill={INK} />
+      <Ellipse cx={112} cy={y} rx={2.9} ry={3.9} fill={INK} />
+      <Circle cx={88.9} cy={y - 1.5} r={1} fill="#fff" />
+      <Circle cx={112.9} cy={y - 1.5} r={1} fill="#fff" />
+      <Ellipse cx={78} cy={y + 5.5} rx={4} ry={2.2} fill={PELUCHE_ROSA} opacity={0.75} />
+      <Ellipse cx={122} cy={y + 5.5} rx={4} ry={2.2} fill={PELUCHE_ROSA} opacity={0.75} />
+      {gato ? (
+        <Path d={`M97.6 ${y + 2.4} L102.4 ${y + 2.4} L100 ${y + 5} Z`} fill="#FF8FB0" stroke="#FF8FB0" strokeWidth={0.8} strokeLinejoin="round" />
+      ) : (
+        <Ellipse cx={100} cy={y + 3.2} rx={2.2} ry={1.5} fill="#FF8FB0" />
+      )}
+      <Path d={`M94.5 ${y + 6.2} Q97.2 ${y + 9.4} 100 ${y + 6.4} Q102.8 ${y + 9.4} 105.5 ${y + 6.2}`} stroke={INK} strokeWidth={1.3} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      {gato && (
+        <Path d={`M72 ${y + 1} L64 ${y - 0.5} M72 ${y + 4} L64.5 ${y + 5.5} M128 ${y + 1} L136 ${y - 0.5} M128 ${y + 4} L135.5 ${y + 5.5}`} stroke={INK} strokeWidth={1} strokeLinecap="round" opacity={0.55} />
+      )}
+    </G>
+  );
+}
+
+// Una tira larga del gorro que cuelga y termina en patita con almohadillas.
+function Tira({ x }) {
+  return (
+    <G>
+      <Path d={`M${x - 9.5} 96 L${x - 9.5} 157 C${x - 16} 161 ${x - 16} 181 ${x} 181 C${x + 16} 181 ${x + 16} 161 ${x + 9.5} 157 L${x + 9.5} 96 Z`} fill={PELUCHE} stroke={PELUCHE_BORDE} strokeWidth={2.4} strokeLinejoin="round" />
+      <Path d={`M${x - 5} 124 L${x - 5} 151`} stroke={PELUCHE_SOMBRA} strokeWidth={3} strokeLinecap="round" />
+      <Ellipse cx={x} cy={172.5} rx={5.6} ry={4.4} fill={PELUCHE_ROSA} />
+      <Circle cx={x - 6.4} cy={165.4} r={2.2} fill={PELUCHE_ROSA} />
+      <Circle cx={x} cy={163.4} r={2.2} fill={PELUCHE_ROSA} />
+      <Circle cx={x + 6.4} cy={165.4} r={2.2} fill={PELUCHE_ROSA} />
+    </G>
+  );
+}
+
+// Parte del accesorio que va DETRÁS de la cabeza y las branquias (las tiras del gorro).
+export function AccesorioAtras({ g, k }) {
+  if (k !== 'conejo' && k !== 'gato') return null;
+  return (
+    <G transform={g.headT}>
+      <Tira x={47} />
+      <Tira x={153} />
     </G>
   );
 }
@@ -525,28 +566,34 @@ export function Accesorio({ g, k, estilo }) {
     );
   } else if (k === 'conejo' || k === 'gato') {
     const conejo = k === 'conejo';
-    const tela = conejo ? '#CDB8F5' : '#FFFFFF';
-    const borde = conejo ? '#9478D4' : '#B9BCCB';
+    const st = { fill: PELUCHE, stroke: PELUCHE_BORDE, strokeWidth: 2.4, strokeLinejoin: 'round' };
     partes.push(
       <G key={k}>
         {conejo ? (
           <G>
-            <Ellipse cx={72} cy={22} rx={9.5} ry={20} fill={tela} stroke={borde} strokeWidth={2.4} transform="rotate(-10 72 22)" />
-            <Ellipse cx={72} cy={24} rx={4.6} ry={13} fill="#FFB7D0" transform="rotate(-10 72 24)" />
-            <Ellipse cx={128} cy={22} rx={9.5} ry={20} fill={tela} stroke={borde} strokeWidth={2.4} transform="rotate(10 128 22)" />
-            <Ellipse cx={128} cy={24} rx={4.6} ry={13} fill="#FFB7D0" transform="rotate(10 128 24)" />
+            {/* orejita parada */}
+            <Ellipse cx={74} cy={21} rx={9.5} ry={19} transform="rotate(-9 74 21)" {...st} />
+            <Ellipse cx={74} cy={22} rx={4.4} ry={12.5} fill={PELUCHE_ROSA} transform="rotate(-9 74 22)" />
+            {/* orejita doblada */}
+            <Path d="M114 38 C112 22 118 8 132 6 C148 4 163 13 167 28 C169 36 160 40 155 34 C151 27 146 23 140 24 C135 25 134 31 135 38 Z" {...st} />
+            <Path d="M140 13 C149 13 157 19 160 28 C155 23 148 19 139 19 Z" fill={PELUCHE_ROSA} />
+            <Path d="M122 30 C122 20 126 13 133 12" stroke={PELUCHE_SOMBRA} strokeWidth={3} fill="none" strokeLinecap="round" />
           </G>
         ) : (
           <G>
-            <Path d="M56 48 L60 14 L86 38 Z" fill={tela} stroke={borde} strokeWidth={2.4} strokeLinejoin="round" />
-            <Path d="M63 40 L64 24 L77 37 Z" fill="#FFB7D0" />
-            <Path d="M144 48 L140 14 L114 38 Z" fill={tela} stroke={borde} strokeWidth={2.4} strokeLinejoin="round" />
-            <Path d="M137 40 L136 24 L123 37 Z" fill="#FFB7D0" />
+            <Path d="M50 52 C47 34 51 18 57 11 C69 15 82 25 92 36 Z" {...st} />
+            <Path d="M57 42 C55 32 57 24 60 20 C67 23 74 29 80 36 Z" fill={PELUCHE_ROSA} />
+            <G transform="translate(200 0) scale(-1 1)">
+              <Path d="M50 52 C47 34 51 18 57 11 C69 15 82 25 92 36 Z" {...st} />
+              <Path d="M57 42 C55 32 57 24 60 20 C67 23 74 29 80 36 Z" fill={PELUCHE_ROSA} />
+            </G>
           </G>
         )}
-        <Path d="M33 88 C30 50 60 34 100 34 C140 34 170 50 167 88 C158 66 132 58 100 58 C68 58 42 66 33 88 Z" fill={tela} stroke={borde} strokeWidth={2.6} strokeLinejoin="round" />
-        <Path d="M36 84 C46 66 70 58 100 58 C130 58 154 66 164 84" stroke={conejo ? '#EFE6FF' : '#E9EBF2'} strokeWidth={5} fill="none" strokeLinecap="round" />
-        <Carita y={45} />
+        {/* gorro de peluche: cubre la cabeza por arriba y a los lados */}
+        <Path d="M29 94 C23 49 57 28 100 28 C143 28 177 49 171 94 C161 74 135 67 100 67 C65 67 39 74 29 94 Z" {...st} strokeWidth={2.6} />
+        <Path d="M33 87 C44 71 68 63 100 63 C132 63 156 71 167 87" stroke={PELUCHE_SOMBRA} strokeWidth={5} fill="none" strokeLinecap="round" />
+        <Path d="M52 44 C62 36 76 33 90 32" stroke="#fff" strokeWidth={3} fill="none" strokeLinecap="round" opacity={0.9} />
+        <Carita y={46} gato={!conejo} />
       </G>
     );
   }
@@ -568,6 +615,7 @@ export function AxoMini({ paletteKey = 'durazno', mood = 'feliz', evo = 'cria', 
       {accessory === 'mariposa' && <Alas g={g} />}
       <Cuerpo g={g} outfit={outfit} />
       {!come && <Brazos g={g} pose={mood === 'nace' || mood === 'amor' ? 'arriba' : 'abajo'} outfit={outfit} />}
+      <AccesorioAtras g={g} k={accessory} />
       <Branquias g={g} side="left" />
       <Branquias g={g} side="right" />
       <CabezaBase g={g} mood={mood} />
