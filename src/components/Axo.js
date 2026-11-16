@@ -22,7 +22,6 @@ import {
   Alas,
   Cuerpo,
   Frente,
-  Brazos,
   Comiendo,
   BrazoSoba,
   Branquias,
@@ -163,7 +162,6 @@ export default function Axo({
         <Layer w={w} h={h}>
           {accessory === 'mariposa' && <Alas g={g} />}
           <Cuerpo g={g} />
-          {!come && <Brazos g={g} pose={brazosArriba ? 'arriba' : 'abajo'} />}
         </Layer>
 
         {/* cabeza (se ladea suavemente) */}
@@ -198,7 +196,7 @@ export default function Axo({
 
         {/* pancita y ropa: van encima de la cabeza */}
         <Layer w={w} h={h}>
-          <Frente g={g} outfit={outfit} />
+          <Frente g={g} outfit={outfit} brazos={come ? null : brazosArriba ? 'arriba' : 'abajo'} />
         </Layer>
 
         {/* accesorios: encima de la ropa, y se ladean igual que la cabeza */}

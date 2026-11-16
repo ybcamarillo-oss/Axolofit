@@ -208,45 +208,37 @@ function Cielo({ abajo }) {
   );
 }
 
-/* ---------- BRACITOS ---------- */
-export function Brazos({ g, pose = 'abajo' }) {
-  return (
-    <G transform={g.T}>
-      {pose === 'arriba' ? (
-        <G>
-          <Ellipse cx={61} cy={124} rx={8.5} ry={14} fill={g.body} transform="rotate(52 61 124)" />
-          <Ellipse cx={139} cy={124} rx={8.5} ry={14} fill={g.body} transform="rotate(-52 139 124)" />
-        </G>
-      ) : (
-        <G>
-          <Ellipse cx={80} cy={128} rx={9} ry={13} fill={g.body} transform="rotate(-34 80 128)" />
-          <Ellipse cx={122} cy={158} rx={9} ry={13} fill={g.body} transform="rotate(28 122 158)" />
-        </G>
-      )}
+/* ---------- BRACITOS (suaves: solo se insinúan sobre la pancita) ---------- */
+function Brazos({ g, pose = 'abajo' }) {
+  return pose === 'arriba' ? (
+    <G>
+      <Ellipse cx={61} cy={124} rx={8.5} ry={14} fill={g.body} transform="rotate(52 61 124)" />
+      <Ellipse cx={139} cy={124} rx={8.5} ry={14} fill={g.body} transform="rotate(-52 139 124)" />
+    </G>
+  ) : (
+    <G>
+      <Ellipse cx={80} cy={128} rx={9} ry={13} fill={g.body} transform="rotate(-34 80 128)" />
+      <Ellipse cx={122} cy={158} rx={9} ry={13} fill={g.body} transform="rotate(28 122 158)" />
     </G>
   );
 }
 
-// Color de la tela en el hombro según la ropa (para que el brazo salga de la manga)
+// Bracito suave, apenas insinuado como en el dibujo original: un óvalo del color del cuerpo,
+// sin rayita y sin manita aparte. Se nota porque pasa por encima de la pancita clara.
+// Va del hombro hacia donde apoya la mano; como es del color del cuerpo, nunca se ve suelto.
+// Con ropa, el bracito es la manga: toma el color de la tela, apenas más oscuro para que se insinúe.
 const TELA = { jersey: '#006847', sarape: '#F3E2C7', hoodieRojo: '#D7263D', hoodieAzul: '#2E6FD6', playeraRaya: '#F7F7F7', poloRosa: '#F3A6BE', chivas: '#FFFFFF', azulDiag: '#5FB4E4', pumas: '#FFFFFF' };
 
-// Un bracito que SALE DEL CUERPO: va del hombro a la manita. Del lado del hombro no lleva rayita,
-// así se funde con el cuerpo y no parece una pieza flotando; la rayita solo rodea la manita.
 function Bracito({ g, hombro, mano, outfit }) {
   const dx = mano.x - hombro.x;
   const dy = mano.y - hombro.y;
   const L = Math.hypot(dx, dy);
   const ang = (Math.atan2(-dx, dy) * 180) / Math.PI;
-  const a = 8; // medio ancho del brazo
   const tela = TELA[outfit];
   return (
     <G transform={`translate(${hombro.x} ${hombro.y}) rotate(${ang})`}>
-      <Path d={`M${-a} -4 Q0 -11 ${a} -4 L${a} ${L} L${-a} ${L} Z`} fill={g.body} />
-      <Path d={`M${-a} ${L * 0.14} L${-a} ${L}`} stroke={g.pal.gill} strokeWidth={2} strokeLinecap="round" />
-      <Path d={`M${a} ${L * 0.14} L${a} ${L}`} stroke={g.pal.gill} strokeWidth={2} strokeLinecap="round" />
-      <Circle cx={0} cy={L} r={8.2} fill={g.body} stroke={g.pal.gill} strokeWidth={2} />
-      <Ellipse cx={-2.6} cy={L - 2.6} rx={2.6} ry={2} fill="#ffffff" opacity={0.45} />
-      {tela && <Path d={`M${-a - 1.5} -5 Q0 -13 ${a + 1.5} -5 L${a + 1.5} ${L * 0.34} L${-a - 1.5} ${L * 0.34} Z`} fill={tela} />}
+      <Ellipse cx={0} cy={L / 2} rx={9} ry={L / 2 + 5} fill={tela || g.body} />
+      {tela && <Ellipse cx={0} cy={L / 2} rx={9} ry={L / 2 + 5} fill="#000000" opacity={0.13} />}
     </G>
   );
 }
@@ -266,7 +258,7 @@ export function Comiendo({ g, outfit }) {
         <Circle cx={122} cy={119} r={1.2} fill="#F7B26B" />
       </G>
       <G transform={g.T}>
-        <Bracito g={g} hombro={g.hombroI} mano={{ x: 90, y: 134 }} outfit={outfit} />
+        <Bracito g={g} hombro={g.hombroI} mano={{ x: 92, y: 132 }} outfit={outfit} />
       </G>
     </G>
   );
@@ -277,7 +269,7 @@ export function Comiendo({ g, outfit }) {
 export function BrazoSoba({ g, outfit }) {
   return (
     <G transform={g.T}>
-      <Bracito g={g} hombro={g.hombroD} mano={{ x: 107, y: 158 }} outfit={outfit} />
+      <Bracito g={g} hombro={g.hombroD} mano={{ x: 108, y: 160 }} outfit={outfit} />
     </G>
   );
 }
@@ -335,12 +327,14 @@ export function CabezaBase({ g, mood }) {
   );
 }
 
-/* ---------- PANCITA y ROPA (van encima de la cabeza, como en el dibujo original) ---------- */
-export function Frente({ g, outfit = 'ninguno' }) {
+/* ---------- PANCITA, BRACITOS y ROPA (van encima de la cabeza, como en el dibujo original) ---------- */
+// brazos: 'abajo' | 'arriba' | null (null cuando come: ahí los bracitos van aparte, animados)
+export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
   const { tRx } = g;
   return (
     <G transform={g.T}>
       <Ellipse cx={100} cy={150} rx={g.bRx} ry={30} fill="#ffffff" opacity={0.4} />
+      {brazos && <Brazos g={g} pose={brazos} />}
       {outfit === "jersey" && (() => { const jw = tRx * 1.28; const cx = 100; return (
         <G>
           {/* cuerpo verde */}
@@ -710,13 +704,12 @@ export function AxoMini({ paletteKey = 'durazno', mood = 'feliz', evo = 'cria', 
       <Aura g={g} evo={evo} />
       {accessory === 'mariposa' && <Alas g={g} />}
       <Cuerpo g={g} />
-      {!come && <Brazos g={g} pose={mood === 'nace' || mood === 'amor' ? 'arriba' : 'abajo'} />}
       <Branquias g={g} side="left" />
       <Branquias g={g} side="right" />
       <CabezaBase g={g} mood={mood} />
       <Ojos g={g} mood={mood} />
       <Boca g={g} mood={mood} />
-      <Frente g={g} outfit={outfit} />
+      <Frente g={g} outfit={outfit} brazos={come ? null : mood === 'nace' || mood === 'amor' ? 'arriba' : 'abajo'} />
       <Accesorio g={g} k={accessory} estilo={estilo} />
       {come && <Comiendo g={g} outfit={outfit} />}
       {come && <BrazoSoba g={g} outfit={outfit} />}
