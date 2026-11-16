@@ -6,7 +6,13 @@ import { PALETTES } from '../theme';
 // Piezas de dibujo de Axo (sin animación). Las usan:
 //  - Axo.js      → versión animada por capas
 //  - AxoMini     → versión quieta y ligera (un solo SVG) para listas y miniaturas
-// Todo se dibuja en un lienzo de 200 x 220.
+//
+// El CUERPO es el del Axo original de la PWA (sin contorno, colita enroscada, pequitas).
+// La CARITA es la nueva (ojos grandes con brillo y cachetes rosas).
+// Las tres etapas son el mismo dibujo en distinto tamaño; el adulto lleva aura dorada.
+//
+// El dibujo original está hecho en un lienzo de 200 x 240 con el piso en y=232.
+// Aquí el lienzo es de 200 x 220, así que todo pasa por la transformación g.T.
 
 export const VB_W = 200;
 export const VB_H = 220;
@@ -15,7 +21,19 @@ export const INK = '#4A2F35'; // ojos y boca
 const MOUTH_IN = '#B8475E';
 const TONGUE = '#F59AB0';
 const BLUSH = '#F58FA8'; // cachetes rosas siempre, sin importar el color de Axo
-const SW = 3;
+
+const K0 = 220 / 240; // del lienzo original al de la app
+const PISO = 232; // piso en el dibujo original
+const SUELO = 220 - (240 - PISO) * K0; // piso en el lienzo de la app
+const ESCALA = { cria: 0.86, joven: 0.93, adulto: 1 }; // la diferencia grande de tamaño la pone cada pantalla
+
+const FROND = 'M0 -6 C 20 -11 36 -10 44 -5 C 50 -2 50 2 44 5 C 36 10 20 11 0 6 C 4 2 4 -2 0 -6 Z';
+const MANCHAS = [[72, 72, 3], [88, 62, 2.4], [112, 64, 3.2], [126, 80, 2.6], [80, 102, 3], [118, 106, 2.8], [100, 90, 2.4], [90, 122, 3], [112, 130, 2.6], [100, 150, 2.8], [78, 140, 2.4], [122, 146, 2.4], [64, 86, 2.2], [134, 96, 2.2]];
+const ESTRELLAS = [[70, 62, 1.6], [118, 56, 2.1], [132, 84, 1.4], [64, 96, 1.7], [92, 54, 1.4], [138, 106, 1.5], [58, 76, 1.2], [108, 72, 1.2], [78, 126, 1.7], [122, 136, 1.9], [96, 162, 1.5], [128, 158, 1.2], [74, 152, 1.3], [100, 114, 1.4]];
+const DESTELLOS = [[118, 56, 4], [96, 162, 3.4], [78, 126, 3]];
+const CORTE = 112; // lo de arriba de esta altura es cabeza; lo de abajo, cuerpo
+const destello = (x, y, r, f = 0.28) =>
+  `M${x} ${y - r} L${x + r * f} ${y - r * f} L${x + r} ${y} L${x + r * f} ${y + r * f} L${x} ${y + r} L${x - r * f} ${y + r * f} L${x - r} ${y} L${x - r * f} ${y - r * f} Z`;
 
 function oscurecer(hex, f) {
   const n = parseInt(hex.slice(1), 16);
@@ -27,19 +45,23 @@ function oscurecer(hex, f) {
 
 export function coloresAxo(paletteKey) {
   const pal = PALETTES[paletteKey] || PALETTES.durazno;
-  const body = paletteKey === 'dorado' ? 'url(#g)' : paletteKey === 'galaxia' ? 'url(#gx)' : pal.body;
-  const gill = paletteKey === 'dorado' ? 'url(#gg)' : paletteKey === 'galaxia' ? 'url(#gxg)' : pal.gill;
+  const esp = { dorado: ['url(#g)', 'url(#gg)'], galaxia: ['url(#gx)', 'url(#gxg)'], arcoiris: ['url(#rb)', 'url(#rbg)'] }[paletteKey];
+  const body = esp ? esp[0] : pal.body;
+  const gill = esp ? esp[1] : pal.gill;
   const line = paletteKey === 'galaxia' ? '#1B1140' : paletteKey === 'albino' ? '#B07F2E' : oscurecer(pal.gill, 0.62);
   return { pal, body, gill, line };
 }
+
+const ARCO = ['#E40303', '#FF8C00', '#FFED00', '#008026', '#004DFF', '#750787'];
 
 export function Gradients() {
   return (
     <Defs>
       <LinearGradient id="g" x1="0" y1="0" x2="0.35" y2="1">
         <Stop offset="0" stopColor="#FFF4BE" />
-        <Stop offset="0.45" stopColor="#FFD23F" />
-        <Stop offset="1" stopColor="#E8A317" />
+        <Stop offset="0.38" stopColor="#FFD23F" />
+        <Stop offset="0.72" stopColor="#E8A317" />
+        <Stop offset="1" stopColor="#B9790B" />
       </LinearGradient>
       <LinearGradient id="gg" x1="0" y1="0" x2="0" y2="1">
         <Stop offset="0" stopColor="#FFDE6A" />
@@ -47,13 +69,21 @@ export function Gradients() {
       </LinearGradient>
       <RadialGradient id="gx" cx="0.4" cy="0.32" r="0.95">
         <Stop offset="0" stopColor="#7B57D6" />
-        <Stop offset="0.55" stopColor="#3B2A7A" />
+        <Stop offset="0.5" stopColor="#3B2A7A" />
         <Stop offset="1" stopColor="#190F3C" />
       </RadialGradient>
       <RadialGradient id="gxg" cx="0.5" cy="0.3" r="0.9">
         <Stop offset="0" stopColor="#9B7BFF" />
         <Stop offset="1" stopColor="#4B2E9E" />
       </RadialGradient>
+      <LinearGradient id="rb" gradientUnits="userSpaceOnUse" x1="100" y1="44" x2="100" y2="196">
+        {ARCO.map((c, i) => [<Stop key={`a${i}`} offset={i / 6} stopColor={c} />, <Stop key={`b${i}`} offset={(i + 1) / 6} stopColor={c} />])}
+      </LinearGradient>
+      <LinearGradient id="rbg" x1="0" y1="0" x2="1" y2="0">
+        {ARCO.map((c, i) => (
+          <Stop key={c} offset={i / 5} stopColor={c} />
+        ))}
+      </LinearGradient>
     </Defs>
   );
 }
@@ -67,246 +97,142 @@ export function Layer({ w, h, children }) {
   );
 }
 
-// Proporciones por etapa: al crecer, la cabeza se hace más chica respecto al cuerpo,
-// el cuerpo se alarga, y las branquias y la colita crecen.
-const ETAPAS = {
-  cria: { s: 1, dy: 0, bcy: 163, brx: 31, bry: 30, gk: 1, tail: 1, feetY: 192, arm: 12, armX: 28, armY: 162, hojas4: false },
-  // joven y adulto: cuerpo en forma de pera, gordito y sentado (top/bottom = alto, sw = hombros)
-  joven: { s: 0.92, dy: -11, pera: true, top: 121, bottom: 197, brx: 35, sw: 15, gk: 1.22, tail: 1.15, feetY: 196, arm: 13, armX: 28, armY: 153, hojas4: false },
-  adulto: { s: 0.84, dy: -21, pera: true, top: 110, bottom: 199, brx: 41, sw: 17, gk: 1.42, tail: 1.3, feetY: 198, arm: 15, armX: 32, armY: 146, hojas4: true },
-};
-
-// Colita: chiquita, sale de lado, se afina hasta terminar en punta y lleva
-// tres piquitos (cresta) arriba, del color de las branquias.
-const CRESTA = ['M123 175 L129 165 L135 175 Z', 'M135 175 L142 164 L147 173 Z', 'M146 172 L153 161 L157 168 Z'];
-const TAIL = 'M112 194 C 134 196 153 188 163 159 C 151 171 138 174 112 171 Z';
-const HEAD = 'M34 92 C34 58 62 40 100 40 C138 40 166 58 166 92 C166 123 140 139 100 139 C60 139 34 123 34 92 Z';
-
-// Toda la geometría que depende del color, la etapa y qué tan llenito está (chub 0..1; 1 = como al inicio)
+// Toda la geometría que depende del color, la etapa y qué tan llenito está (chub 0..1)
 export function geom({ paletteKey = 'durazno', evo = 'cria', chub = 1 }) {
   const col = coloresAxo(paletteKey);
-  const stage = evo === 'mistico' ? 'adulto' : ETAPAS[evo] ? evo : 'cria';
-  const E0 = ETAPAS[stage];
+  const stage = evo === 'mistico' ? 'adulto' : ESCALA[evo] ? evo : 'cria';
+  const S = ESCALA[stage];
+  const k = K0 * S;
   const c = Math.max(0, Math.min(1, chub));
-  const f = 0.88 + 0.12 * c; // al bajar de peso el cuerpo se adelgaza un poco
-  const E = { ...E0, brx: E0.brx * f, armX: E0.armX * f };
-  const bw = E.brx;
-  const bodyTop = E.pera ? E.top : E.bcy - E.bry;
-  const bodyBottom = E.pera ? E.bottom : E.bcy + E.bry;
-  const bh = bodyBottom - bodyTop;
-  const bellyY = E.pera ? E.bottom - bh * 0.4 : E.bcy + 7;
-  const neckY = 139 + E.dy; // donde termina la cabeza
-  let bodyD;
-  if (E.pera) {
-    const low = E.bottom - bh * 0.4;
-    const mid = E.top + bh * 0.24;
-    const lowC = low + (E.bottom - low) * 0.78;
-    bodyD = `M100 ${E.top} C ${100 + E.sw * 1.5} ${E.top} ${100 + bw} ${mid} ${100 + bw} ${low} C ${100 + bw} ${lowC} ${100 + bw * 0.62} ${E.bottom} 100 ${E.bottom} C ${100 - bw * 0.62} ${E.bottom} ${100 - bw} ${lowC} ${100 - bw} ${low} C ${100 - bw} ${mid} ${100 - E.sw * 1.5} ${E.top} 100 ${E.top} Z`;
-  } else {
-    const k = 0.5523;
-    const { bcy: cy, bry: ry } = E;
-    bodyD = `M100 ${cy - ry} C ${100 + bw * k} ${cy - ry} ${100 + bw} ${cy - ry * k} ${100 + bw} ${cy} C ${100 + bw} ${cy + ry * k} ${100 + bw * k} ${cy + ry} 100 ${cy + ry} C ${100 - bw * k} ${cy + ry} ${100 - bw} ${cy + ry * k} ${100 - bw} ${cy} C ${100 - bw} ${cy - ry * k} ${100 - bw * k} ${cy - ry} 100 ${cy - ry} Z`;
-  }
-  const comeDy = E.dy + (1 - E.s) * 30;
-  const brazoDe = (sx, sy, hx2, hy2) => {
-    const dx = hx2 - sx;
-    const dy2 = hy2 - sy;
-    const len = Math.hypot(dx, dy2);
-    return { cx: (sx + hx2) / 2, cy: (sy + hy2) / 2, ry: len / 2 + 5, ang: (Math.atan2(-dx, dy2) * 180) / Math.PI };
-  };
-  const hombroD = { x: 100 + E.armX - 3, y: E.armY - 8 };
-  const hombroI = { x: 100 - E.armX + 3, y: E.armY - 8 };
+  const tRx = 30 + 12 * c; // ancho del torso (cambia con el peso)
+  const bRx = 15 + 8 * c; // pancita
+  const T = `translate(100 ${SUELO}) scale(${k}) translate(-100 -${PISO})`;
   return {
     ...col,
-    E,
+    paletteKey,
     stage,
-    bw,
-    bh,
-    bodyTop,
-    bodyBottom,
-    bellyY,
-    neckY,
-    bodyD,
-    comeDy,
-    hombroD,
-    hombroI,
-    bSoba: brazoDe(hombroD.x, hombroD.y, E.pera ? 110 : 106, bellyY + (E.pera ? -3 : 5)),
-    bManzana: brazoDe(hombroI.x, hombroI.y, 87, 141 + comeDy),
-    headT: `translate(100 ${139 + E.dy}) scale(${E.s}) translate(-100 -139)`,
-    tailT: `translate(120 ${E.feetY + 5 - 8 * E.tail}) scale(${E.tail}) translate(-120 -188)`,
-    clipId: `bc_${stage}_${Math.round(c * 100)}`,
+    S,
+    k,
+    tRx,
+    bRx,
+    T,
+    headT: T,
+    // la carita nueva está dibujada para una cabeza más ancha: se encoge y se centra en la cabeza original
+    faceT: `${T} translate(100 86) scale(0.82) translate(-100 -89.5)`,
+    // del dibujo original al lienzo de la app (para los puntos de giro de las animaciones)
+    X: (x) => 100 + (x - 100) * k,
+    Y: (y) => SUELO + (y - PISO) * k,
+    sombra: { cy: SUELO + 1, rx: 46 * k, ry: 7 * k },
+    clipId: `c${stage}${Math.round(c * 100)}`,
   };
 }
 
-/* ---------- OUTFITS (ropa) ---------- */
-// Cada outfit: color base, color de manga y detalles. Se recorta con la forma del cuerpo,
-// así el mismo dibujo sirve para bebé, joven y adulto.
-const OUT = {
-  jersey: { base: '#1E9E5A', sleeve: '#1E9E5A' },
-  sarape: { base: '#FFF3DC', sleeve: '#E0556E' },
-  hoodieRojo: { base: '#D7263D', sleeve: '#D7263D', dark: '#A81B2E' },
-  hoodieAzul: { base: '#2E6FD6', sleeve: '#2E6FD6', dark: '#2156A8' },
-  playeraRaya: { base: '#FFFFFF', sleeve: '#FFFFFF' },
-  poloRosa: { base: '#F58FB0', sleeve: '#F58FB0' },
-  chivas: { base: '#FFFFFF', sleeve: '#D7263D' },
-  azulDiag: { base: '#2E6FD6', sleeve: '#2E6FD6' },
-  pumas: { base: '#1D2F6F', sleeve: '#1D2F6F' },
-};
-export const mangaDe = (outfit) => (OUT[outfit] ? OUT[outfit].sleeve : null);
-
-function Outfit({ g, k }) {
-  const o = OUT[k];
-  if (!o) return null;
-  const W = g.bw;
-  const x0 = 100 - W - 3;
-  const x1 = 100 + W + 3;
-  const yT = g.bodyTop - 3;
-  const yN = g.neckY + 1;
-  const yH = g.bodyBottom - (g.bodyBottom - g.neckY) * 0.24; // dobladillo
-  const alto = yH - yN;
-  const det = [];
-  if (k === 'jersey') {
-    det.push(<Path key="c" d={`M${100 - 13} ${yN - 2} Q100 ${yN + 13} ${100 + 13} ${yN - 2}`} stroke="#D7263D" strokeWidth={4.5} fill="none" strokeLinecap="round" />);
-    det.push(<Line key="s1" x1={100 - W} y1={yN + 3} x2={100 - W * 0.55} y2={yN - 3} stroke="#fff" strokeWidth={3} />);
-    det.push(<Line key="s2" x1={100 + W} y1={yN + 3} x2={100 + W * 0.55} y2={yN - 3} stroke="#fff" strokeWidth={3} />);
-    det.push(<Circle key="e" cx={100} cy={yN + alto * 0.62} r={Math.min(7, alto * 0.2)} fill="none" stroke="#F2C744" strokeWidth={2.4} />);
-    det.push(<Circle key="e2" cx={100} cy={yN + alto * 0.62} r={2} fill="#F2C744" />);
-  } else if (k === 'sarape') {
-    const cols = ['#E0556E', '#F2B705', '#34BC97', '#3FA9F5'];
-    const n = 6;
-    const bh = (yH - yN + 6) / n;
-    for (let i = 0; i < n; i++) det.push(<Rect key={i} x={x0} y={yN - 4 + i * bh} width={x1 - x0} height={bh * 0.62} fill={cols[i % 4]} />);
-  } else if (k === 'hoodieRojo' || k === 'hoodieAzul') {
-    det.push(<Path key="h" d={`M${100 - 17} ${yN - 3} Q100 ${yN + 11} ${100 + 17} ${yN - 3}`} stroke={o.dark} strokeWidth={5} fill="none" strokeLinecap="round" />);
-    det.push(<Rect key="p" x={100 - W * 0.52} y={yH - Math.min(13, alto * 0.36)} width={W * 1.04} height={Math.min(13, alto * 0.36) + 2} rx={5} fill={o.dark} />);
-    det.push(<Line key="c1" x1={95} y1={yN + 5} x2={94} y2={yN + alto * 0.42} stroke="#fff" strokeWidth={2} strokeLinecap="round" />);
-    det.push(<Line key="c2" x1={105} y1={yN + 5} x2={106} y2={yN + alto * 0.42} stroke="#fff" strokeWidth={2} strokeLinecap="round" />);
-  } else if (k === 'playeraRaya') {
-    for (let y = yN + 3, i = 0; y < yH; y += 9, i++) det.push(<Rect key={i} x={x0} y={y} width={x1 - x0} height={4} fill="#2E3A8C" />);
-  } else if (k === 'poloRosa') {
-    det.push(<Path key="l" d={`M100 ${yN + 11} L${100 - 14} ${yN - 3} L${100 - 3} ${yN - 3} Z`} fill="#fff" stroke="#E6A3BA" strokeWidth={1} />);
-    det.push(<Path key="r" d={`M100 ${yN + 11} L${100 + 14} ${yN - 3} L${100 + 3} ${yN - 3} Z`} fill="#fff" stroke="#E6A3BA" strokeWidth={1} />);
-    det.push(<Line key="p" x1={100} y1={yN + 11} x2={100} y2={yN + alto * 0.7} stroke="#D96F92" strokeWidth={1.6} />);
-    det.push(<Circle key="b1" cx={100} cy={yN + alto * 0.4} r={1.8} fill="#fff" />);
-    det.push(<Circle key="b2" cx={100} cy={yN + alto * 0.62} r={1.8} fill="#fff" />);
-  } else if (k === 'chivas') {
-    for (let x = 100 - 40, i = 0; x < x1; x += 16, i++) det.push(<Rect key={i} x={x} y={yT} width={8} height={yH - yT + 8} fill="#D7263D" />);
-    det.push(<Path key="c" d={`M${100 - 13} ${yN - 2} Q100 ${yN + 11} ${100 + 13} ${yN - 2}`} stroke="#1D2F6F" strokeWidth={4} fill="none" strokeLinecap="round" />);
-  } else if (k === 'azulDiag') {
-    det.push(<Path key="d" d={`M${x0} ${yN - 6} L${x0} ${yN + 8} L${x1} ${yH + 4} L${x1} ${yH - 12} Z`} fill="#16233F" />);
-    det.push(<Path key="c" d={`M${100 - 12} ${yN - 2} Q100 ${yN + 9} ${100 + 12} ${yN - 2}`} stroke="#fff" strokeWidth={3} fill="none" strokeLinecap="round" />);
-  } else if (k === 'pumas') {
-    det.push(<Path key="v" d={`M${x0} ${yN + 1} L100 ${yN + alto * 0.72} L${x1} ${yN + 1}`} stroke="#E9B93A" strokeWidth={7} fill="none" strokeLinejoin="round" />);
-    det.push(<Path key="c" d={`M${100 - 12} ${yN - 2} Q100 ${yN + 9} ${100 + 12} ${yN - 2}`} stroke="#E9B93A" strokeWidth={3} fill="none" strokeLinecap="round" />);
-  }
+/* ---------- AURA (adulto: dorada · místico: morada con destellos) ---------- */
+export function Aura({ g, evo }) {
+  if (evo !== 'adulto' && evo !== 'mistico') return null;
+  const mistico = evo === 'mistico';
   return (
-    <G>
-      <Defs>
-        <ClipPath id={g.clipId}>
-          <Path d={g.bodyD} />
-        </ClipPath>
-      </Defs>
-      <G clipPath={`url(#${g.clipId})`}>
-        <Path d={`M${x0} ${yT} H${x1} V${yH} Q100 ${yH + 7} ${x0} ${yH} Z`} fill={o.base} />
-        {det}
-        <Path d={`M${x0} ${yH} Q100 ${yH + 7} ${x1} ${yH}`} stroke={g.line} strokeWidth={2} fill="none" opacity={0.55} />
-      </G>
-      <Path d={g.bodyD} fill="none" stroke={g.line} strokeWidth={SW} strokeLinejoin="round" />
-    </G>
-  );
-}
-
-/* ---------- CUERPO ---------- */
-// Un brazo: óvalo girado. Con ropa, el óvalo es la manga y asoma la manita.
-export function Brazo({ g, cx, cy, ry, ang, manga, tip = 1 }) {
-  const rx = 7.5;
-  return (
-    <G transform={`rotate(${ang} ${cx} ${cy})`}>
-      <Ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={manga || g.body} stroke={g.line} strokeWidth={SW} />
-      {manga && <Circle cx={cx} cy={cy + tip * (ry - rx + 1.5)} r={rx - 0.6} fill={g.body} stroke={g.line} strokeWidth={2.4} />}
-    </G>
-  );
-}
-
-// Alas de mariposa (accesorio): van detrás del cuerpo
-export function Alas({ g }) {
-  const y = g.E.armY - 6;
-  const ala = (s) => (
-    <G transform={`translate(${100 + s * (g.bw - 4)} ${y}) scale(${s} 1)`}>
-      <Path d="M0 0 C 14 -34 52 -36 54 -10 C 55 6 30 12 0 4 Z" fill="#FFB7E0" stroke="#B06AC0" strokeWidth={2.4} strokeLinejoin="round" />
-      <Path d="M0 4 C 22 6 46 14 40 32 C 34 46 8 36 0 10 Z" fill="#C9A7F0" stroke="#B06AC0" strokeWidth={2.4} strokeLinejoin="round" />
-      <Circle cx={34} cy={-14} r={5} fill="#fff" opacity={0.75} />
-      <Circle cx={24} cy={22} r={3.6} fill="#fff" opacity={0.75} />
-    </G>
-  );
-  return (
-    <G>
-      {ala(-1)}
-      {ala(1)}
-    </G>
-  );
-}
-
-// Colita + patitas + torso (con pancita clara o con ropa)
-export function Cuerpo({ g, outfit }) {
-  const { E, bw } = g;
-  const piel = { fill: g.body, stroke: g.line, strokeWidth: SW };
-  const pies = E.pera ? (
-    <G>
-      <Ellipse cx={100 - bw * 0.62} cy={E.bottom - 1} rx={12} ry={7.5} {...piel} />
-      <Ellipse cx={100 + bw * 0.62} cy={E.bottom - 1} rx={12} ry={7.5} {...piel} />
-    </G>
-  ) : (
-    <G>
-      <Ellipse cx={100 - bw * 0.52} cy={E.feetY} rx={11} ry={7} {...piel} />
-      <Ellipse cx={100 + bw * 0.52} cy={E.feetY} rx={11} ry={7} {...piel} />
-    </G>
-  );
-  const conRopa = !!OUT[outfit];
-  return (
-    <G>
-      <G transform={g.tailT}>
-        {CRESTA.map((d) => (
-          <Path key={d} d={d} fill={g.gill} stroke={g.line} strokeWidth={2.2 / E.tail} strokeLinejoin="round" />
+    <G transform={g.T}>
+      <Circle cx={100} cy={118} r={80} fill={mistico ? '#9B7BFF' : '#FFE08A'} opacity={mistico ? 0.22 : 0.16} />
+      {mistico &&
+        [[40, 66, 5], [160, 78, 6], [48, 162, 5], [156, 150, 5], [100, 34, 7], [28, 118, 4], [172, 116, 4]].map((s) => (
+          <Path key={s.join()} d={destello(s[0], s[1], s[2], 0.3)} fill="#FFF6C8" opacity={0.95} />
         ))}
-        <Path d={TAIL} fill={g.body} stroke={g.line} strokeWidth={SW / E.tail} strokeLinejoin="round" />
-        <Path d="M124 191 C 137 191 147 186 154 176" stroke="#ffffff" strokeWidth={2.4} fill="none" strokeLinecap="round" opacity={0.4} />
-      </G>
-      {!E.pera && pies}
-      <Path d={g.bodyD} fill={g.body} stroke={g.line} strokeWidth={SW} strokeLinejoin="round" />
-      {!conRopa && <Ellipse cx={100} cy={g.bellyY} rx={bw * (E.pera ? 0.56 : 0.58)} ry={E.pera ? g.bh * 0.34 : E.bry * 0.63} fill="#ffffff" opacity={0.55} />}
-      {conRopa && <Outfit g={g} k={outfit} />}
-      {E.pera && pies}
     </G>
   );
 }
 
-// pose: 'abajo' (normal) | 'arriba' (nace, amor)
-export function Brazos({ g, pose = 'abajo', outfit }) {
-  const { E } = g;
-  const manga = mangaDe(outfit);
-  if (pose === 'arriba') {
-    return (
+/* ---------- ALAS DE MARIPOSA (van detrás de todo) ---------- */
+export function Alas({ g }) {
+  return (
+    <G transform={g.T}>
       <G>
-        <Brazo g={g} cx={100 - E.armX - 9} cy={E.armY - 15} ry={E.arm + 1} ang={-58} manga={manga} tip={-1} />
-        <Brazo g={g} cx={100 + E.armX + 9} cy={E.armY - 15} ry={E.arm + 1} ang={58} manga={manga} tip={-1} />
+        <Path d="M144 126 C 156 88, 184 68, 197 88 C 204 100, 190 128, 156 140 C 146 144, 142 137, 144 126 Z" fill="#A98EDB" stroke="#6E54B0" strokeWidth="2.5" />
+        <Path d="M150 142 C 166 150, 189 164, 187 186 C 186 202, 162 200, 152 184 C 146 174, 147 156, 150 142 Z" fill="#BBA2E6" stroke="#6E54B0" strokeWidth="2.5" />
+        <Circle cx="178" cy="100" r="8" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="2" />
+        <Circle cx="170" cy="180" r="5" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="1.8" />
       </G>
-    );
-  }
-  return (
-    <G>
-      <Brazo g={g} cx={100 - E.armX} cy={E.armY} ry={E.arm} ang={26} manga={manga} />
-      <Brazo g={g} cx={100 + E.armX} cy={E.armY} ry={E.arm} ang={-26} manga={manga} />
+      <G transform="translate(200,0) scale(-1,1)">
+        <Path d="M144 126 C 156 88, 184 68, 197 88 C 204 100, 190 128, 156 140 C 146 144, 142 137, 144 126 Z" fill="#A98EDB" stroke="#6E54B0" strokeWidth="2.5" />
+        <Path d="M150 142 C 166 150, 189 164, 187 186 C 186 202, 162 200, 152 184 C 146 174, 147 156, 150 142 Z" fill="#BBA2E6" stroke="#6E54B0" strokeWidth="2.5" />
+        <Circle cx="178" cy="100" r="8" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="2" />
+        <Circle cx="170" cy="180" r="5" fill="#EFE7FF" stroke="#6E54B0" strokeWidth="1.8" />
+      </G>
     </G>
   );
 }
 
-// Comiendo: manzanita mordida + el brazo que la sostiene
-export function Comiendo({ g, outfit }) {
-  const b = g.bManzana;
+/* ---------- CUERPO: colita enroscada y torso ---------- */
+export function Cuerpo({ g }) {
+  const { paletteKey, pal } = g;
+  return (
+    <G transform={g.T}>
+      <Path d="M104 152 C 130 168 160 168 162 196 C 164 222 134 232 120 215 C 135 215 149 206 145 189 C 139 171 116 161 100 156 Z" fill={g.body} />
+      <Path d="M112 160 C 132 173 152 175 152 195 C 152 208 137 213 129 205 C 140 201 144 192 140 184 C 134 172 119 166 107 163 Z" fill="#ffffff" opacity={0.28} />
+      <Ellipse cx={100} cy={142} rx={g.tRx} ry={46} fill={g.body} />
+      {(paletteKey === 'salvaje' || paletteKey === 'cobre') && (
+        <G fill={pal.gill} opacity={paletteKey === 'salvaje' ? 0.5 : 0.4}>
+          {MANCHAS.filter((s) => s[1] > CORTE).map((s) => (
+            <Circle key={s.join()} cx={s[0]} cy={s[1]} r={s[2]} />
+          ))}
+        </G>
+      )}
+      {paletteKey === 'galaxia' && <Cielo abajo />}
+    </G>
+  );
+}
+
+function Cielo({ abajo }) {
+  const en = (s) => (abajo ? s[1] > CORTE : s[1] <= CORTE);
   return (
     <G>
-      <G transform={`translate(0 ${g.comeDy})`}>
+      {ESTRELLAS.filter(en).map((s) => (
+        <Circle key={s.join()} cx={s[0]} cy={s[1]} r={s[2]} fill="#FFFFFF" opacity={0.92} />
+      ))}
+      {DESTELLOS.filter(en).map((s) => (
+        <Path key={s.join()} d={destello(s[0], s[1], s[2])} fill="#FFF6C8" opacity={0.95} />
+      ))}
+    </G>
+  );
+}
+
+/* ---------- BRACITOS ---------- */
+export function Brazos({ g, pose = 'abajo' }) {
+  return (
+    <G transform={g.T}>
+      {pose === 'arriba' ? (
+        <G>
+          <Ellipse cx={61} cy={124} rx={8.5} ry={14} fill={g.body} transform="rotate(52 61 124)" />
+          <Ellipse cx={139} cy={124} rx={8.5} ry={14} fill={g.body} transform="rotate(-52 139 124)" />
+        </G>
+      ) : (
+        <G>
+          <Ellipse cx={80} cy={128} rx={9} ry={13} fill={g.body} transform="rotate(-34 80 128)" />
+          <Ellipse cx={122} cy={158} rx={9} ry={13} fill={g.body} transform="rotate(28 122 158)" />
+        </G>
+      )}
+    </G>
+  );
+}
+
+// Un bracito con manita, con una rayita del color de las branquias para que se distinga del cuerpo
+function Manita({ g, lado }) {
+  const d = lado === 'der' ? 1 : -1;
+  const x = (v) => 100 + d * v;
+  return (
+    <G>
+      <Ellipse cx={x(12)} cy={146} rx={8} ry={14} fill={g.body} stroke={g.pal.gill} strokeWidth={2} transform={`rotate(${-38 * d} ${x(12)} 146)`} />
+      <Circle cx={x(6)} cy={155} r={8} fill={g.body} stroke={g.pal.gill} strokeWidth={2} />
+      <Ellipse cx={x(9)} cy={152} rx={2.6} ry={2} fill="#ffffff" opacity={0.45} />
+    </G>
+  );
+}
+
+/* ---------- COMIENDO: una manita sostiene la manzanita ---------- */
+export function Comiendo({ g }) {
+  return (
+    <G>
+      <G transform={g.faceT}>
         <Circle cx={100} cy={137} r={11} fill="#F26D6D" stroke="#B8404A" strokeWidth={2.4} />
         <Circle cx={109} cy={129} r={5} fill={g.pal.body} />
         <Path d="M100 127 Q101 121 105 119" stroke="#7A4B2A" strokeWidth={2.2} fill="none" strokeLinecap="round" />
@@ -316,43 +242,33 @@ export function Comiendo({ g, outfit }) {
         <Circle cx={128} cy={125} r={1.5} fill="#F7B26B" />
         <Circle cx={122} cy={119} r={1.2} fill="#F7B26B" />
       </G>
-      <Brazo g={g} cx={b.cx} cy={b.cy} ry={b.ry} ang={b.ang} manga={mangaDe(outfit)} />
+      <G transform={g.T}>
+        <Ellipse cx={84} cy={143} rx={8} ry={13} fill={g.body} stroke={g.pal.gill} strokeWidth={2} transform="rotate(24 84 143)" />
+        <Circle cx={90} cy={133} r={7.5} fill={g.body} stroke={g.pal.gill} strokeWidth={2} />
+      </G>
     </G>
   );
 }
 
-// El brazo que se soba la pancita (en Axo.js gira desde el hombro)
-export function BrazoSoba({ g, outfit }) {
-  const b = g.bSoba;
-  return <Brazo g={g} cx={b.cx} cy={b.cy} ry={b.ry} ang={b.ang} manga={mangaDe(outfit)} />;
+// La otra manita se soba la pancita (Axo.js la hace girar desde el hombro: g.hombro)
+export const HOMBRO = { x: 118, y: 132 };
+export function BrazoSoba({ g }) {
+  return (
+    <G transform={g.T}>
+      <Manita g={g} lado="der" />
+    </G>
+  );
 }
 
-/* ---------- CABEZA ---------- */
-const petalo = (len, wd) =>
-  `M0 ${-wd} C ${len * 0.35} ${-wd * 1.75} ${len * 0.92} ${-wd * 1.35} ${len} 0 C ${len * 0.92} ${wd * 1.35} ${len * 0.35} ${wd * 1.75} 0 ${wd} Z`;
-
+/* ---------- BRANQUIAS ---------- */
 export function Branquias({ g, side }) {
-  const t = side === 'left' ? 'translate(40,84) scale(-1,1)' : 'translate(160,84)';
-  const k = g.E.gk;
-  const hojas = g.E.hojas4
-    ? [
-        { r: -58, len: 30, wd: 6.5 },
-        { r: -28, len: 37, wd: 7.5 },
-        { r: 2, len: 39, wd: 8 },
-        { r: 34, len: 32, wd: 7 },
-      ]
-    : [
-        { r: -42, len: 35, wd: 7.5 },
-        { r: -4, len: 39, wd: 8 },
-        { r: 34, len: 33, wd: 7 },
-      ];
+  const t = side === 'left' ? 'translate(50,76) scale(-1,1)' : 'translate(150,76)';
   return (
-    <G transform={g.headT}>
+    <G transform={g.T}>
       <G transform={t}>
-        {hojas.map((p) => (
-          <G key={p.r} transform={`rotate(${p.r})`}>
-            <Path d={petalo(p.len * k, p.wd)} fill={g.gill} stroke={g.line} strokeWidth={2.6} strokeLinejoin="round" />
-            <Path d={`M7 0 L ${p.len * k * 0.7} 0`} stroke="#ffffff" strokeWidth={2} strokeLinecap="round" opacity={0.35} />
+        {[-32, -4, 24].map((r) => (
+          <G key={r} transform={`rotate(${r})`}>
+            <Path d={FROND} fill={g.gill} />
           </G>
         ))}
       </G>
@@ -360,27 +276,202 @@ export function Branquias({ g, side }) {
   );
 }
 
+/* ---------- CABEZA: forma, pequitas y cachetes ---------- */
 export function CabezaBase({ g, mood }) {
+  const { paletteKey, pal } = g;
   const come = mood === 'come';
   return (
-    <G transform={g.headT}>
-      <Path d={HEAD} fill={g.body} stroke={g.line} strokeWidth={SW / g.E.s} strokeLinejoin="round" />
-      <Path d="M62 58 C74 48 90 45 104 46" stroke="#ffffff" strokeWidth={5} fill="none" strokeLinecap="round" opacity={0.45} />
-      <G fill={g.pal.gill} opacity={0.4}>
-        <Ellipse cx={88} cy={56} rx={4} ry={2.8} />
-        <Ellipse cx={101} cy={51} rx={4.4} ry={3} />
-        <Ellipse cx={114} cy={56} rx={3.6} ry={2.6} />
-        <Ellipse cx={95} cy={62} rx={2.6} ry={2} />
-        <Ellipse cx={108} cy={62} rx={2.4} ry={1.8} />
+    <G>
+      <G transform={g.T}>
+        <Ellipse cx={100} cy={86} rx={54} ry={46} fill={g.body} />
+        {paletteKey === 'dorado' && <Ellipse cx={82} cy={64} rx={22} ry={11} fill="#FFFDF0" opacity={0.5} transform="rotate(-22 82 64)" />}
+        {(paletteKey === 'salvaje' || paletteKey === 'cobre') && (
+          <G fill={pal.gill} opacity={paletteKey === 'salvaje' ? 0.5 : 0.4}>
+            {MANCHAS.filter((s) => s[1] <= CORTE).map((s) => (
+              <Circle key={s.join()} cx={s[0]} cy={s[1]} r={s[2]} />
+            ))}
+          </G>
+        )}
+        {paletteKey === 'galaxia' && <Cielo />}
+        <G fill={pal.gill} opacity={0.45}>
+          <Circle cx={78} cy={58} r={3} />
+          <Circle cx={92} cy={50} r={3.4} />
+          <Circle cx={106} cy={52} r={2.6} />
+          <Circle cx={120} cy={60} r={3} />
+          <Circle cx={68} cy={70} r={2.4} />
+          <Circle cx={129} cy={74} r={2.6} />
+          <Circle cx={100} cy={46} r={2.2} />
+        </G>
       </G>
-      <Ellipse cx={54} cy={109} rx={come ? 14 : 11.5} ry={come ? 9.5 : 7} fill={BLUSH} opacity={0.78} />
-      <Ellipse cx={146} cy={109} rx={come ? 14 : 11.5} ry={come ? 9.5 : 7} fill={BLUSH} opacity={0.78} />
-      {mood === 'triste' && <Path d="M56 114 C53 120 52 124 56 126 C60 124 59 120 56 114 Z" fill="#9BD4F5" stroke="#6FB6E0" strokeWidth={1} />}
+      <G transform={g.faceT}>
+        <Ellipse cx={54} cy={109} rx={come ? 14 : 11.5} ry={come ? 9.5 : 7} fill={BLUSH} opacity={0.78} />
+        <Ellipse cx={146} cy={109} rx={come ? 14 : 11.5} ry={come ? 9.5 : 7} fill={BLUSH} opacity={0.78} />
+        {mood === 'triste' && <Path d="M56 114 C53 120 52 124 56 126 C60 124 59 120 56 114 Z" fill="#9BD4F5" stroke="#6FB6E0" strokeWidth={1} />}
+      </G>
     </G>
   );
 }
 
-// Ojo grande con brillos (el mismo en todas las caras de ojos abiertos)
+/* ---------- PANCITA y ROPA (van encima de la cabeza, como en el dibujo original) ---------- */
+export function Frente({ g, outfit = 'ninguno' }) {
+  const { tRx } = g;
+  return (
+    <G transform={g.T}>
+      <Ellipse cx={100} cy={150} rx={g.bRx} ry={30} fill="#ffffff" opacity={0.4} />
+      {outfit === "jersey" && (() => { const jw = tRx * 1.28; const cx = 100; return (
+        <G>
+          {/* cuerpo verde */}
+          <Path d={"M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 188 Q " + cx + " 198 " + (cx - jw * 0.85) + " 188 Z"} fill="#006847" />
+          {/* mangas */}
+          <Ellipse cx={cx - jw * 0.92} cy="132" rx="15" ry="10" fill="#006847" transform={"rotate(-28 " + (cx - jw * 0.92) + " 132)"} />
+          <Ellipse cx={cx + jw * 0.92} cy="132" rx="15" ry="10" fill="#006847" transform={"rotate(28 " + (cx + jw * 0.92) + " 132)"} />
+          {/* borde rojo mangas */}
+          <Ellipse cx={cx - jw * 0.92} cy="138" rx="15" ry="5" fill="none" stroke="#C8102E" strokeWidth="3.5" transform={"rotate(-28 " + (cx - jw * 0.92) + " 138)"} />
+          <Ellipse cx={cx + jw * 0.92} cy="138" rx="15" ry="5" fill="none" stroke="#C8102E" strokeWidth="3.5" transform={"rotate(28 " + (cx + jw * 0.92) + " 138)"} />
+          {/* cuello redondo rojo */}
+          <Path d="M88 127 Q100 138 112 127" fill="none" stroke="#C8102E" strokeWidth="5" strokeLinecap="round" />
+          {/* rayas blancas en hombros */}
+          <Line x1={cx - jw * 0.55} y1="127" x2={cx - jw * 0.82} y2="145" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
+          <Line x1={cx - jw * 0.45} y1="127" x2={cx - jw * 0.72} y2="145" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
+          <Line x1={cx - jw * 0.35} y1="127" x2={cx - jw * 0.62} y2="145" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
+          <Line x1={cx + jw * 0.55} y1="127" x2={cx + jw * 0.82} y2="145" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
+          <Line x1={cx + jw * 0.45} y1="127" x2={cx + jw * 0.72} y2="145" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
+          <Line x1={cx + jw * 0.35} y1="127" x2={cx + jw * 0.62} y2="145" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
+          {/* patrón azteca circular en el pecho (simplificado) */}
+          <Circle cx={cx} cy="162" r="14" fill="none" stroke="#005535" strokeWidth="2.5" />
+          <Circle cx={cx} cy="162" r="9" fill="none" stroke="#005535" strokeWidth="1.8" />
+          <Circle cx={cx} cy="162" r="4" fill="#005535" />
+          {[0,45,90,135,180,225,270,315].map(a => {
+            const rad = a * Math.PI / 180;
+            return <Line key={a} x1={cx + Math.cos(rad)*4} y1={162 + Math.sin(rad)*4} x2={cx + Math.cos(rad)*9} y2={162 + Math.sin(rad)*9} stroke="#005535" strokeWidth="1.5" />;
+          })}
+        </G>
+      ); })()}
+      {outfit === "sarape" && (() => { const jw = tRx * 1.32; const cols = ["#E0556E", "#F2B705", "#34BC97", "#3FA9F5"]; return (
+        <G>
+          <Path d={"M" + (100 - jw) + " 126 Q 100 138 " + (100 + jw) + " 126 L " + (100 + jw * 0.82) + " 188 Q 100 198 " + (100 - jw * 0.82) + " 188 Z"} fill="#F3E2C7" />
+          {cols.map((col, idx) => <Rect key={idx} x={100 - jw * 0.72} y={142 + idx * 12} width={jw * 1.44} height="9" rx="2" fill={col} />)}
+        </G>
+      ); })()}
+      {(outfit === "hoodieRojo" || outfit === "hoodieAzul") && (() => {
+        const jw = tRx * 1.3; const cx = 100;
+        const base = outfit === "hoodieRojo" ? "#D7263D" : "#2E6FD6";
+        const dark = outfit === "hoodieRojo" ? "#A81B2E" : "#2156A8";
+        return (
+          <G>
+            <Path d={"M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 190 Q " + cx + " 200 " + (cx - jw * 0.85) + " 190 Z"} fill={base} />
+            <Ellipse cx={cx - jw * 0.92} cy="134" rx="15" ry="11" fill={base} transform={"rotate(-28 " + (cx - jw * 0.92) + " 134)"} />
+            <Ellipse cx={cx + jw * 0.92} cy="134" rx="15" ry="11" fill={base} transform={"rotate(28 " + (cx + jw * 0.92) + " 134)"} />
+            {/* puños */}
+            <Ellipse cx={cx - jw * 0.92} cy="142" rx="13" ry="4.5" fill={dark} transform={"rotate(-28 " + (cx - jw * 0.92) + " 142)"} />
+            <Ellipse cx={cx + jw * 0.92} cy="142" rx="13" ry="4.5" fill={dark} transform={"rotate(28 " + (cx + jw * 0.92) + " 142)"} />
+            {/* bolsa canguro */}
+            <Path d={"M" + (cx - jw * 0.5) + " 165 Q " + cx + " 172 " + (cx + jw * 0.5) + " 165 L " + (cx + jw * 0.42) + " 182 L " + (cx - jw * 0.42) + " 182 Z"} fill="none" stroke={dark} strokeWidth="2.5" />
+            {/* cordones (más abajo, sobre el pecho) */}
+            <Line x1={cx - 5} y1="140" x2={cx - 7} y2="160" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+            <Line x1={cx + 5} y1="140" x2={cx + 7} y2="160" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+            <Circle cx={cx - 7} cy="161" r="2" fill="#fff" />
+            <Circle cx={cx + 7} cy="161" r="2" fill="#fff" />
+          </G>
+        );
+      })()}
+      {outfit === "chivas" && (() => {
+        const jw = tRx * 1.26; const cx = 100;
+        const body = "M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 188 Q " + cx + " 198 " + (cx - jw * 0.85) + " 188 Z";
+        const sw = (jw * 2) / 6; const cid = "clChiv" + g.clipId;
+        return (
+          <G>
+            <Ellipse cx={cx - jw * 0.92} cy="132" rx="15" ry="10" fill="#fff" stroke="#C8102E" strokeWidth="2" transform={"rotate(-28 " + (cx - jw * 0.92) + " 132)"} />
+            <Ellipse cx={cx + jw * 0.92} cy="132" rx="15" ry="10" fill="#fff" stroke="#C8102E" strokeWidth="2" transform={"rotate(28 " + (cx + jw * 0.92) + " 132)"} />
+            <Path d={body} fill="#fff" />
+            <ClipPath id={cid}><Path d={body} /></ClipPath>
+            <G clipPath={"url(#" + cid + ")"}>
+              <Rect x={cx - jw} y="120" width={sw} height="84" fill="#C8102E" />
+              <Rect x={cx - jw + sw * 2} y="120" width={sw} height="84" fill="#C8102E" />
+              <Rect x={cx - jw + sw * 4} y="120" width={sw} height="84" fill="#C8102E" />
+            </G>
+            <Path d={body} fill="none" stroke="#C8102E" strokeWidth="2" />
+            <Path d="M88 127 Q100 137 112 127" fill="none" stroke="#1A2A5E" strokeWidth="4" strokeLinecap="round" />
+          </G>
+        );
+      })()}
+      {outfit === "azulDiag" && (() => {
+        const jw = tRx * 1.26; const cx = 100;
+        const body = "M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 188 Q " + cx + " 198 " + (cx - jw * 0.85) + " 188 Z";
+        const cid = "clAz" + g.clipId;
+        return (
+          <G>
+            <Ellipse cx={cx - jw * 0.92} cy="132" rx="15" ry="10" fill="#5FB4E4" transform={"rotate(-28 " + (cx - jw * 0.92) + " 132)"} />
+            <Ellipse cx={cx + jw * 0.92} cy="132" rx="15" ry="10" fill="#5FB4E4" transform={"rotate(28 " + (cx + jw * 0.92) + " 132)"} />
+            <Path d={body} fill="#5FB4E4" />
+            <ClipPath id={cid}><Path d={body} /></ClipPath>
+            <G clipPath={"url(#" + cid + ")"}>
+              <Line x1={cx - jw * 0.8} y1="190" x2={cx + jw * 0.8} y2="126" stroke="#fff" strokeWidth="17" />
+            </G>
+            <Path d={body} fill="none" stroke="#3F97C9" strokeWidth="1.5" />
+            <Path d="M88 127 Q100 137 112 127" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
+          </G>
+        );
+      })()}
+      {outfit === "pumas" && (() => {
+        const jw = tRx * 1.26; const cx = 100;
+        const body = "M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 188 Q " + cx + " 198 " + (cx - jw * 0.85) + " 188 Z";
+        const cid = "clPum" + g.clipId;
+        return (
+          <G>
+            <Ellipse cx={cx - jw * 0.92} cy="132" rx="15" ry="10" fill="#fff" stroke="#1A2A5E" strokeWidth="2" transform={"rotate(-28 " + (cx - jw * 0.92) + " 132)"} />
+            <Ellipse cx={cx + jw * 0.92} cy="132" rx="15" ry="10" fill="#fff" stroke="#1A2A5E" strokeWidth="2" transform={"rotate(28 " + (cx + jw * 0.92) + " 132)"} />
+            <Path d={body} fill="#fff" />
+            <ClipPath id={cid}><Path d={body} /></ClipPath>
+            <G clipPath={"url(#" + cid + ")"}>
+              <Rect x={cx - jw} y="120" width="14" height="84" fill="#C9A227" />
+              <Rect x={cx + jw - 14} y="120" width="14" height="84" fill="#C9A227" />
+            </G>
+            <Path d={body} fill="none" stroke="#1A2A5E" strokeWidth="1.5" />
+            <Path d="M86 127 Q100 139 114 127" fill="none" stroke="#1A2A5E" strokeWidth="5" strokeLinecap="round" />
+          </G>
+        );
+      })()}
+      {outfit === "playeraRaya" && (() => {
+        const jw = tRx * 1.26; const cx = 100;
+        return (
+          <G>
+            <Path d={"M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 188 Q " + cx + " 198 " + (cx - jw * 0.85) + " 188 Z"} fill="#F7F7F7" />
+            <Ellipse cx={cx - jw * 0.92} cy="132" rx="14" ry="10" fill="#F7F7F7" transform={"rotate(-28 " + (cx - jw * 0.92) + " 132)"} />
+            <Ellipse cx={cx + jw * 0.92} cy="132" rx="14" ry="10" fill="#F7F7F7" transform={"rotate(28 " + (cx + jw * 0.92) + " 132)"} />
+            {/* franja negra diagonal cruzando el pecho */}
+            <Line x1={cx - jw * 0.78} y1="170" x2={cx + jw * 0.78} y2="138" stroke="#222" strokeWidth="11" strokeLinecap="round" />
+            {/* cuello */}
+            <Path d="M88 127 Q100 137 112 127" fill="none" stroke="#222" strokeWidth="4" strokeLinecap="round" />
+          </G>
+        );
+      })()}
+      {outfit === "poloRosa" && (() => {
+        const jw = tRx * 1.26; const cx = 100;
+        return (
+          <G>
+            <Path d={"M" + (cx - jw) + " 126 Q " + cx + " 142 " + (cx + jw) + " 126 L " + (cx + jw * 0.85) + " 188 Q " + cx + " 198 " + (cx - jw * 0.85) + " 188 Z"} fill="#F3A6BE" />
+            <Ellipse cx={cx - jw * 0.92} cy="132" rx="14" ry="10" fill="#F3A6BE" transform={"rotate(-28 " + (cx - jw * 0.92) + " 132)"} />
+            <Ellipse cx={cx + jw * 0.92} cy="132" rx="14" ry="10" fill="#F3A6BE" transform={"rotate(28 " + (cx + jw * 0.92) + " 132)"} />
+            {/* puños mangas */}
+            <Ellipse cx={cx - jw * 0.92} cy="139" rx="12" ry="4" fill="#E48BA6" transform={"rotate(-28 " + (cx - jw * 0.92) + " 139)"} />
+            <Ellipse cx={cx + jw * 0.92} cy="139" rx="12" ry="4" fill="#E48BA6" transform={"rotate(28 " + (cx + jw * 0.92) + " 139)"} />
+            {/* cuello de polo */}
+            <Path d={"M" + (cx - 12) + " 126 L " + (cx - 4) + " 138 L " + cx + " 130 Z"} fill="#E48BA6" />
+            <Path d={"M" + (cx + 12) + " 126 L " + (cx + 4) + " 138 L " + cx + " 130 Z"} fill="#E48BA6" />
+            {/* botones */}
+            <Circle cx={cx} cy="140" r="1.8" fill="#fff" />
+            <Circle cx={cx} cy="148" r="1.8" fill="#fff" />
+          </G>
+        );
+      })()}
+    </G>
+  );
+}
+
+/* ---------- OJOS y BOCA (carita nueva) ---------- */
+const arco = (cx, cy) => `M${cx - 9} ${cy + 3} Q${cx} ${cy - 9} ${cx + 9} ${cy + 3}`;
+
 function OjoGrande({ cx, cy, r = 13 }) {
   const k = r / 13;
   return (
@@ -393,8 +484,6 @@ function OjoGrande({ cx, cy, r = 13 }) {
     </G>
   );
 }
-
-const arco = (cx, cy) => `M${cx - 9} ${cy + 3} Q${cx} ${cy - 9} ${cx + 9} ${cy + 3}`;
 
 export function Ojos({ g, mood }) {
   let c;
@@ -425,7 +514,7 @@ export function Ojos({ g, mood }) {
       </G>
     );
   }
-  return <G transform={g.headT}>{c}</G>;
+  return <G transform={g.faceT}>{c}</G>;
 }
 
 export function Boca({ g, mood }) {
@@ -451,7 +540,7 @@ export function Boca({ g, mood }) {
   } else {
     c = <Path d="M90 106 Q95 113.5 100 106 Q105 113.5 110 106" stroke={INK} strokeWidth={2.8} fill="none" strokeLinecap="round" strokeLinejoin="round" />;
   }
-  return <G transform={g.headT}>{c}</G>;
+  return <G transform={g.faceT}>{c}</G>;
 }
 
 /* ---------- ACCESORIOS (cabeza) y ESTILO ---------- */
@@ -460,7 +549,6 @@ const PELUCHE_SOMBRA = '#EFEAF3';
 const PELUCHE_BORDE = '#B7AEC2';
 const PELUCHE_ROSA = '#FFB3CB';
 
-// Carita bordada del gorro de peluche: ojitos ovalados con brillo y boquita.
 function Carita({ y, gato }) {
   return (
     <G>
@@ -483,7 +571,6 @@ function Carita({ y, gato }) {
   );
 }
 
-// Una tira larga de la capucha: cuelga por delante y termina en patita con almohadillas.
 function Tira({ x }) {
   const lados = `M${x - 9.5} 127 L${x - 9.5} 161 C${x - 16} 165 ${x - 16} 185 ${x} 185 C${x + 16} 185 ${x + 16} 165 ${x + 9.5} 161 L${x + 9.5} 127`;
   return (
@@ -500,111 +587,84 @@ function Tira({ x }) {
   );
 }
 
-// Capucha de peluche: envuelve casi toda la cabeza y deja un hueco para la carita.
 const CAPUCHA = 'M26 92 C26 52 58 28 100 28 C142 28 174 52 174 92 C174 128 144 146 100 146 C56 146 26 128 26 92 Z';
 const CARA = 'M40 99 C40 81 60 70 100 70 C140 70 160 81 160 99 C160 121 138 133 100 133 C62 133 40 121 40 99 Z';
 const CARA_SOMBRA = 'M36.5 99 C36.5 79 58 66.5 100 66.5 C142 66.5 163.5 79 163.5 99 C163.5 123 140 136.5 100 136.5 C60 136.5 36.5 123 36.5 99 Z';
 
 export function Accesorio({ g, k, estilo }) {
-  const partes = [];
-  if (estilo === 'galan') {
-    partes.push(
-      <G key="galan">
-        <Path d="M56 77 Q68 69 82 75" stroke={INK} strokeWidth={4} fill="none" strokeLinecap="round" />
-        <Path d="M118 75 Q132 69 144 77" stroke={INK} strokeWidth={4} fill="none" strokeLinecap="round" />
-        <Path d="M86 44 C84 28 104 22 116 32 C108 31 103 35 106 44 C100 40 92 40 86 44 Z" fill={g.gill} stroke={g.line} strokeWidth={2.2} strokeLinejoin="round" />
-      </G>
-    );
-  }
-  if (k === 'flor') {
-    const cx = 62;
-    const cy = 52;
-    partes.push(
-      <G key="flor">
-        {[0, 72, 144, 216, 288].map((a) => (
-          <Circle key={a} cx={cx + Math.cos((a * Math.PI) / 180) * 7.5} cy={cy + Math.sin((a * Math.PI) / 180) * 7.5} r={6.4} fill="#FF9EC0" stroke="#D96A92" strokeWidth={1.4} />
-        ))}
-        <Circle cx={cx} cy={cy} r={5} fill="#FFD45C" stroke="#D9A21E" strokeWidth={1.2} />
-      </G>
-    );
-  } else if (k === 'monito') {
-    partes.push(
-      <G key="monito" transform="translate(136 50) rotate(14)">
-        <Path d="M0 0 L-18 -11 Q-22 0 -18 11 Z" fill="#FF6F9C" stroke="#C9446E" strokeWidth={2} strokeLinejoin="round" />
-        <Path d="M0 0 L18 -11 Q22 0 18 11 Z" fill="#FF6F9C" stroke="#C9446E" strokeWidth={2} strokeLinejoin="round" />
-        <Circle cx={0} cy={0} r={5} fill="#FF8FB5" stroke="#C9446E" strokeWidth={2} />
-      </G>
-    );
-  } else if (k === 'gorra') {
-    partes.push(
-      <G key="gorra">
-        <Path d="M128 58 C152 54 178 60 181 71 C160 70 142 70 126 67 Z" fill="#2E8AD8" stroke="#1F5F9C" strokeWidth={2.4} strokeLinejoin="round" />
-        <Path d="M48 68 C46 28 154 28 152 68 C128 59 72 59 48 68 Z" fill="#3FA9F5" stroke="#1F5F9C" strokeWidth={2.6} strokeLinejoin="round" />
-        <Path d="M100 38 L100 62" stroke="#1F5F9C" strokeWidth={1.4} opacity={0.5} />
-        <Circle cx={100} cy={37} r={3.4} fill="#fff" stroke="#1F5F9C" strokeWidth={1.4} />
-      </G>
-    );
-  } else if (k === 'fiesta') {
-    partes.push(
-      <G key="fiesta">
-        <Path d="M100 5 L78 47 Q100 55 122 47 Z" fill="#FFB347" stroke="#C9781E" strokeWidth={2.4} strokeLinejoin="round" />
-        <Path d="M92 20 L112 29 M86 32 L117 40" stroke="#FF6F9C" strokeWidth={3.4} strokeLinecap="round" />
-        <Circle cx={100} cy={6} r={5.5} fill="#FF6F9C" stroke="#C9446E" strokeWidth={1.6} />
-      </G>
-    );
-  } else if (k === 'corona') {
-    partes.push(
-      <G key="corona">
-        <Path d="M74 49 L69 22 L86 36 L100 15 L114 36 L131 22 L126 49 Q100 56 74 49 Z" fill="#FFD23F" stroke="#C9920E" strokeWidth={2.6} strokeLinejoin="round" />
-        <Circle cx={100} cy={40} r={3.6} fill="#FF6F9C" />
-        <Circle cx={84} cy={43} r={2.6} fill="#7C5CFF" />
-        <Circle cx={116} cy={43} r={2.6} fill="#34BC97" />
-      </G>
-    );
-  } else if (k === 'conejo' || k === 'gato') {
-    const conejo = k === 'conejo';
-    const st = { fill: PELUCHE, stroke: PELUCHE_BORDE, strokeWidth: 2.4, strokeLinejoin: 'round' };
-    partes.push(
-      <G key={k}>
-        {conejo ? (
-          <G>
-            {/* orejita parada */}
-            <Ellipse cx={74} cy={21} rx={9.5} ry={19} transform="rotate(-9 74 21)" {...st} />
-            <Ellipse cx={74} cy={22} rx={4.4} ry={12.5} fill={PELUCHE_ROSA} transform="rotate(-9 74 22)" />
-            {/* orejita doblada */}
-            <Path d="M114 38 C112 22 118 8 132 6 C148 4 163 13 167 28 C169 36 160 40 155 34 C151 27 146 23 140 24 C135 25 134 31 135 38 Z" {...st} />
-            <Path d="M140 13 C149 13 157 19 160 28 C155 23 148 19 139 19 Z" fill={PELUCHE_ROSA} />
-            <Path d="M122 30 C122 20 126 13 133 12" stroke={PELUCHE_SOMBRA} strokeWidth={3} fill="none" strokeLinecap="round" />
-          </G>
-        ) : (
-          <G>
-            <Path d="M50 52 C47 34 51 18 57 11 C69 15 82 25 92 36 Z" {...st} />
-            <Path d="M57 42 C55 32 57 24 60 20 C67 23 74 29 80 36 Z" fill={PELUCHE_ROSA} />
-            <G transform="translate(200 0) scale(-1 1)">
-              <Path d="M50 52 C47 34 51 18 57 11 C69 15 82 25 92 36 Z" {...st} />
-              <Path d="M57 42 C55 32 57 24 60 20 C67 23 74 29 80 36 Z" fill={PELUCHE_ROSA} />
-            </G>
+  const accessory = k;
+  const conejo = k === 'conejo';
+  const st = { fill: PELUCHE, stroke: PELUCHE_BORDE, strokeWidth: 2.4, strokeLinejoin: 'round' };
+  return (
+    <G>
+      <G transform={g.T}>
+        {estilo === 'galan' && (
+          <G transform="translate(0 -8)">
+            <Path d="M62 80 l 16 -4" stroke="#5b4636" strokeWidth={3.2} strokeLinecap="round" fill="none" />
+            <Path d="M116 78 l 16 4" stroke="#5b4636" strokeWidth={3.2} strokeLinecap="round" fill="none" />
           </G>
         )}
-        {/* capucha: cubre casi toda la cabeza, con hueco para la carita */}
-        <Path d={`${CAPUCHA} ${CARA}`} fillRule="evenodd" fill={PELUCHE} />
-        <Path d={CARA_SOMBRA} stroke={PELUCHE_SOMBRA} strokeWidth={3.4} fill="none" />
-        <Path d={CAPUCHA} fill="none" stroke={PELUCHE_BORDE} strokeWidth={2.6} strokeLinejoin="round" />
-        <Path d={CARA} fill="none" stroke={PELUCHE_BORDE} strokeWidth={2.2} strokeLinejoin="round" />
-        <Path d="M50 46 C60 37 75 33 90 32" stroke="#fff" strokeWidth={3} fill="none" strokeLinecap="round" opacity={0.9} />
-        {/* tiras: cuelgan por delante, cosidas a los lados de la capucha */}
-        <Tira x={50} />
-        <Tira x={150} />
-        <Carita y={47} gato={!conejo} />
+        {accessory === "flor" && (
+          <G transform="translate(54,50)">
+            {[0, 72, 144, 216, 288].map((a) => <Ellipse key={a} cx="0" cy="-9" rx="6" ry="9" fill="#FF8FB0" transform={"rotate(" + a + ")"} />)}
+            <Circle cx="0" cy="0" r="5" fill="#FFD15C" />
+          </G>
+        )}
+        {accessory === "fiesta" && (
+          <G transform="translate(100,46)"><Path d="M0 -44 L 17 2 L -17 2 Z" fill="#7C5CFF" /><Path d="M0 -44 L 6 -24 L -6 -24 Z" fill="#FFD15C" /><Circle cx="0" cy="-46" r="6" fill="#FF6F9C" /></G>
+        )}
+        {accessory === "corona" && (
+          <G transform="translate(100,48)"><Path d="M-22 4 L -22 -16 L -10 -4 L 0 -22 L 10 -4 L 22 -16 L 22 4 Z" fill="#FFD15C" stroke="#F2B705" strokeWidth="2" /><Circle cx="0" cy="-22" r="4" fill="#E79FAE" /></G>
+        )}
+        {accessory === "gorra" && (
+          <G transform="translate(100,46)"><Path d="M-34 6 Q -34 -22 0 -22 Q 34 -22 34 6 Z" fill="#3E7BD6" /><Path d="M2 6 Q 38 6 46 16 Q 24 13 2 13 Z" fill="#2F66BC" /><Circle cx="0" cy="-20" r="3.5" fill="#2F66BC" /></G>
+        )}
+        {accessory === "monito" && (
+          <G transform="translate(100,120)"><Path d="M0 0 L -20 -11 L -20 11 Z" fill="#E0556E" /><Path d="M0 0 L 20 -11 L 20 11 Z" fill="#E0556E" /><Rect x="-6" y="-8" width="12" height="16" rx="4" fill="#C24459" /></G>
+        )}
       </G>
-    );
-  }
-  if (!partes.length) return null;
-  return <G transform={g.headT}>{partes}</G>;
+      {(k === 'conejo' || k === 'gato') && (
+        <G transform={g.faceT}>
+          {conejo ? (
+            <G>
+              {/* orejita parada */}
+              <Ellipse cx={74} cy={21} rx={9.5} ry={19} transform="rotate(-9 74 21)" {...st} />
+              <Ellipse cx={74} cy={22} rx={4.4} ry={12.5} fill={PELUCHE_ROSA} transform="rotate(-9 74 22)" />
+              {/* orejita doblada */}
+              <Path d="M114 38 C112 22 118 8 132 6 C148 4 163 13 167 28 C169 36 160 40 155 34 C151 27 146 23 140 24 C135 25 134 31 135 38 Z" {...st} />
+              <Path d="M140 13 C149 13 157 19 160 28 C155 23 148 19 139 19 Z" fill={PELUCHE_ROSA} />
+              <Path d="M122 30 C122 20 126 13 133 12" stroke={PELUCHE_SOMBRA} strokeWidth={3} fill="none" strokeLinecap="round" />
+            </G>
+          ) : (
+            <G>
+              <Path d="M50 52 C47 34 51 18 57 11 C69 15 82 25 92 36 Z" {...st} />
+              <Path d="M57 42 C55 32 57 24 60 20 C67 23 74 29 80 36 Z" fill={PELUCHE_ROSA} />
+              <G transform="translate(200 0) scale(-1 1)">
+                <Path d="M50 52 C47 34 51 18 57 11 C69 15 82 25 92 36 Z" {...st} />
+                <Path d="M57 42 C55 32 57 24 60 20 C67 23 74 29 80 36 Z" fill={PELUCHE_ROSA} />
+              </G>
+            </G>
+          )}
+          {/* capucha: cubre casi toda la cabeza, con hueco para la carita */}
+          <Path d={`${CAPUCHA} ${CARA}`} fillRule="evenodd" fill={PELUCHE} />
+          <Path d={CARA_SOMBRA} stroke={PELUCHE_SOMBRA} strokeWidth={3.4} fill="none" />
+          <Path d={CAPUCHA} fill="none" stroke={PELUCHE_BORDE} strokeWidth={2.6} strokeLinejoin="round" />
+          <Path d={CARA} fill="none" stroke={PELUCHE_BORDE} strokeWidth={2.2} strokeLinejoin="round" />
+          <Path d="M50 46 C60 37 75 33 90 32" stroke="#fff" strokeWidth={3} fill="none" strokeLinecap="round" opacity={0.9} />
+          {/* tiras: cuelgan por delante, cosidas a los lados de la capucha */}
+          <Tira x={50} />
+          <Tira x={150} />
+
+          <Tira x={50} />
+          <Tira x={150} />
+          <Carita y={47} gato={!conejo} />
+        </G>
+      )}
+    </G>
+  );
 }
 
-/* ---------- AXO QUIETO (un solo SVG, sin animación) ---------- */
-// Para miniaturas, listas y juegos: mucho más ligero que el Axo animado.
+/* ---------- AXO QUIETO (un solo SVG): miniaturas, listas, juegos ---------- */
 export function AxoMini({ paletteKey = 'durazno', mood = 'feliz', evo = 'cria', chub = 1, accessory = 'ninguno', outfit = 'ninguno', estilo = 'clasico', size = 60, style }) {
   const g = geom({ paletteKey, evo, chub });
   const w = size;
@@ -613,18 +673,20 @@ export function AxoMini({ paletteKey = 'durazno', mood = 'feliz', evo = 'cria', 
   return (
     <Svg width={w} height={h} viewBox={`0 0 ${VB_W} ${VB_H}`} style={style}>
       <Gradients />
-      <Ellipse cx={100} cy={208} rx={46 + (g.bw - 31) * 2} ry={7} fill="#00000012" />
+      <Ellipse cx={100} cy={g.sombra.cy} rx={g.sombra.rx} ry={g.sombra.ry} fill="#00000012" />
+      <Aura g={g} evo={evo} />
       {accessory === 'mariposa' && <Alas g={g} />}
-      <Cuerpo g={g} outfit={outfit} />
-      {!come && <Brazos g={g} pose={mood === 'nace' || mood === 'amor' ? 'arriba' : 'abajo'} outfit={outfit} />}
+      <Cuerpo g={g} />
+      {!come && <Brazos g={g} pose={mood === 'nace' || mood === 'amor' ? 'arriba' : 'abajo'} />}
       <Branquias g={g} side="left" />
       <Branquias g={g} side="right" />
       <CabezaBase g={g} mood={mood} />
       <Ojos g={g} mood={mood} />
       <Boca g={g} mood={mood} />
+      <Frente g={g} outfit={outfit} />
       <Accesorio g={g} k={accessory} estilo={estilo} />
-      {come && <Comiendo g={g} outfit={outfit} />}
-      {come && <BrazoSoba g={g} outfit={outfit} />}
+      {come && <Comiendo g={g} />}
+      {come && <BrazoSoba g={g} />}
     </Svg>
   );
 }

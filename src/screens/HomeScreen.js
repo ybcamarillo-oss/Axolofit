@@ -10,7 +10,7 @@ import { Btn, Card, CardH, Muted, Ring, RingC, GlassIcon, Row, sombra } from '..
 import Axo from '../components/Axo';
 import Nacimiento from '../components/Nacimiento';
 
-const TAM = { cria: 190, joven: 215, adulto: 240, mistico: 240 };
+const TAM = { cria: 200, joven: 230, adulto: 260, mistico: 260 };
 const sombraFab = { elevation: 6, shadowColor: '#E79FAE', shadowOpacity: 0.5, shadowRadius: 10, shadowOffset: { width: 0, height: 6 } };
 
 export default function HomeScreen() {

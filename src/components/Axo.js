@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Pressable, View } from 'react-native';
-import Svg, { Ellipse, Circle, Path } from 'react-native-svg';
+import Svg, { Ellipse, Path } from 'react-native-svg';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -18,8 +18,11 @@ import {
   Layer,
   geom,
   coloresAxo,
+  Aura,
   Alas,
   Cuerpo,
+  Frente,
+  HOMBRO,
   Brazos,
   Comiendo,
   BrazoSoba,
@@ -31,7 +34,7 @@ import {
   AxoMini,
 } from './axoParts';
 
-// Axo animado: diseño propio estilo kawaii (cabeza grande tipo mochi).
+// Axo animado: cuerpo del Axo original (sin contorno, colita enroscada) con la carita nueva.
 // Está separado en capas para que cada parte se anime sola en el hilo nativo:
 // flota, respira, mueve las branquias, parpadea, ladea la cabeza, mastica y se soba la panza.
 // Caras (mood): 'feliz' | 'triste' | 'come' | 'nace' | 'amor'
@@ -57,7 +60,6 @@ export default function Axo({
   const w = size;
   const h = size * (VB_H / VB_W);
   const g = geom({ paletteKey, evo, chub });
-  const { E } = g;
   const come = mood === 'come';
   const brazosArriba = mood === 'nace' || mood === 'amor';
   const parpadea = mood === 'feliz' || mood === 'triste' || mood === 'nace';
@@ -134,42 +136,45 @@ export default function Axo({
   // Conversión del viewBox a pixeles (para los puntos de giro)
   const px = (x) => (x / VB_W) * w;
   const py = (y) => (y / VB_H) * h;
-  const hx = (x) => px(100 + (x - 100) * E.s);
-  const hy = (y) => py(139 + E.dy + (y - 139) * E.s);
+  // puntos del dibujo original -> pixeles (el dibujo se encoge según la etapa)
+  const hx = (x) => px(g.X(x));
+  const hy = (y) => py(g.Y(y));
   const full = { position: 'absolute', left: 0, top: 0, width: w, height: h };
 
+  const cuello = { transformOrigin: [w / 2, hy(130), 0] };
   const contenido = (
     <View style={{ width: w, height: h }}>
       <Animated.View style={[full, shadowStyle]}>
         <Layer w={w} h={h}>
-          <Ellipse cx={100} cy={208} rx={46 + (g.bw - 31) * 2} ry={7} fill="#00000012" />
+          <Ellipse cx={100} cy={g.sombra.cy} rx={g.sombra.rx} ry={g.sombra.ry} fill="#00000012" />
         </Layer>
       </Animated.View>
 
-      {evo === 'mistico' && (
-        <Animated.View style={[full, twinkleStyle]}>
+      {/* aura: dorada fija en el adulto, morada con destellos que titilan en el místico */}
+      {(evo === 'adulto' || evo === 'mistico') && (
+        <Animated.View style={[full, evo === 'mistico' ? twinkleStyle : null]}>
           <Layer w={w} h={h}>
-            <Circle cx={100} cy={112} r={98} fill="#9B7BFF" opacity={0.22} />
+            <Aura g={g} evo={evo} />
           </Layer>
         </Animated.View>
       )}
 
-      <Animated.View style={[full, wholeStyle, { transformOrigin: [w / 2, py(E.feetY + 6), 0] }]}>
+      <Animated.View style={[full, wholeStyle, { transformOrigin: [w / 2, py(g.sombra.cy), 0] }]}>
         {/* cuerpo */}
         <Layer w={w} h={h}>
           {accessory === 'mariposa' && <Alas g={g} />}
-          <Cuerpo g={g} outfit={outfit} />
-          {!come && <Brazos g={g} pose={brazosArriba ? 'arriba' : 'abajo'} outfit={outfit} />}
+          <Cuerpo g={g} />
+          {!come && <Brazos g={g} pose={brazosArriba ? 'arriba' : 'abajo'} />}
         </Layer>
 
         {/* cabeza (se ladea suavemente) */}
-        <Animated.View style={[full, headStyle, { transformOrigin: [w / 2, py(139 + E.dy), 0] }]}>
-          <Animated.View style={[full, leftGill, { transformOrigin: [hx(40), hy(84), 0] }]}>
+        <Animated.View style={[full, headStyle, cuello]}>
+          <Animated.View style={[full, leftGill, { transformOrigin: [hx(50), hy(76), 0] }]}>
             <Layer w={w} h={h}>
               <Branquias g={g} side="left" />
             </Layer>
           </Animated.View>
-          <Animated.View style={[full, rightGill, { transformOrigin: [hx(160), hy(84), 0] }]}>
+          <Animated.View style={[full, rightGill, { transformOrigin: [hx(150), hy(76), 0] }]}>
             <Layer w={w} h={h}>
               <Branquias g={g} side="right" />
             </Layer>
@@ -179,35 +184,50 @@ export default function Axo({
             <CabezaBase g={g} mood={mood} />
           </Layer>
 
-          <Animated.View style={[full, parpadea ? eyesStyle : null, { transformOrigin: [w / 2, hy(94), 0] }]}>
+          <Animated.View style={[full, parpadea ? eyesStyle : null, { transformOrigin: [w / 2, hy(89), 0] }]}>
             <Layer w={w} h={h}>
               <Ojos g={g} mood={mood} />
             </Layer>
           </Animated.View>
 
-          <Animated.View style={[full, mouthStyle, { transformOrigin: [w / 2, hy(109.5), 0] }]}>
+          <Animated.View style={[full, mouthStyle, { transformOrigin: [w / 2, hy(102.4), 0] }]}>
             <Layer w={w} h={h}>
               <Boca g={g} mood={mood} />
             </Layer>
           </Animated.View>
+        </Animated.View>
 
-          {(accessory !== 'ninguno' || estilo === 'galan') && (
+        {/* pancita y ropa: van encima de la cabeza */}
+        <Layer w={w} h={h}>
+          <Frente g={g} outfit={outfit} />
+        </Layer>
+
+        {/* accesorios: encima de la ropa, y se ladean igual que la cabeza */}
+        {(accessory !== 'ninguno' || estilo === 'galan') && accessory !== 'mariposa' && (
+          <Animated.View style={[full, headStyle, cuello]}>
             <Layer w={w} h={h}>
               <Accesorio g={g} k={accessory} estilo={estilo} />
             </Layer>
-          )}
-        </Animated.View>
+          </Animated.View>
+        )}
+        {accessory === 'mariposa' && estilo === 'galan' && (
+          <Animated.View style={[full, headStyle, cuello]}>
+            <Layer w={w} h={h}>
+              <Accesorio g={g} k="ninguno" estilo={estilo} />
+            </Layer>
+          </Animated.View>
+        )}
 
         {/* comiendo: una manita sostiene la manzanita y la otra se soba la pancita */}
         {come && (
           <Layer w={w} h={h}>
-            <Comiendo g={g} outfit={outfit} />
+            <Comiendo g={g} />
           </Layer>
         )}
         {come && (
-          <Animated.View style={[full, rubStyle, { transformOrigin: [px(g.hombroD.x), py(g.hombroD.y), 0] }]}>
+          <Animated.View style={[full, rubStyle, { transformOrigin: [hx(HOMBRO.x), hy(HOMBRO.y), 0] }]}>
             <Layer w={w} h={h}>
-              <BrazoSoba g={g} outfit={outfit} />
+              <BrazoSoba g={g} />
             </Layer>
           </Animated.View>
         )}
