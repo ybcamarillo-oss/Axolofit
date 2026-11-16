@@ -233,7 +233,7 @@ function Bracito({ g, hombro, mano, outfit }) {
   );
 }
 
-// Bracitos de siempre: abrazando la pancita (como en el ícono) o levantados (amor / recién nacido)
+// Bracitos de siempre (uno en el pecho y otro abajo, como en la app original) o levantados (amor / recién nacido)
 function Brazos({ g, pose = 'abajo', outfit }) {
   const i = g.hombroI;
   const d = g.hombroD;
@@ -246,9 +246,10 @@ function Brazos({ g, pose = 'abajo', outfit }) {
     );
   }
   return (
+    // postura de siempre: una manita en el pecho y la otra abajo, sobre la pancita
     <G>
-      <Bracito g={g} hombro={i} mano={{ x: 92, y: 151 }} outfit={outfit} />
-      <Bracito g={g} hombro={d} mano={{ x: 108, y: 151 }} outfit={outfit} />
+      <Bracito g={g} hombro={{ x: i.x, y: 129 }} mano={{ x: 89, y: 139 }} outfit={outfit} />
+      <Bracito g={g} hombro={{ x: d.x, y: 148 }} mano={{ x: 113, y: 167 }} outfit={outfit} />
     </G>
   );
 }
