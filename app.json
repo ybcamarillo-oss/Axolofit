@@ -52,6 +52,15 @@
     ],
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "28344765-ab29-4acc-9226-978f912b7179"
+      }
+    },
+    "owner": "rickyrabbit",
+    "updates": {
+      "url": "https://u.expo.dev/28344765-ab29-4acc-9226-978f912b7179"
     }
   }
 }
