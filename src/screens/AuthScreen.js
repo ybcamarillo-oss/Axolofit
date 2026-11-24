@@ -6,7 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { sb } from '../supabase';
 import { useApp } from '../store';
 import { C, F } from '../theme';
-import { Btn, Display, Muted, Input } from '../ui';
+import { Btn, Display, Muted, Input, Sheet } from '../ui';
+import { AvisoTexto, AVISO_VERSION } from '../privacidad';
 import Axo from '../components/Axo';
 
 // Entrar, crear cuenta y recuperar contraseña con código (igual que en la PWA).
@@ -58,6 +59,8 @@ const Err = ({ children }) => (children ? <Text style={{ fontFamily: F.bodyBold,
 
 export default function AuthScreen() {
   const { handleAuth, showToast } = useApp();
+  const [acepto, setAcepto] = useState(false);
+  const [verAviso, setVerAviso] = useState(false);
   const [modo, setModo] = useState('login'); // 'login' | 'registro' | 'reset'
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
@@ -78,6 +81,7 @@ export default function AuthScreen() {
     if (!mail || !pass) return setError('Completa email y contraseña.');
     if (modo === 'registro' && !nombre) return setError('¿Cómo te llamamos?');
     if (modo === 'registro' && pass !== pass2) return setError('Las contraseñas no coinciden.');
+    if (modo === 'registro' && !acepto) return setError('Para crear tu cuenta necesitas aceptar el aviso de privacidad.');
     setCargando(true);
     try {
       if (modo === 'login') {
@@ -85,7 +89,12 @@ export default function AuthScreen() {
         if (e) throw e;
         await handleAuth(data.user, null);
       } else {
-        const { data, error: e } = await sb.auth.signUp({ email: mail, password: pass });
+        // El consentimiento queda guardado en la cuenta, con fecha y versión del aviso
+        const { data, error: e } = await sb.auth.signUp({
+          email: mail,
+          password: pass,
+          options: { data: { consentimiento_privacidad: new Date().toISOString(), aviso_version: AVISO_VERSION } },
+        });
         if (e) throw e;
         if (data.user && !data.session) setConfirmado(true);
         else await handleAuth(data.user, nombre);
@@ -224,8 +233,20 @@ export default function AuthScreen() {
       <Input placeholder="Email" keyboardType="email-address" autoCapitalize="none" autoComplete="email" value={email} onChangeText={setEmail} style={{ width: '100%' }} />
       {passInput}
       {modo === 'registro' && passConfirm}
+      {modo === 'registro' && (
+        <Pressable onPress={() => setAcepto((v) => !v)} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, width: '100%', marginBottom: 12, marginTop: 2 }}>
+          <View style={{ width: 24, height: 24, borderRadius: 7, borderWidth: 2, borderColor: acepto ? C.pink : '#c9cbd8', backgroundColor: acepto ? C.pink : '#fff', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
+            {acepto && <Text style={{ color: '#fff', fontFamily: F.display, fontSize: 14, marginTop: -1 }}>✓</Text>}
+          </View>
+          <Text style={{ flex: 1, fontFamily: F.body, fontSize: 13, lineHeight: 18, color: '#4a4f6a' }}>
+            He leído el{' '}
+            <Text onPress={() => setVerAviso(true)} style={{ fontFamily: F.bodyBold, color: C.pink, textDecorationLine: 'underline' }}>aviso de privacidad</Text>
+            {' '}y doy mi consentimiento expreso para el tratamiento de mis datos de salud (peso, medidas, hábitos y fotos de comida) para las finalidades descritas.
+          </Text>
+        </Pressable>
+      )}
       <Err>{error}</Err>
-      <Btn big label={cargando ? 'Cargando…' : modo === 'login' ? 'Entrar' : 'Crear cuenta'} onPress={handleSubmit} disabled={cargando} />
+      <Btn big label={cargando ? 'Cargando…' : modo === 'login' ? 'Entrar' : 'Crear cuenta'} onPress={handleSubmit} disabled={cargando || (modo === 'registro' && !acepto)} />
       <Btn
         kind="ghost"
         label={modo === 'login' ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
@@ -233,6 +254,13 @@ export default function AuthScreen() {
         style={{ marginTop: 6 }}
       />
       {modo === 'login' && <Btn kind="ghost" label="¿Olvidaste tu contraseña?" onPress={() => { setModo('reset'); setError(null); }} textStyle={{ fontSize: 13, color: C.gray }} />}
+      {verAviso && (
+        <Sheet tall onClose={() => setVerAviso(false)}>
+          <Display style={{ fontSize: 22, marginBottom: 8 }}>Aviso de privacidad</Display>
+          <AvisoTexto />
+          <Btn big label="Entendido" onPress={() => setVerAviso(false)} />
+        </Sheet>
+      )}
     </Marco>
   );
 }

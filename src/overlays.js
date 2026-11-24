@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, withDelay, Easing } from 'react-native-reanimated';
 import { useApp } from './store';
 import { GEMINI_PROXY } from './supabase';
+import { AvisoTexto } from './privacidad';
 import { PALETTES, COACH_QA, RECETAS, MENU_DB, MEAL_SPLIT, ALERGENOS, EJEMPLOS_COMIDA, promptDescribir, promptExtras, PROMPT_FOTO, rango } from './data';
 import { pickIdx, cambioParecido, hoyLocal } from './plan';
 import { C, F } from './theme';
@@ -453,12 +454,6 @@ function Rename({ a }) {
   );
 }
 
-const P = ({ b, children }) => (
-  <Text style={{ fontFamily: F.body, fontSize: 13.5, lineHeight: 20, color: '#4a4f6a', marginBottom: 9 }}>
-    <Text style={{ fontFamily: F.bodyBold, color: C.ink }}>{b}</Text> {children}
-  </Text>
-);
-
 /* ---------- Selector: qué ventana mostrar ---------- */
 export default function Overlays() {
   const a = useApp();
@@ -598,13 +593,7 @@ export default function Overlays() {
     return (
       <Sheet tall onClose={close}>
         <Display style={{ fontSize: 22, marginBottom: 8 }}>Aviso de privacidad</Display>
-        <Text style={{ fontFamily: F.bodyBold, fontSize: 12.5, color: '#B06A12', backgroundColor: '#FFF6EA', borderRadius: 10, padding: 9, marginBottom: 10, overflow: 'hidden' }}>Borrador de muestra. Debe revisarlo un abogado antes de publicarse.</Text>
-        <P b="Responsable.">Ricky Rabbit Dev Studio (“nosotros”) es responsable del tratamiento de tus datos personales.</P>
-        <P b="Datos que recabamos.">De identificación (nombre, correo) y de salud: sexo, edad, peso, estatura, circunferencias y hábitos alimenticios. Los datos de salud son datos personales sensibles.</P>
-        <P b="Finalidades.">Calcular tus requerimientos nutricionales, personalizar recomendaciones y operar la app. No tomamos decisiones médicas por ti ni reemplazamos a un profesional.</P>
-        <P b="Consentimiento.">Para datos sensibles obtenemos tu consentimiento libre, específico e informado, conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares vigente (DOF 20 de marzo de 2025).</P>
-        <P b="Derechos ARCO.">Puedes acceder, rectificar, cancelar u oponerte, y revocar tu consentimiento, en privacidad@rickyrabbit.studio. La autoridad es la Secretaría Anticorrupción y Buen Gobierno.</P>
-        <P b="Seguridad.">Aplicamos medidas de seguridad para proteger tus datos. No vendemos tus datos personales.</P>
+        <AvisoTexto />
         <Btn big label="Entendido" onPress={close} />
       </Sheet>
     );
