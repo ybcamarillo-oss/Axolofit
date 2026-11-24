@@ -14,11 +14,29 @@ import Axo, { AxoMini } from './components/Axo';
 
 /* ---------- IA (mismo servicio de Gemini que la PWA) ---------- */
 async function preguntarIA(body) {
-  const res = await fetch(GEMINI_PROXY, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  const data = await res.json();
-  const limpio = (data.text || '').replace(/```json|```/g, '').trim();
+  // Cada falla lleva un detalle corto para poder diagnosticar (se muestra junto al mensaje de error)
+  let res;
+  try {
+    res = await fetch(GEMINI_PROXY, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  } catch (e) {
+    throw new Error('red: ' + (e && e.message));
+  }
+  const crudo = await res.text();
+  if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + crudo.slice(0, 80));
+  let data;
+  try {
+    data = JSON.parse(crudo);
+  } catch (e) {
+    throw new Error('respuesta rara: ' + crudo.slice(0, 80));
+  }
+  if (!data.text) throw new Error('la IA no respondió texto');
+  const limpio = data.text.replace(/```json|```/g, '').trim();
   const m = limpio.match(/\{[\s\S]*\}/);
-  return JSON.parse(m ? m[0] : limpio);
+  try {
+    return JSON.parse(m ? m[0] : limpio);
+  } catch (e) {
+    throw new Error('JSON: ' + limpio.slice(0, 80));
+  }
 }
 const num = (v) => Math.round(Number(v) || 0);
 // La racha que va a quedar al cerrar la celebración (misma regla que en store.js)
@@ -77,7 +95,7 @@ function Voice({ a }) {
       setResultado(parsed);
       setEtapa(parsed.pregunta_extras ? 'extras' : 'resultado');
     } catch (e) {
-      setError('No pude analizar eso. Intenta describir diferente.');
+      setError('No pude analizar eso. Intenta describir diferente.\n(detalle: ' + e.message + ')');
       setEtapa('escribir');
     }
   };
@@ -152,7 +170,7 @@ function Photo({ a }) {
       setResultado(parsed);
       setEtapa('resultado');
     } catch (e) {
-      setError('No pude analizar la foto. Intenta con otra o usa Describir.');
+      setError('No pude analizar la foto. Intenta con otra o usa Describir.\n(detalle: ' + e.message + ' · foto ' + Math.round(base64.length / 1024) + ' KB)');
       setEtapa('inicial');
     }
   };
