@@ -248,6 +248,15 @@ export function AppProvider({ children }) {
     const { error } = await sb.from('axo_state').upsert({ id: uid, ...axoData });
     if (error) console.warn('axo_state', error.message);
   };
+  // Desbloquear un extra (por ejemplo un color del vestido). Se guarda en la cuenta junto con las skins,
+  // así no se pierde al reinstalar la app.
+  const desbloquear = (k) => {
+    if (skinsUnlocked.includes(k)) return;
+    const nuevas = [...skinsUnlocked, k];
+    setSkinsUnlocked(nuevas);
+    if (userId) sb.from('axo_state').update({ skins: nuevas.join(',') }).eq('id', userId).then(() => {});
+  };
+
   const updatePet = (newPet) => {
     setPet(newPet);
     if (userId) guardarAxo(userId, { variedad: newPet.palette, accesorio: newPet.accessory, outfit: newPet.outfit, nivel: level, xp, racha: streak });
@@ -593,7 +602,7 @@ export function AppProvider({ children }) {
   const value = {
     userId, phase, setPhase, screen, setScreen, overlay, setOverlay, toast, showToast,
     profile, setProfile, petName, pet, updatePet, targets, tieneAxo,
-    level, xp, addXp, streak, ultimoDia, skinsUnlocked, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
+    level, xp, addXp, streak, ultimoDia, skinsUnlocked, desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
     best, recordBest, log, totals, vasos, addAgua, setWater, viewDate, setViewDate,
     pesoActual, pesoHist, registrarPeso, totalComidas,
     prefs, setPrefs, toggleEvitar, weekPlan, weekEaten, toggleEaten, swapMeal, regenDay, regenWeek,

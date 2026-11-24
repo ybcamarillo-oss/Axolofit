@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '../store';
-import { PALETTES, ESTILOS, ACCESSORIES, OUTFITS, BACKGROUNDS } from '../data';
+import { PALETTES, ESTILOS, ACCESSORIES, OUTFITS, BACKGROUNDS, VESTIDOS, PRECIO_COLOR } from '../data';
 import { C, F } from '../theme';
-import { Screen, Muted, SectT, Btn, sombra } from '../ui';
+import { Screen, Muted, SectT, Btn, Sheet, Display, sombra } from '../ui';
 import Axo, { AxoMini } from '../components/Axo';
 
 const ETAPAS = [
@@ -47,6 +47,17 @@ export default function PetScreen() {
   const curIdx = ETAPAS.findIndex((e) => e[0] === computedEvo);
   const sig = ETAPAS[curIdx + 1];
   const tStyle = darkBg ? { color: '#ffffffcc' } : null;
+  const enVestido = (pet.outfit || '').startsWith('vestido_');
+  const [colorPend, setColorPend] = useState(null);
+  // PENDIENTE antes de producción: conectar el anuncio con recompensa (AdMob) y la compra (Google Play Billing).
+  // Por ahora, en la versión de prueba, ambos botones desbloquean directo.
+  const desbloquearColor = (c) => {
+    const k = 'vestido_' + c;
+    a.desbloquear(k);
+    a.updatePet({ ...pet, outfit: k });
+    setColorPend(null);
+    a.showToast('✨ ¡Vestido ' + VESTIDOS[c].label.toLowerCase() + ' desbloqueado!');
+  };
 
   return (
     <Screen title={petName} back={() => a.setScreen('home')} colors={[a.bg.from, a.bg.to]} dark={darkBg} contentStyle={{ paddingBottom: 100 }}>
@@ -85,7 +96,39 @@ export default function PetScreen() {
       <SectT style={tStyle}>Accesorio</SectT>
       <Swatches map={ACCESSORIES} sel={pet.accessory} onPick={(k) => (ACCESSORIES[k].premium ? a.setOverlay('paywall') : a.updatePet({ ...pet, accessory: k }))} render={(k) => <AxoMini paletteKey={pet.palette} accessory={k} estilo={pet.estilo} size={50} />} />
       <SectT style={tStyle}>Outfit</SectT>
-      <Swatches map={OUTFITS} sel={pet.outfit} onPick={(k) => (OUTFITS[k].premium ? a.setOverlay('paywall') : a.updatePet({ ...pet, outfit: k }))} render={(k) => <AxoMini paletteKey={pet.palette} outfit={k} evo={computedEvo} size={50} />} />
+      <Swatches map={OUTFITS} sel={enVestido ? 'vestido_rosa' : pet.outfit} onPick={(k) => (OUTFITS[k].premium ? a.setOverlay('paywall') : a.updatePet({ ...pet, outfit: k }))} render={(k) => <AxoMini paletteKey={pet.palette} outfit={k} evo={computedEvo} size={50} />} />
+      {enVestido && (
+        <>
+          <SectT style={tStyle}>Color del vestido</SectT>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+            {Object.entries(VESTIDOS).map(([c, v]) => {
+              const k = 'vestido_' + c;
+              const libre = v.gratis || a.skinsUnlocked.includes(k);
+              const on = pet.outfit === k;
+              return (
+                <Pressable key={c} onPress={() => (libre ? a.updatePet({ ...pet, outfit: k }) : setColorPend(c))} style={{ alignItems: 'center' }}>
+                  <View style={[s.colorDot, { backgroundColor: v.base, borderColor: on ? C.pink : '#fff' }]}>
+                    {!libre && <Text style={{ fontSize: 14 }}>🔒</Text>}
+                  </View>
+                  <Text style={{ fontFamily: F.displaySemi, fontSize: 11, color: C.muted, marginTop: 3 }}>{v.label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </>
+      )}
+      {colorPend && (
+        <Sheet onClose={() => setColorPend(null)}>
+          <View style={{ alignItems: 'center', paddingTop: 6 }}>
+            <AxoMini paletteKey={pet.palette} outfit={'vestido_' + colorPend} evo={computedEvo} size={120} />
+            <Display style={{ fontSize: 20, marginTop: 6, textAlign: 'center' }}>Vestido {VESTIDOS[colorPend].label.toLowerCase()}</Display>
+            <Muted style={{ textAlign: 'center', marginTop: 4, marginBottom: 14 }}>Desbloquéalo para siempre</Muted>
+            <Btn label="🎬 Ver un anuncio" onPress={() => desbloquearColor(colorPend)} style={{ alignSelf: 'stretch' }} />
+            <Btn kind="soft" label={'💳 Comprar por ' + PRECIO_COLOR} onPress={() => desbloquearColor(colorPend)} style={{ alignSelf: 'stretch', marginTop: 10 }} />
+            <Muted sm style={{ textAlign: 'center', marginTop: 10 }}>Versión de prueba: por ahora se desbloquea sin anuncio ni cobro.</Muted>
+          </View>
+        </Sheet>
+      )}
       <SectT style={tStyle}>Fondo</SectT>
       <Swatches
         map={BACKGROUNDS}
@@ -99,6 +142,7 @@ export default function PetScreen() {
 }
 
 const s = StyleSheet.create({
+  colorDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 3, alignItems: 'center', justifyContent: 'center', ...sombra },
   swatch: { width: 74, alignItems: 'center', backgroundColor: '#fff', borderRadius: 16, borderWidth: 2, borderColor: 'transparent', paddingVertical: 6, paddingHorizontal: 4, ...sombra },
   crown: { position: 'absolute', top: 4, right: 4, width: 18, height: 18, borderRadius: 9, backgroundColor: '#FFE9A6', alignItems: 'center', justifyContent: 'center' },
   evoRow: { flexDirection: 'row', backgroundColor: '#ffffffcc', borderRadius: 18, paddingVertical: 10, marginBottom: 8 },

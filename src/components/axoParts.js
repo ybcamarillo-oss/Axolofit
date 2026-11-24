@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import Svg, { Ellipse, Circle, Path, G, Rect, Line, Defs, ClipPath, LinearGradient, RadialGradient, Stop } from 'react-native-svg';
 import { PALETTES } from '../theme';
+import { VESTIDOS } from '../data';
 
 // Piezas de dibujo de Axo (sin animación). Las usan:
 //  - Axo.js      → versión animada por capas
@@ -340,8 +341,31 @@ export function CabezaBase({ g, mood }) {
 
 /* ---------- PANCITA, ROPA y BRACITOS (van encima de la cabeza; los bracitos, encima de la ropa) ---------- */
 // brazos: 'abajo' | 'arriba' | null (null cuando come: ahí los bracitos van aparte, animados)
+// Falda del vestido: sale de la cintura con vuelo y orilla de olitas, moñito al centro
+function Falda({ tRx, v }) {
+  const cx = 100, y0 = 158, y1 = 194;
+  const l = cx - tRx * 0.98, r = cx + tRx * 0.98, L = cx - tRx * 1.42, R = cx + tRx * 1.42;
+  const n = 5, seg = (R - L) / n;
+  let olas = '';
+  for (let i = 0; i < n; i++) olas += ` Q ${R - seg * (i + 0.5)} ${y1 + 6} ${R - seg * (i + 1)} ${y1}`;
+  const d = `M${l} ${y0} Q ${cx} ${y0 + 5} ${r} ${y0} Q ${R - 2} ${y0 + 18} ${R} ${y1}${olas} Q ${L + 2} ${y0 + 18} ${l} ${y0} Z`;
+  return (
+    <G>
+      <Path d={d} fill={v.base} />
+      {[-1, 1].map((o) => (
+        <Path key={o} d={`M${cx + o * tRx * 0.35} ${y0 + 5} Q ${cx + o * tRx * 0.5} ${y0 + 20} ${cx + o * tRx * 0.62} ${y1 + 1}`} stroke={v.dark} strokeWidth={1.3} fill="none" opacity={0.45} />
+      ))}
+      <Path d={`M${l} ${y0} Q ${cx} ${y0 + 5} ${r} ${y0}`} stroke={v.dark} strokeWidth={4} fill="none" strokeLinecap="round" />
+      <Path d={`M${cx} ${y0 + 2} L ${cx - 9} ${y0 - 4} L ${cx - 9} ${y0 + 8} Z M${cx} ${y0 + 2} L ${cx + 9} ${y0 - 4} L ${cx + 9} ${y0 + 8} Z`} fill={v.dark} stroke={v.dark} strokeWidth={2} strokeLinejoin="round" />
+      <Circle cx={cx} cy={y0 + 2} r={3} fill={v.base} stroke={v.dark} strokeWidth={1.5} />
+      <Path d={`M${cx - 14} 128 Q ${cx} 140 ${cx + 14} 128`} stroke="#fff" strokeWidth={3.5} fill="none" strokeLinecap="round" opacity={0.85} />
+    </G>
+  );
+}
+
 export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
   const { tRx } = g;
+  const vestido = outfit && outfit.startsWith('vestido_') ? VESTIDOS[outfit.slice(8)] || VESTIDOS.rosa : null;
   return (
     <G transform={g.T}>
       <Ellipse cx={100} cy={150} rx={g.bRx} ry={30} fill="#ffffff" opacity={0.4} />
@@ -350,6 +374,9 @@ export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
         <Ellipse cx={100} cy={143} rx={tRx + 2.5} ry={47.5} />
       </ClipPath>
       <G clipPath={'url(#ropa' + g.clipId + ')'}>
+      {vestido && (
+        <Path d={"M" + (100 - tRx * 1.3) + " 126 Q 100 140 " + (100 + tRx * 1.3) + " 126 L " + (100 + tRx * 1.3) + " 162 L " + (100 - tRx * 1.3) + " 162 Z"} fill={vestido.base} />
+      )}
       {outfit === "jersey" && (() => { const jw = tRx * 1.28; const cx = 100; return (
         <G>
           {/* cuerpo verde */}
@@ -498,6 +525,7 @@ export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
         );
       })()}
       </G>
+      {vestido && <Falda tRx={tRx} v={vestido} />}
       {brazos && <Brazos g={g} pose={brazos} outfit={outfit} />}
     </G>
   );

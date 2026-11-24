@@ -39,7 +39,18 @@ export const PALETTES = {
 export const SKINS_REGALO = ["dorado", "leucistico", "galaxia", "albino", "cobre", "melanico", "salvaje", "arcoiris"];
 export const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, conejo: { label: "Gorro conejo", premium: true }, gato: { label: "Gorro gato", premium: true }, mariposa: { label: "Alas mariposa", premium: true }, corona: { label: "Corona", premium: true } };
 export const ESTILOS = { clasico: { label: "Clásico", premium: false }, galan: { label: "Galán", premium: true } };
-export const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false }, hoodieRojo: { label: "Hoodie rojo", premium: false }, hoodieAzul: { label: "Hoodie azul", premium: false }, playeraRaya: { label: "Playera rayada", premium: false }, poloRosa: { label: "Polo rosa", premium: true }, chivas: { label: "Rojiblanca", premium: true }, azulDiag: { label: "Azul diagonal", premium: true }, pumas: { label: "Felino azul y oro", premium: true } };
+// Vestido: el rosa es gratis; los demás colores se desbloquean viendo un anuncio o comprándolos ($18 MXN)
+export const VESTIDOS = {
+  rosa: { label: "Rosa", base: "#F6A5C0", dark: "#E07A9E", gratis: true },
+  lila: { label: "Lila", base: "#C9B3F2", dark: "#9C80DB" },
+  menta: { label: "Menta", base: "#9FDCC8", dark: "#5FB79A" },
+  celeste: { label: "Celeste", base: "#A9D4F5", dark: "#6AAEE3" },
+  amarillo: { label: "Amarillo", base: "#FBE08A", dark: "#E3B93E" },
+  coral: { label: "Coral", base: "#FBA68F", dark: "#E57A5E" },
+};
+export const PRECIO_COLOR = "$18 MXN";
+
+export const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, vestido_rosa: { label: "Vestido", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false }, hoodieRojo: { label: "Hoodie rojo", premium: false }, hoodieAzul: { label: "Hoodie azul", premium: false }, playeraRaya: { label: "Playera rayada", premium: false }, poloRosa: { label: "Polo rosa", premium: true }, chivas: { label: "Rojiblanca", premium: true }, azulDiag: { label: "Azul diagonal", premium: true }, pumas: { label: "Felino azul y oro", premium: true } };
 export const BACKGROUNDS = { agua: { label: "Agua", from: "#E7F7F4", to: "#CDEFE9", premium: false }, lavanda: { label: "Lavanda", from: "#F0EBFF", to: "#E2D8FF", premium: false }, atardecer: { label: "Atardecer", from: "#FFE9D6", to: "#FFD3C0", premium: false }, noche: { label: "Noche", from: "#4E5180", to: "#3A3D63", premium: true } };
 export const PHRASES = ["¡Lo lograste! Estoy orgulloso de ti 💗", "Hoy te cuidaste increíble. Gracias por cuidarme a mí también.", "Pequeños pasos, gran corazón. ¡Mua!", "Cada día contigo soy más fuerte 🥹"];
 export const COACH_QA = {
