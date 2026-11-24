@@ -156,6 +156,34 @@ function Voice({ a }) {
   );
 }
 
+/* ---------- Eliminar cuenta ---------- */
+function BorrarCuenta({ a, close }) {
+  const [txt, setTxt] = useState('');
+  const [ocupado, setOcupado] = useState(false);
+  const [error, setError] = useState(null);
+  const listo = txt.trim().toUpperCase() === 'ELIMINAR';
+  const borrar = async () => {
+    setOcupado(true);
+    setError(null);
+    const r = await a.eliminarCuenta();
+    if (!r.ok) {
+      setError('No se pudo eliminar. Revisa tu internet e intenta de nuevo.\n(detalle: ' + r.error + ')');
+      setOcupado(false);
+    } else a.showToast('Tu cuenta y tus datos se eliminaron');
+  };
+  return (
+    <Sheet onClose={ocupado ? () => {} : close}>
+      <Titulo>🗑️ Eliminar mi cuenta</Titulo>
+      <Muted sm style={{ marginBottom: 10 }}>Se borran para siempre tu cuenta, tu perfil, tu peso, tus comidas, tus juegos y a tu Axo. No se puede deshacer.</Muted>
+      <Muted sm style={{ marginBottom: 6 }}>Para confirmar, escribe ELIMINAR:</Muted>
+      <TextInput value={txt} onChangeText={setTxt} autoCapitalize="characters" autoCorrect={false} placeholder="ELIMINAR" placeholderTextColor={C.gray} style={{ borderRadius: 12, borderWidth: 1.5, borderColor: '#e8eaf0', padding: 12, fontFamily: F.body, fontSize: 15, color: C.ink }} />
+      {error && <Text style={{ fontFamily: F.body, color: '#E05C5C', fontSize: 13, marginTop: 6 }}>{error}</Text>}
+      <Btn big label={ocupado ? 'Eliminando…' : 'Eliminar para siempre'} onPress={borrar} disabled={!listo || ocupado} style={{ marginTop: 12 }} />
+      <Btn kind="ghost" label="Mejor no" onPress={close} disabled={ocupado} style={{ marginTop: 6 }} />
+    </Sheet>
+  );
+}
+
 /* ---------- Foto del plato ---------- */
 function Photo({ a }) {
   const [etapa, setEtapa] = useState('inicial');
@@ -588,6 +616,8 @@ export default function Overlays() {
         <Muted sm>La idea no es contar todo al gramo, sino la proporción del plato. Es una guía general, no un plan médico: si tienes una condición (diabetes, riñón, embarazo), confírmalo con tu nutriólogo.</Muted>
       </Sheet>
     );
+
+  if (o === 'borrarCuenta') return <BorrarCuenta a={a} close={close} />;
 
   if (o === 'privacy') {
     return (

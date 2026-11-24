@@ -43,6 +43,7 @@ export default function MoreScreen() {
       <Fila onPress={() => a.setOverlay('rename')}>✏️ Cambiar el nombre de {petName}</Fila>
       <Fila onPress={() => a.setPhase('onboarding')}>📝 Rehacer mi perfil</Fila>
       <Fila onPress={a.cerrarSesion} color="#c0392b">🚪 Cerrar sesión</Fila>
+      <Fila onPress={() => a.setOverlay('borrarCuenta')} color="#c0392b">🗑️ Eliminar mi cuenta y mis datos</Fila>
       <View style={{ alignItems: 'center', marginTop: 18 }}>
         <Svg viewBox="230 40 220 190" width={34} height={29}>
           <Path d={LOGO_PATHS[0]} fill="#2A2D43" />

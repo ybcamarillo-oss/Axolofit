@@ -78,3 +78,9 @@ export async function avisoDePrueba(nombre = 'Axo') {
     trigger: { type: T.TIME_INTERVAL, seconds: 5, channelId: CANAL },
   });
 }
+
+// Al borrar la cuenta se cancelan todos los avisos programados en el teléfono.
+export async function cancelarAvisos() {
+  if (web) return;
+  await Notifications.cancelAllScheduledNotificationsAsync();
+}

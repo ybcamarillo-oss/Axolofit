@@ -5,7 +5,7 @@ import * as Haptics from 'expo-haptics';
 import { sb } from './supabase';
 import { DEMO, computeProfile, BACKGROUNDS, SKINS_REGALO, MENU_DB, MEAL_SPLIT, PHRASES } from './data';
 import { hoyLocal, genWeek, genDay, cambioParecido, lunesDe } from './plan';
-import { estadoAvisos, pedirAvisos, programarAvisos } from './notifications';
+import { estadoAvisos, pedirAvisos, programarAvisos, cancelarAvisos } from './notifications';
 
 // "Cerebro" de la app: todo el estado y las acciones, pasado de la PWA.
 // Las pantallas solo leen de aquí con useApp() y llaman a estas funciones.
@@ -524,6 +524,19 @@ export function AppProvider({ children }) {
     setPhase('auth');
   };
 
+  // Borra la cuenta y todos sus datos en Supabase (función eliminar_mi_cuenta) y limpia el teléfono
+  const eliminarCuenta = async () => {
+    const uid = userId;
+    const { error } = await sb.rpc('eliminar_mi_cuenta');
+    if (error) return { ok: false, error: error.message };
+    try {
+      await AsyncStorage.multiRemove([claveLocal(uid), 'axo_nacido_' + uid]);
+      await cancelarAvisos();
+    } catch (e) {}
+    await cerrarSesion();
+    return { ok: true };
+  };
+
   /* ---------- Avisos ---------- */
   const activarAvisos = async () => {
     const est = await pedirAvisos();
@@ -608,7 +621,7 @@ export function AppProvider({ children }) {
     prefs, setPrefs, toggleEvitar, weekPlan, weekEaten, toggleEaten, swapMeal, regenDay, regenWeek,
     celebrated, setCelebrated, kissing, eating, blowKiss, naciendo, setNaciendo, terminoDeNacer,
     avisos, activarAvisos, phrase,
-    addFood, removeFood, closeCelebrate, renombrarAxo, handleAuth, onboardingDone, cerrarSesion,
+    addFood, removeFood, closeCelebrate, renombrarAxo, handleAuth, onboardingDone, cerrarSesion, eliminarCuenta,
     computedEvo, bg, darkBg, pesoIni, pesoMeta, pa, chub, hungry, diasAbandono, abandonado, mood, axoProps,
     pKcal: totals.kcal / targets.objetivoDeficit,
     pProt: totals.p / targets.prote,
