@@ -13,6 +13,7 @@ import { AppProvider, useApp } from './src/store';
 import { C, F } from './src/theme';
 import { AxoMini } from './src/components/Axo';
 import Overlays from './src/overlays';
+import TipDelDia from './src/TipDelDia';
 import AuthScreen from './src/screens/AuthScreen';
 import Onboarding from './src/screens/Onboarding';
 import HomeScreen from './src/screens/HomeScreen';
@@ -88,6 +89,7 @@ function Raiz() {
       <Pantalla key={a.screen} />
       <Nav />
       <Overlays />
+      <TipDelDia />
       {a.toast && (
         <View pointerEvents="none" style={[st.toast, { bottom: insets.bottom + 150 }]}>
           <Text style={st.toastTxt}>{a.toast}</Text>
