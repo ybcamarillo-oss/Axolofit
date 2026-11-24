@@ -3,8 +3,8 @@ import { Text } from 'react-native';
 import { C, F } from './theme';
 
 // Aviso de privacidad integral. Se usa en Ajustes y al crear cuenta.
-// PENDIENTE: confirmar CORREO_PRIVACIDAD (que exista y alguien lo lea) y que un abogado revise el texto.
-export const CORREO_PRIVACIDAD = 'privacidad@rickyrabbit.studio';
+// PENDIENTE: que un abogado revise el texto antes de publicar en Google Play.
+export const CORREO_PRIVACIDAD = 'yaracdev@gmail.com';
 export const AVISO_VERSION = '2026-11-24';
 export const AVISO_FECHA = '24 de noviembre de 2026';
 
