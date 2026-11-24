@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
+import { View, Text, Pressable, TextInput, BackHandler } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '../store';
@@ -39,7 +39,7 @@ const Stat = ({ k, v, s, color }) => (
 );
 
 export default function Onboarding() {
-  const { onboardingDone, profile, petName, pet, tieneAxo } = useApp();
+  const { onboardingDone, profile, petName, pet, tieneAxo, setPhase } = useApp();
   const insets = useSafeAreaInsets();
   const [step, setStep] = useState('welcome');
   // Si está rehaciendo su perfil, empezamos con lo que ya tenía
@@ -56,6 +56,16 @@ export default function Onboarding() {
     return c[Math.floor(Math.random() * c.length)];
   });
   const set = (k, v) => setD((p) => ({ ...p, [k]: v }));
+
+  // Si ya tiene su Axo y entró por error a rehacer el perfil, el botón "atrás" del teléfono la regresa sin cambiar nada
+  useEffect(() => {
+    if (!tieneAxo) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      setPhase('app');
+      return true;
+    });
+    return () => sub.remove();
+  }, [tieneAxo]);
 
   useEffect(() => {
     if (step !== 'welcome') return;
@@ -79,7 +89,8 @@ export default function Onboarding() {
               <Pressable key={i} onPress={() => setSlide(i)} hitSlop={8} style={{ width: i === slide ? 22 : 8, height: 8, borderRadius: 4, backgroundColor: i === slide ? C.pink : '#d7dbe6' }} />
             ))}
           </View>
-          <Btn big label="Crear mi ajolote 💗" onPress={() => setStep('objetivo')} />
+          <Btn big label={tieneAxo ? 'Rehacer mi perfil 📝' : 'Crear mi ajolote 💗'} onPress={() => setStep('objetivo')} />
+          {tieneAxo && <Btn kind="ghost" label="← Mejor no, volver sin cambios" onPress={() => setPhase('app')} style={{ marginTop: 8 }} />}
         </View>
       </LinearGradient>
     );

@@ -194,6 +194,8 @@ export default function HomeScreen() {
           ))}
         </Card>
 
+        <Btn kind="ghost" label="⚖️ Actualizar mi peso" onPress={() => a.setScreen('stats')} style={{ marginBottom: 10 }} />
+
         <Card colors={['#FFF0E8', '#FDE7EC']}>
           <CardH>📅 Plan semanal</CardH>
           <View style={{ flexDirection: 'row', gap: 4, marginBottom: 8 }}>

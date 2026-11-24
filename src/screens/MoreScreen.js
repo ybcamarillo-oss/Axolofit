@@ -34,6 +34,7 @@ export default function MoreScreen() {
         <Muted sm>IA por foto ilimitada · recetas infinitas · skins y especies raras · informes avanzados · minijuegos exclusivos.</Muted>
         <Btn label="Ver planes" onPress={() => a.setOverlay('paywall')} style={{ marginTop: 10 }} />
       </Card>
+      <Fila onPress={() => a.setScreen('stats')}>⚖️ Actualizar mi peso</Fila>
       <Fila onPress={() => a.setOverlay('prefs')}>🥗 Preferencias y alergias</Fila>
       <Fila onPress={tocarAvisos}>
         🔔 {avisos === 'activados' ? 'Avisos activados ✓ · toca para probar' : avisos === 'bloqueados' ? 'Avisos bloqueados (actívalos en ajustes del teléfono)' : 'Activar avisos de ' + petName}
