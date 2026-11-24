@@ -48,6 +48,8 @@ export default function StatsScreen() {
         <Muted sm style={{ textAlign: 'center', marginTop: 8 }}>Registra tu peso una vez por semana para ver tu avance.</Muted>
       </Card>
 
+      <Composicion a={a} />
+
       <Card>
         <CardH>Tu progreso de peso</CardH>
         {pesoHist.length === 0 && <Muted sm>Aún no registras tu peso. Pon tu peso de hoy arriba para empezar tu gráfica.</Muted>}
@@ -131,6 +133,66 @@ export default function StatsScreen() {
         ))}
       </Card>
     </Screen>
+  );
+}
+
+const CAMPOS_COMP = [
+  ['grasa', 'Grasa corporal', '%', '🧈'],
+  ['musculo', 'Masa muscular', 'kg', '💪'],
+  ['agua', 'Agua corporal', '%', '💧'],
+  ['edadMet', 'Edad metabólica', 'años', '🎂'],
+  ['bmr', 'Calorías basales', 'kcal', '🔥'],
+];
+
+function Composicion({ a }) {
+  const [abierto, setAbierto] = useState(false);
+  const [v, setV] = useState({});
+  const hist = a.composicion || [];
+  const ult = hist.length ? hist[hist.length - 1] : null;
+  const prev = hist.length > 1 ? hist[hist.length - 2] : null;
+  const guardar = async () => {
+    const ok = await a.registrarComposicion(v);
+    if (ok) {
+      setV({});
+      setAbierto(false);
+    }
+  };
+  const delta = (k) => {
+    if (!ult || !prev || ult[k] == null || prev[k] == null) return null;
+    const d = Math.round((ult[k] - prev[k]) * 10) / 10;
+    return d === 0 ? '=' : (d > 0 ? '▲ ' : '▼ ') + Math.abs(d);
+  };
+  return (
+    <Card>
+      <CardH>🧬 Composición corporal (báscula inteligente)</CardH>
+      {!ult && <Muted sm>Si tu báscula mide grasa, músculo, agua y más, anota aquí tus datos para ver cómo cambian con el tiempo. Todos son opcionales.</Muted>}
+      {ult && (
+        <>
+          <Muted sm style={{ marginBottom: 6 }}>Última medición: {ult.fecha}</Muted>
+          {CAMPOS_COMP.filter(([k]) => ult[k] != null).map(([k, l, u, e]) => (
+            <Row key={k}>
+              <Text style={{ fontFamily: F.bodyBold, fontSize: 14, color: C.ink }}>{e} {l}</Text>
+              <Text style={{ fontFamily: F.bodyBold, fontSize: 14, color: C.ink }}>
+                {ult[k]} {u}
+                {delta(k) ? <Text style={{ fontFamily: F.body, fontSize: 12, color: C.gray }}>  {delta(k)}</Text> : null}
+              </Text>
+            </Row>
+          ))}
+        </>
+      )}
+      {abierto ? (
+        <View style={{ marginTop: 10 }}>
+          {CAMPOS_COMP.map(([k, l, u]) => (
+            <Input key={k} placeholder={l + ' (' + u + ')'} keyboardType="decimal-pad" value={v[k] || ''} onChangeText={(t) => setV((x) => ({ ...x, [k]: t }))} style={{ marginBottom: 8, backgroundColor: '#fff' }} />
+          ))}
+          <Btn label="Guardar medición" onPress={guardar} />
+          <Btn kind="ghost" label="Cancelar" onPress={() => setAbierto(false)} style={{ marginTop: 4 }} />
+        </View>
+      ) : (
+        <Btn label={ult ? '➕ Nueva medición' : '➕ Anotar mis datos'} onPress={() => setAbierto(true)} style={{ marginTop: 10 }} />
+      )}
+      <Muted sm style={{ marginTop: 8, fontSize: 11.5 }}>Las básculas estiman estos valores y pueden variar entre marcas y según tu hidratación. Fíjate en la tendencia, no en un solo día.</Muted>
+    </Card>
   );
 }
 

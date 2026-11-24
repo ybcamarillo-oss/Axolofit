@@ -60,6 +60,7 @@ export function AppProvider({ children }) {
   const [viewDate, setViewDateRaw] = useState(() => hoyLocal());
   const [pesoActual, setPesoActual] = useState(null);
   const [pesoHist, setPesoHist] = useState([]);
+  const [composicion, setComposicion] = useState([]);
   const [totalComidas, setTotalComidas] = useState(0);
   const [prefs, setPrefs] = useState(PREFS0);
   const [weekPlan, setWeekPlan] = useState(() => genWeek(PREFS0, computeProfile({ ...DEMO })));
@@ -138,6 +139,10 @@ export function AppProvider({ children }) {
 
       if (scores && scores.length > 0) setBest(Object.fromEntries(scores.map((sc) => [sc.game_key, sc.score])));
       setTotalComidas(totComidas || 0);
+      // Mediciones de báscula inteligente (si la tabla aún no existe, simplemente queda vacía)
+      sb.from('composicion_log').select('*').eq('user_id', uid).order('fecha').then(({ data, error }) => {
+        setComposicion(!error && data ? data.map((r) => ({ fecha: r.fecha, grasa: r.grasa_pct, musculo: r.musculo_kg, agua: r.agua_pct, edadMet: r.edad_metabolica, bmr: r.bmr_kcal })) : []);
+      });
       if (pesos && pesos.length > 0) {
         setPesoHist(pesos.map((r) => ({ fecha: r.fecha, peso: parseFloat(r.peso) })));
         setPesoActual(parseFloat(pesos[pesos.length - 1].peso));
@@ -433,6 +438,38 @@ export function AppProvider({ children }) {
     return true;
   };
 
+  /* ---------- Báscula inteligente ---------- */
+  const registrarComposicion = async (v) => {
+    const n = (x) => {
+      const t = parseFloat(String(x ?? '').replace(',', '.'));
+      return Number.isFinite(t) ? t : null;
+    };
+    const m = { grasa: n(v.grasa), musculo: n(v.musculo), agua: n(v.agua), edadMet: n(v.edadMet), bmr: n(v.bmr) };
+    if (Object.values(m).every((x) => x == null)) {
+      showToast('Escribe al menos un dato');
+      return false;
+    }
+    const rangos = { grasa: [3, 70, 'Grasa (3–70 %)'], musculo: [10, 120, 'Masa muscular (10–120 kg)'], agua: [25, 80, 'Agua (25–80 %)'], edadMet: [10, 99, 'Edad metabólica (10–99)'], bmr: [800, 4000, 'Calorías basales (800–4000)'] };
+    for (const k of Object.keys(m)) {
+      if (m[k] != null && (m[k] < rangos[k][0] || m[k] > rangos[k][1])) {
+        showToast('Revisa: ' + rangos[k][2]);
+        return false;
+      }
+    }
+    const fecha = hoyLocal();
+    const fila = { fecha, ...m, edadMet: m.edadMet != null ? Math.round(m.edadMet) : null, bmr: m.bmr != null ? Math.round(m.bmr) : null };
+    if (userId) {
+      const { error } = await sb.from('composicion_log').upsert({ user_id: userId, fecha, grasa_pct: fila.grasa, musculo_kg: fila.musculo, agua_pct: fila.agua, edad_metabolica: fila.edadMet, bmr_kcal: fila.bmr }, { onConflict: 'user_id,fecha' });
+      if (error) {
+        showToast('⚠️ No se guardó, revisa tu conexión');
+        return false;
+      }
+    }
+    setComposicion((h) => [...h.filter((r) => r.fecha !== fecha), fila].sort((a, b) => a.fecha.localeCompare(b.fecha)));
+    showToast('¡Medición guardada! 💪');
+    return true;
+  };
+
   /* ---------- Juegos ---------- */
   const recordBest = (g, v) => {
     const anterior = best[g] || 0;
@@ -617,7 +654,7 @@ export function AppProvider({ children }) {
     profile, setProfile, petName, pet, updatePet, targets, tieneAxo,
     level, xp, addXp, streak, ultimoDia, skinsUnlocked, desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
     best, recordBest, log, totals, vasos, addAgua, setWater, viewDate, setViewDate,
-    pesoActual, pesoHist, registrarPeso, totalComidas,
+    pesoActual, pesoHist, registrarPeso, composicion, registrarComposicion, totalComidas,
     prefs, setPrefs, toggleEvitar, weekPlan, weekEaten, toggleEaten, swapMeal, regenDay, regenWeek,
     celebrated, setCelebrated, kissing, eating, blowKiss, naciendo, setNaciendo, terminoDeNacer,
     avisos, activarAvisos, phrase,
