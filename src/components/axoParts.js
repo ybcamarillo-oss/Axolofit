@@ -343,17 +343,17 @@ export function CabezaBase({ g, mood }) {
 // brazos: 'abajo' | 'arriba' | null (null cuando come: ahí los bracitos van aparte, animados)
 // Falda del vestido: sale de la cintura con vuelo y orilla de olitas, moñito al centro
 function Falda({ tRx, v }) {
-  const cx = 100, y0 = 158, y1 = 194;
+  const cx = 100, y0 = 158, y1 = 177; // falda corta
   const l = cx - tRx * 0.98, r = cx + tRx * 0.98, L = cx - tRx * 1.42, R = cx + tRx * 1.42;
   const n = 5, seg = (R - L) / n;
   let olas = '';
   for (let i = 0; i < n; i++) olas += ` Q ${R - seg * (i + 0.5)} ${y1 + 6} ${R - seg * (i + 1)} ${y1}`;
-  const d = `M${l} ${y0} Q ${cx} ${y0 + 5} ${r} ${y0} Q ${R - 2} ${y0 + 18} ${R} ${y1}${olas} Q ${L + 2} ${y0 + 18} ${l} ${y0} Z`;
+  const d = `M${l} ${y0} Q ${cx} ${y0 + 5} ${r} ${y0} Q ${R - 2} ${y0 + 11} ${R} ${y1}${olas} Q ${L + 2} ${y0 + 11} ${l} ${y0} Z`;
   return (
     <G>
       <Path d={d} fill={v.base} />
       {[-1, 1].map((o) => (
-        <Path key={o} d={`M${cx + o * tRx * 0.35} ${y0 + 5} Q ${cx + o * tRx * 0.5} ${y0 + 20} ${cx + o * tRx * 0.62} ${y1 + 1}`} stroke={v.dark} strokeWidth={1.3} fill="none" opacity={0.45} />
+        <Path key={o} d={`M${cx + o * tRx * 0.35} ${y0 + 5} Q ${cx + o * tRx * 0.5} ${y0 + 13} ${cx + o * tRx * 0.62} ${y1 + 1}`} stroke={v.dark} strokeWidth={1.3} fill="none" opacity={0.45} />
       ))}
       <Path d={`M${l} ${y0} Q ${cx} ${y0 + 5} ${r} ${y0}`} stroke={v.dark} strokeWidth={4} fill="none" strokeLinecap="round" />
       <Path d={`M${cx} ${y0 + 2} L ${cx - 9} ${y0 - 4} L ${cx - 9} ${y0 + 8} Z M${cx} ${y0 + 2} L ${cx + 9} ${y0 - 4} L ${cx + 9} ${y0 + 8} Z`} fill={v.dark} stroke={v.dark} strokeWidth={2} strokeLinejoin="round" />
