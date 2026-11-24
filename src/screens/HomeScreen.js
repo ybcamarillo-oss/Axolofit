@@ -50,7 +50,7 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 110 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 110 + insets.bottom }} showsVerticalScrollIndicator={false}>
         {/* semana */}
         <View style={{ flexDirection: 'row', gap: 6, marginBottom: 10 }}>
           {weekDates.map((d, i) => {
@@ -194,7 +194,7 @@ export default function HomeScreen() {
           ))}
         </Card>
 
-        <Card colors={['#E8F7EE', '#EEF7F3']}>
+        <Card colors={['#FFF0E8', '#FDE7EC']}>
           <CardH>📅 Plan semanal</CardH>
           <View style={{ flexDirection: 'row', gap: 4, marginBottom: 8 }}>
             {DIAS.map((d, di) => {
@@ -221,7 +221,7 @@ export default function HomeScreen() {
         </Card>
       </ScrollView>
 
-      <Pressable onPress={() => a.setScreen('log')} style={({ pressed }) => [s.fab, { transform: [{ scale: pressed ? 0.95 : 1 }] }]}>
+      <Pressable onPress={() => a.setScreen('log')} style={({ pressed }) => [s.fab, { bottom: 84 + insets.bottom, transform: [{ scale: pressed ? 0.95 : 1 }] }]}>
         <LinearGradient colors={[C.pinkLight, C.pink]} style={s.fabIn}>
           <Text style={{ fontFamily: F.display, fontSize: 22, color: C.brown, marginTop: -2 }}>+</Text>
           <Text style={{ fontFamily: F.displaySemi, fontSize: 14, color: C.brown }}>Registrar</Text>

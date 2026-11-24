@@ -107,15 +107,17 @@ export function Header({ title, back, dark }) {
 // Pantalla con fondo degradado, encabezado opcional y contenido con scroll
 export function Screen({ colors = ['#FAFBFE', '#F3F5FB'], title, back, dark, children, scroll = true, footer, pad = 16, contentStyle }) {
   const insets = useSafeAreaInsets();
+  // Espacio extra abajo para que la barra del sistema (botones de Android) no tape el contenido
+  const abajo = { paddingBottom: ((contentStyle && contentStyle.paddingBottom) || 24) + insets.bottom };
   return (
     <LinearGradient colors={colors} style={{ flex: 1, paddingTop: insets.top }}>
       {title != null && <Header title={title} back={back} dark={dark} />}
       {scroll ? (
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[{ paddingHorizontal: pad, paddingBottom: 24 }, contentStyle]}>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[{ paddingHorizontal: pad }, contentStyle, abajo]}>
           {children}
         </ScrollView>
       ) : (
-        <View style={[{ flex: 1, paddingHorizontal: pad }, contentStyle]}>{children}</View>
+        <View style={[{ flex: 1, paddingHorizontal: pad }, contentStyle, abajo]}>{children}</View>
       )}
       {footer && <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 }}>{footer}</View>}
     </LinearGradient>
