@@ -214,6 +214,17 @@ function Cielo({ abajo }) {
 const TELA = { jersey: '#006847', sarape: '#F3E2C7', hoodieRojo: '#D7263D', hoodieAzul: '#2E6FD6', playeraRaya: '#F7F7F7', poloRosa: '#F3A6BE', chivas: '#FFFFFF', azulDiag: '#5FB4E4', pumas: '#FFFFFF' };
 
 // Va del hombro (pegado a la orilla del cuerpo, sin rayita de ese lado) hasta la manita.
+// Manga de volante del vestido (se dibuja en el eje del bracito: x=0 es el hombro)
+function MangaVestido({ v }) {
+  return (
+    <G>
+      <Path d="M-5 -10 Q 6 -13 13 -11 Q 18 -16 22 -11 Q 27 -6 22 -1 Q 28 4 22 8 Q 24 14 17 12 Q 12 16 7 11 Q -3 12 -5 9 Z" fill={v.base} stroke={v.dark} strokeWidth={1.6} strokeLinejoin="round" />
+      <Path d="M13 -10 Q 19 0 12 11" stroke="#fff" strokeWidth={2} fill="none" strokeLinecap="round" opacity={0.8} />
+      <Path d="M8 -9 Q 12 0 7 10" stroke="#fff" strokeWidth={1.4} fill="none" strokeLinecap="round" opacity={0.6} />
+    </G>
+  );
+}
+
 function Bracito({ g, hombro, mano, outfit }) {
   const dx = mano.x - hombro.x;
   const dy = mano.y - hombro.y;
@@ -228,6 +239,7 @@ function Bracito({ g, hombro, mano, outfit }) {
       <Path d={`M0 -8 Q${L / 2} -6.2 ${m} -5 L${m} 5 Q${L / 2} 6.2 0 8 Z`} fill={tela || g.body} />
       <Path d={`M0 -8 Q${L / 2} -6.2 ${m} -5`} {...raya} />
       <Path d={`M${m} 5 Q${L / 2} 6.2 0 8`} {...raya} />
+      {outfit && outfit.startsWith('vestido_') && <MangaVestido v={VESTIDOS[outfit.slice(8)] || VESTIDOS.rosa} />}
       <Path d={`${manita} Z`} fill={g.body} />
       <Path d={manita} stroke={g.pal.gill} strokeWidth={2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
     </G>
