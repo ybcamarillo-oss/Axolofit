@@ -161,8 +161,10 @@ export function Popup({ onClose, children }) {
 /* ---------- Campos ---------- */
 export const Input = ({ style, ...p }) => <TextInput placeholderTextColor={C.gray} {...p} style={[s.input, style]} />;
 
-export function NumField({ label, value, onChange, suffix, min, max, hint }) {
-  const [text, setText] = useState(String(value));
+export function NumField({ label, value, onChange, suffix, min, max, hint, inicio }) {
+  const vacio = value === null || value === undefined || value === '';
+  const [text, setText] = useState(vacio ? '' : String(value));
+  const base = inicio || min;
   const clamp = (v) => Math.min(max, Math.max(min, v));
   const commit = (v) => {
     const n = clamp(v);
@@ -173,13 +175,15 @@ export function NumField({ label, value, onChange, suffix, min, max, hint }) {
     <View style={{ marginBottom: 14 }}>
       <Text style={s.label}>{label}</Text>
       <View style={s.stepper}>
-        <Pressable onPress={() => commit((value || min) - 1)} style={s.stepBtn}>
+        <Pressable onPress={() => commit((vacio ? base + 1 : value) - 1)} style={s.stepBtn}>
           <Text style={s.stepTxt}>–</Text>
         </Pressable>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
           <TextInput
             style={{ fontFamily: F.display, fontSize: 24, color: C.ink, minWidth: 50, textAlign: 'center', padding: 0 }}
             keyboardType="number-pad"
+            placeholder="—"
+            placeholderTextColor={C.gray}
             selectTextOnFocus
             value={text}
             onChangeText={(t) => {
@@ -190,12 +194,12 @@ export function NumField({ label, value, onChange, suffix, min, max, hint }) {
             }}
             onBlur={() => {
               const n = parseInt(text, 10);
-              commit(isNaN(n) ? value || min : n);
+              { if (isNaN(n)) { if (!vacio) commit(value); } else commit(n); }
             }}
           />
           <Text style={{ fontFamily: F.body, color: C.gray, fontSize: 14 }}>{suffix}</Text>
         </View>
-        <Pressable onPress={() => commit((value || min) + 1)} style={s.stepBtn}>
+        <Pressable onPress={() => commit((vacio ? base - 1 : value) + 1)} style={s.stepBtn}>
           <Text style={s.stepTxt}>+</Text>
         </Pressable>
       </View>

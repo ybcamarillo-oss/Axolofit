@@ -9,8 +9,29 @@ import { hoyLocal } from './plan';
 import { C, F } from './theme';
 import Axo from './components/Axo';
 
-// Mismo tip que muestra Progreso en "Tip del día": cambia cada día
-export const tipDeHoy = () => TIPS[Math.floor(Date.now() / 86400000) % TIPS.length];
+const dif = (a, b) => Math.round((new Date(a + 'T12:00:00') - new Date(b + 'T12:00:00')) / 86400000);
+
+// Día de uso: 0 = el primer día que entra a la app; 1 = el segundo día, etc.
+// El primer tip que se ve (el segundo día) es el de "Constancia sobre perfección", y de ahí siguen en orden.
+export function useDiaDeUso() {
+  const { userId } = useApp();
+  const [dia, setDia] = useState(null);
+  useEffect(() => {
+    if (!userId) return;
+    const clave = 'axo_primer_dia_' + userId;
+    AsyncStorage.getItem(clave)
+      .then((v) => {
+        const hoy = hoyLocal();
+        if (!v) {
+          AsyncStorage.setItem(clave, hoy).catch(() => {});
+          setDia(0);
+        } else setDia(Math.max(0, dif(hoy, v)));
+      })
+      .catch(() => setDia(0));
+  }, [userId]);
+  return dia;
+}
+export const tipDeDia = (dia) => TIPS[Math.max(0, (dia || 1) - 1) % TIPS.length];
 
 // Al abrir la app (una vez al día) Axo cuenta el tip del día en un globo
 export default function TipDelDia() {
@@ -18,18 +39,20 @@ export default function TipDelDia() {
   const insets = useSafeAreaInsets();
   const [ver, setVer] = useState(false);
   const revisado = useRef(false);
-  const tip = tipDeHoy();
+  const dia = useDiaDeUso();
+  const tip = tipDeDia(dia);
 
   useEffect(() => {
-    if (revisado.current || a.phase !== 'app' || !a.userId || a.naciendo || a.overlay) return;
+    if (revisado.current || dia === null || a.phase !== 'app' || !a.userId || a.naciendo || a.overlay) return;
     revisado.current = true;
+    if (dia < 1) return; // el primer día no sale tip
     const clave = 'axo_tip_dia_' + a.userId;
     AsyncStorage.getItem(clave)
       .then((v) => {
         if (v !== hoyLocal()) setTimeout(() => setVer(true), 900);
       })
       .catch(() => {});
-  }, [a.phase, a.userId, a.naciendo, a.overlay]);
+  }, [dia, a.phase, a.userId, a.naciendo, a.overlay]);
 
   if (!ver) return null;
   const cerrar = () => {

@@ -5,6 +5,7 @@ import { C, F } from '../theme';
 import { Screen, Btn, Card, CardH, Muted, MiniChart, Tip, Row, Input, sombra } from '../ui';
 import Axo, { AxoMini } from '../components/Axo';
 import { TIPS, TIPS_CATS } from '../data';
+import { useDiaDeUso, tipDeDia } from '../TipDelDia';
 
 // Progreso: peso, gráfica, IMC, informe del día y logros.
 export default function StatsScreen() {
@@ -199,8 +200,8 @@ function Composicion({ a }) {
 function BibliotecaTips() {
   const [cat, setCat] = useState('todos');
   const [abierto, setAbierto] = useState(null);
-  const dia = Math.floor(Date.now() / 86400000);
-  const delDia = TIPS[dia % TIPS.length];
+  const dia = useDiaDeUso();
+  const delDia = tipDeDia(dia);
   const lista = cat === 'todos' ? TIPS : TIPS.filter((t) => t.c === cat);
   return (
     <>

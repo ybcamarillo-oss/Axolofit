@@ -43,7 +43,10 @@ export default function Onboarding() {
   const insets = useSafeAreaInsets();
   const [step, setStep] = useState('welcome');
   // Si está rehaciendo su perfil, empezamos con lo que ya tenía
-  const [d, setD] = useState({ ...DEMO, ...profile });
+  // Cuenta nueva: los datos personales empiezan vacíos. Si rehace su perfil, ve lo que ya tenía.
+  const [d, setD] = useState(() =>
+    tieneAxo ? { ...DEMO, ...profile } : { sexo: null, edad: null, pesoKg: null, estaturaCm: null, actividad: null, objetivo: null, cuelloCm: null, cinturaCm: null, caderaCm: null, munecaCm: null }
+  );
   const [name, setName] = useState(petName || 'Axo');
   const [skipWarn, setSkipWarn] = useState(false);
   const [slide, setSlide] = useState(0);
@@ -76,7 +79,7 @@ export default function Onboarding() {
   if (step === 'welcome')
     return (
       <LinearGradient colors={['#F3ECFF', '#E7F7F4']} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 22, paddingTop: insets.top + 10 }}>
-        <Nacimiento paletteKey={colorNacer} size={110} espera />
+        <Nacimiento paletteKey={colorNacer} size={190} espera />
         <Display style={{ fontSize: 30, marginTop: 2, marginBottom: 10 }}>AxoloFit</Display>
         <View style={{ width: '100%', maxWidth: 320 }}>
           <View style={{ backgroundColor: '#ffffff99', borderRadius: 20, paddingVertical: 18, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center', minHeight: 150 }}>
@@ -118,7 +121,7 @@ export default function Onboarding() {
 
   if (step === 'datos')
     return (
-      <Screen key="datos" title="Tus datos" back={() => setStep('objetivo')} footer={<Btn big label="Continuar" onPress={() => setStep('medidas')} />}>
+      <Screen key="datos" title="Tus datos" back={() => setStep('objetivo')} footer={<Btn big label="Continuar" onPress={() => setStep('medidas')} disabled={!(d.sexo && d.edad && d.pesoKg && d.estaturaCm && d.actividad)} />}>
         <Text style={{ fontFamily: F.displaySemi, fontSize: 15, color: C.ink, marginBottom: 7 }}>Sexo biológico</Text>
         {[['F', 'Mujer'], ['M', 'Hombre'], ['X', 'Prefiero no decirlo']].map(([v, l]) => (
           <RowOpt key={v} on={d.sexo === v} onPress={() => set('sexo', v)}>
@@ -134,9 +137,9 @@ export default function Onboarding() {
         ) : (
           <Muted sm style={{ marginBottom: 14 }}>Solo se usa para calcular tu energía y el piso mínimo de calorías seguras. No se comparte con nadie.</Muted>
         )}
-        <NumField key="Edad" label="Edad" value={d.edad} onChange={(v) => set('edad', v)} suffix="años" min={15} max={90} hint="Toca el número para escribirlo, o usa − / +." />
-        <NumField key="Peso" label="Peso" value={d.pesoKg} onChange={(v) => set('pesoKg', v)} suffix="kg" min={35} max={250} />
-        <NumField key="Estatura" label="Estatura" value={d.estaturaCm} onChange={(v) => set('estaturaCm', v)} suffix="cm" min={130} max={220} />
+        <NumField key="Edad" label="Edad" value={d.edad} onChange={(v) => set('edad', v)} suffix="años" min={15} max={90} inicio={30} hint="Toca el número para escribirlo, o usa − / +." />
+        <NumField key="Peso" label="Peso" value={d.pesoKg} onChange={(v) => set('pesoKg', v)} suffix="kg" min={35} max={250} inicio={65} />
+        <NumField key="Estatura" label="Estatura" value={d.estaturaCm} onChange={(v) => set('estaturaCm', v)} suffix="cm" min={130} max={220} inicio={165} />
         <Text style={{ fontFamily: F.displaySemi, fontSize: 15, color: C.ink, marginBottom: 7 }}>Nivel de actividad</Text>
         {[['sedentario', 'Sedentario'], ['ligero', 'Ligero (1–2 días)'], ['moderado', 'Moderado (3–4 días)'], ['activo', 'Activo (5–6 días)'], ['intenso', 'Muy intenso']].map(([v, l]) => (
           <RowOpt key={v} on={d.actividad === v} onPress={() => set('actividad', v)}>
@@ -154,17 +157,17 @@ export default function Onboarding() {
         back={() => setStep('datos')}
         footer={
           <>
-            <Btn big label="Calcular mi plan" onPress={() => setStep('resultados')} />
+            <Btn big label="Calcular mi plan" onPress={() => setStep('resultados')} disabled={!(d.cuelloCm && d.cinturaCm && d.munecaCm && (d.sexo !== 'F' || d.caderaCm))} />
             <Btn kind="ghost" label="No tengo cinta — lo hago más tarde" onPress={() => setSkipWarn(true)} style={{ marginTop: 4 }} />
           </>
         }
       >
         <Muted style={{ marginTop: 4 }}>Con esto calculamos tu % de grasa, estructura ósea, ICM y peso corporal ideal personalizado.</Muted>
         <Muted sm style={{ marginBottom: 12, marginTop: 4 }}>Necesitas una cinta métrica. Mide en cm sobre la piel, sin apretar.</Muted>
-        <NumField key="Cuello" label="Cuello" value={d.cuelloCm ?? DEMO.cuelloCm} onChange={(v) => set('cuelloCm', v)} suffix="cm" min={25} max={60} />
-        <NumField key="Cintura" label="Cintura" value={d.cinturaCm ?? DEMO.cinturaCm} onChange={(v) => set('cinturaCm', v)} suffix="cm" min={50} max={180} />
-        {d.sexo === 'F' && <NumField key="Cadera" label="Cadera" value={d.caderaCm ?? DEMO.caderaCm} onChange={(v) => set('caderaCm', v)} suffix="cm" min={60} max={180} />}
-        <NumField key="Muñeca" label="Muñeca" value={d.munecaCm ?? DEMO.munecaCm} onChange={(v) => set('munecaCm', v)} suffix="cm" min={10} max={30} hint="Mide alrededor de la muñeca en su parte más delgada." />
+        <NumField key="Cuello" label="Cuello" value={d.cuelloCm} onChange={(v) => set('cuelloCm', v)} suffix="cm" min={25} max={60} inicio={33} />
+        <NumField key="Cintura" label="Cintura" value={d.cinturaCm} onChange={(v) => set('cinturaCm', v)} suffix="cm" min={50} max={180} inicio={80} />
+        {d.sexo === 'F' && <NumField key="Cadera" label="Cadera" value={d.caderaCm} onChange={(v) => set('caderaCm', v)} suffix="cm" min={60} max={180} inicio={95} />}
+        <NumField key="Muñeca" label="Muñeca" value={d.munecaCm} onChange={(v) => set('munecaCm', v)} suffix="cm" min={10} max={30} inicio={15} hint="Mide alrededor de la muñeca en su parte más delgada." />
         {skipWarn && (
           <Sheet onClose={() => setSkipWarn(false)} colors="#FFF3E0">
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
