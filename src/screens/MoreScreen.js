@@ -44,15 +44,15 @@ export default function MoreScreen() {
       <Fila onPress={() => a.setPhase('onboarding')}>📝 Rehacer mi perfil</Fila>
       <Fila onPress={a.cerrarSesion} color="#c0392b">🚪 Cerrar sesión</Fila>
       <View style={{ alignItems: 'center', marginTop: 18 }}>
-        <Svg viewBox="230 40 220 190" width={92} height={80}>
+        <Svg viewBox="230 40 220 190" width={34} height={29}>
           <Path d={LOGO_PATHS[0]} fill="#2A2D43" />
           <Circle cx={303.1} cy={160.9} r={12.5} fill="#fff" />
           <Circle cx={376.1} cy={161.7} r={12.5} fill="#fff" />
         </Svg>
-        <Text style={{ fontFamily: F.body, fontSize: 20, color: C.ink }}>
+        <Text style={{ fontFamily: F.body, fontSize: 13, color: C.muted, marginTop: 4 }}>
           Ricky <Text style={{ fontFamily: F.bodyBold }}>Rabbit</Text>
         </Text>
-        <Text style={{ fontFamily: F.body, fontSize: 17, color: C.ink }}>Dev Studio</Text>
+        <Text style={{ fontFamily: F.body, fontSize: 11.5, color: C.muted }}>Dev Studio</Text>
         <Muted sm style={{ textAlign: 'center', marginTop: 8 }}>AxoloFit es un producto de Ricky Rabbit Dev Studio.</Muted>
         <Muted sm style={{ textAlign: 'center', marginTop: 6, fontSize: 11.5, opacity: 0.8 }}>Herramienta de seguimiento y educación nutricional. No sustituye la atención de un profesional de la salud.</Muted>
       </View>

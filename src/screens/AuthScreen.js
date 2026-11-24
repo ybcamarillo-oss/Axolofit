@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, KeyboardAvoidingView, ScrollView } from 'react-native';
+import Svg, { Path, Circle } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { sb } from '../supabase';
@@ -9,6 +10,26 @@ import { Btn, Display, Muted, Input } from '../ui';
 import Axo from '../components/Axo';
 
 // Entrar, crear cuenta y recuperar contraseña con código (igual que en la PWA).
+
+// Ojito de la contraseña: cerrado cuando se ven asteriscos, abierto cuando se ve la contraseña
+function Ojito({ abierto }) {
+  const col = '#7A7F99';
+  return (
+    <Svg width={26} height={26} viewBox="0 0 24 24">
+      {abierto ? (
+        <>
+          <Path d="M2 12 Q12 3 22 12 Q12 21 2 12 Z" fill="none" stroke={col} strokeWidth={1.8} strokeLinejoin="round" />
+          <Circle cx={12} cy={12} r={3.4} fill={col} />
+        </>
+      ) : (
+        <>
+          <Path d="M2 10 Q12 18 22 10" fill="none" stroke={col} strokeWidth={1.8} strokeLinecap="round" />
+          <Path d="M5.5 13.2 L4 15.6 M9.5 15 L9 17.6 M14.5 15 L15 17.6 M18.5 13.2 L20 15.6" stroke={col} strokeWidth={1.6} strokeLinecap="round" />
+        </>
+      )}
+    </Svg>
+  );
+}
 
 const MSGS = {
   'Invalid login credentials': 'Email o contraseña incorrectos.',
@@ -123,7 +144,7 @@ export default function AuthScreen() {
     <View style={{ width: '100%' }}>
       <Input placeholder="Contraseña (mín. 6 caracteres)" secureTextEntry={!showPass} autoCapitalize="none" value={pass} onChangeText={setPass} style={{ paddingRight: 54 }} />
       <Pressable onPress={() => setShowPass((v) => !v)} hitSlop={10} style={{ position: 'absolute', right: 12, top: 11 }}>
-        <Text style={{ fontSize: 20 }}>{showPass ? '🙈' : '👁️'}</Text>
+        <Ojito abierto={showPass} />
       </Pressable>
     </View>
   );
@@ -141,7 +162,7 @@ export default function AuthScreen() {
   if (confirmado)
     return (
       <Marco>
-        <Axo paletteKey="durazno" size={160} mood="amor" />
+        <Axo paletteKey="durazno" size={220} mood="amor" />
         <Display style={{ fontSize: 24, marginVertical: 8 }}>¡Revisa tu email! 💌</Display>
         <Muted style={{ textAlign: 'center', marginBottom: 16 }}>
           Te mandamos un link de confirmación a <Text style={{ fontFamily: F.bodyBold }}>{mail}</Text>. Ábrelo y luego regresa aquí a iniciar sesión.
@@ -153,7 +174,7 @@ export default function AuthScreen() {
   if (modo === 'reset')
     return (
       <Marco>
-        <Axo paletteKey="durazno" size={140} mood={resetEnviado ? 'amor' : 'feliz'} />
+        <Axo paletteKey="durazno" size={190} mood={resetEnviado ? 'amor' : 'feliz'} />
         <Display style={{ fontSize: 23, marginTop: 6, textAlign: 'center' }}>
           {!resetEnviado ? '¿Olvidaste tu contraseña?' : otpVerificado ? 'Crea tu nueva contraseña 🔐' : 'Revisa tu correo 💌'}
         </Display>
@@ -196,7 +217,7 @@ export default function AuthScreen() {
 
   return (
     <Marco>
-      <Axo paletteKey="durazno" size={150} mood="feliz" />
+      <Axo paletteKey="durazno" size={210} mood="feliz" />
       <Display style={{ fontSize: 30, marginTop: 6 }}>AxoloFit</Display>
       <Muted style={{ marginBottom: 18 }}>{modo === 'login' ? '¡Hola de nuevo! 💗' : 'Crea tu cuenta gratis'}</Muted>
       {modo === 'registro' && <Input placeholder="¿Cómo te llamas?" value={nombre} onChangeText={setNombre} maxLength={30} style={{ width: '100%' }} />}
