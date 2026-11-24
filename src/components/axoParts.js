@@ -345,6 +345,11 @@ export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
   return (
     <G transform={g.T}>
       <Ellipse cx={100} cy={150} rx={g.bRx} ry={30} fill="#ffffff" opacity={0.4} />
+      {/* La ropa se recorta con la forma del cuerpo de Axo: queda redondita y pegada, sin hombros cuadrados */}
+      <ClipPath id={'ropa' + g.clipId}>
+        <Ellipse cx={100} cy={143} rx={tRx + 2.5} ry={47.5} />
+      </ClipPath>
+      <G clipPath={'url(#ropa' + g.clipId + ')'}>
       {outfit === "jersey" && (() => { const jw = tRx * 1.28; const cx = 100; return (
         <G>
           {/* cuerpo verde */}
@@ -393,7 +398,7 @@ export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
             <Ellipse cx={cx - jw * 0.92} cy="142" rx="13" ry="4.5" fill={dark} transform={"rotate(-28 " + (cx - jw * 0.92) + " 142)"} />
             <Ellipse cx={cx + jw * 0.92} cy="142" rx="13" ry="4.5" fill={dark} transform={"rotate(28 " + (cx + jw * 0.92) + " 142)"} />
             {/* bolsa canguro */}
-            <Path d={"M" + (cx - jw * 0.5) + " 165 Q " + cx + " 172 " + (cx + jw * 0.5) + " 165 L " + (cx + jw * 0.42) + " 182 L " + (cx - jw * 0.42) + " 182 Z"} fill="none" stroke={dark} strokeWidth="2.5" />
+            <Path d={"M" + (cx - jw * 0.46) + " 161 Q " + cx + " 168 " + (cx + jw * 0.46) + " 161 L " + (cx + jw * 0.38) + " 177 Q " + cx + " 180 " + (cx - jw * 0.38) + " 177 Z"} fill="none" stroke={dark} strokeWidth="2.5" />
             {/* cordones (más abajo, sobre el pecho) */}
             <Line x1={cx - 5} y1="140" x2={cx - 7} y2="160" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
             <Line x1={cx + 5} y1="140" x2={cx + 7} y2="160" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
@@ -492,6 +497,7 @@ export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
           </G>
         );
       })()}
+      </G>
       {brazos && <Brazos g={g} pose={brazos} outfit={outfit} />}
     </G>
   );

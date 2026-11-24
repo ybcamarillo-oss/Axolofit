@@ -217,10 +217,15 @@ export function AppProvider({ children }) {
       localListo.current = true;
       setPhase('app');
 
-      // La primera vez que se abre la app en este teléfono, Axo nace del huevo
-      AsyncStorage.getItem('axo_nacido_' + uid).then((v) => {
-        if (!v) setNaciendo(true);
-      });
+      // Axo nace solo una vez por cuenta. Si la cuenta ya tiene a su Axo guardado
+      // (por ejemplo al reinstalar la app), ya nació y no se repite.
+      if (axo) {
+        AsyncStorage.setItem('axo_nacido_' + uid, '1').catch(() => {});
+      } else {
+        AsyncStorage.getItem('axo_nacido_' + uid).then((v) => {
+          if (!v) setNaciendo(true);
+        });
+      }
       // Avisos: si ya hay permiso, se reprograman en cada visita
       estadoAvisos().then((est) => {
         setAvisos(est);

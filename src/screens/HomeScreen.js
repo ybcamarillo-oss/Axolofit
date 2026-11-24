@@ -10,7 +10,7 @@ import { Btn, Card, CardH, Muted, Ring, RingC, GlassIcon, Row, sombra } from '..
 import Axo from '../components/Axo';
 import Nacimiento from '../components/Nacimiento';
 
-const TAM = { cria: 200, joven: 230, adulto: 260, mistico: 260 };
+const TAM = { cria: 250, joven: 285, adulto: 320, mistico: 320 };
 const sombraFab = { elevation: 6, shadowColor: '#E79FAE', shadowOpacity: 0.5, shadowRadius: 10, shadowOffset: { width: 0, height: 6 } };
 
 export default function HomeScreen() {
@@ -238,7 +238,7 @@ const s = StyleSheet.create({
   xpTrack: { width: 54, height: 7, borderRadius: 4, backgroundColor: '#0000000f', overflow: 'hidden' },
   xpFill: { height: '100%', borderRadius: 4, backgroundColor: C.pink },
   day: { flex: 1, alignItems: 'center', gap: 1, paddingVertical: 8, borderRadius: 14, backgroundColor: '#fff' },
-  stage: { alignItems: 'center', justifyContent: 'flex-end', minHeight: 270, marginTop: 4 },
+  stage: { alignItems: 'center', justifyContent: 'flex-end', minHeight: 330, marginTop: 4 },
   bubble: { fontFamily: F.bodyBold, fontSize: 14.5, color: C.ink, backgroundColor: '#fff', borderRadius: 18, paddingHorizontal: 16, paddingVertical: 9, marginBottom: 6, overflow: 'hidden', textAlign: 'center', maxWidth: '92%' },
   aviso: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FFF4E0', borderWidth: 1, borderColor: '#F2D9A8', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 11, marginBottom: 12 },
   rings: { flexDirection: 'row', justifyContent: 'space-around', backgroundColor: '#fff', borderRadius: 22, paddingTop: 12, paddingBottom: 12, marginBottom: 12, ...sombra },
