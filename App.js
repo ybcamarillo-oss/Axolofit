@@ -75,8 +75,8 @@ function Raiz() {
   if (a.phase === 'cargando')
     return (
       <LinearGradient colors={['#F3ECFF', '#E7F7F4']} style={st.centro}>
-        <AxoMini paletteKey="durazno" size={130} />
-        <Text style={{ fontFamily: F.body, color: C.muted, marginTop: 8 }}>Cargando a tu Axo…</Text>
+        <AxoMini paletteKey="durazno" size={240} />
+        <Text style={{ fontFamily: F.body, color: C.muted, fontSize: 17, marginTop: 12 }}>Cargando a tu Axo…</Text>
       </LinearGradient>
     );
   if (a.phase === 'auth') return <AuthScreen />;
