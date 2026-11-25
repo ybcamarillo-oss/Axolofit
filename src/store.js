@@ -51,6 +51,8 @@ export function AppProvider({ children }) {
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
   const [ultimoDia, setUltimoDia] = useState(null);
+  const [rachaMax, setRachaMax] = useState(0); // récord personal: se queda guardado aunque la racha se rompa
+  const [escudos, setEscudos] = useState(0); // escudos de racha (máx. 2): cubren un día fallado
   const [skinsUnlocked, setSkinsUnlocked] = useState([]);
   const [regaloSkin, setRegaloSkin] = useState(null);
   const [evoNueva, setEvoNueva] = useState(null);
@@ -193,17 +195,31 @@ export function AppProvider({ children }) {
         setLevel(axo.nivel != null ? axo.nivel : 1);
         setXp(axo.xp != null ? axo.xp : 0);
         const rachaGuardada = axo.racha != null ? axo.racha : 0;
+        const maxGuardado = Math.max(axo.racha_max || 0, rachaGuardada);
+        let escudosHoy = axo.escudos || 0;
+        setRachaMax(maxGuardado);
         ultDia = axo.ultimo_dia || null;
         if (rachaGuardada > 0 && ultDia) {
           const hd = new Date();
           const [yy, mm, dd] = ultDia.split('-').map(Number);
           const dif = Math.floor((new Date(hd.getFullYear(), hd.getMonth(), hd.getDate()) - new Date(yy, mm - 1, dd)) / 86400000);
-          if (dif >= 2) {
+          const nom = perfil.nombre || 'Axo';
+          if (dif === 2 && escudosHoy > 0) {
+            // Falló un solo día: el escudo cubre ese día y la racha sigue
+            const ayerD = new Date(hd.getFullYear(), hd.getMonth(), hd.getDate() - 1);
+            const ayerS = hoyLocal(ayerD);
+            escudosHoy -= 1;
+            setStreak(rachaGuardada);
+            setUltimoDia(ayerS);
+            ultDia = ayerS;
+            luego(() => showToast('🛡️ Ayer no pudimos, pero mi escudo te cubrió. ¡Tu racha de ' + rachaGuardada + ' días sigue intacta!'), 1200);
+            sb.from('axo_state').update({ ultimo_dia: ayerS, escudos: escudosHoy, racha_max: maxGuardado }).eq('id', uid).then(() => {});
+          } else if (dif >= 2) {
             setStreak(0);
             setUltimoDia(null);
             ultDia = null;
-            luego(() => showToast('💔 ' + (perfil.nombre || 'Axo') + ' te extrañó… tu racha de ' + rachaGuardada + ' días se reinició'), 1200);
-            sb.from('axo_state').update({ racha: 0, ultimo_dia: null }).eq('id', uid).then(() => {});
+            luego(() => showToast('🌱 ' + nom + ' guardó tu récord de ' + maxGuardado + ' días. ¡Empezamos otra vez cuando quieras!'), 1200);
+            sb.from('axo_state').update({ racha: 0, ultimo_dia: null, racha_max: maxGuardado }).eq('id', uid).then(() => {});
           } else {
             setStreak(rachaGuardada);
             setUltimoDia(ultDia);
@@ -212,6 +228,7 @@ export function AppProvider({ children }) {
           setStreak(rachaGuardada);
           setUltimoDia(ultDia);
         }
+        setEscudos(escudosHoy);
         setSkinsUnlocked(axo.skins ? axo.skins.split(',').filter(Boolean) : []);
         setVasos(axo.vasos_fecha === hoy && axo.vasos_hoy ? axo.vasos_hoy : 0);
       }
@@ -406,6 +423,18 @@ export function AppProvider({ children }) {
       }
     }
     if (userId) guardarAxo(userId, { variedad: pet.palette, accesorio: pet.accessory, outfit: pet.outfit, nivel: nl, xp: nx, racha: nuevaRacha, ultimo_dia: hoyStr, skins: skins.join(',') });
+    // Récord y escudos (aparte, para que un fallo aquí nunca afecte el guardado de la racha)
+    const nuevoMax = Math.max(rachaMax, nuevaRacha);
+    let nuevosEscudos = escudos;
+    let ganoEscudo = false;
+    if (ultimoDia !== hoyStr && nuevaRacha % 7 === 0 && escudos < 2) {
+      nuevosEscudos = escudos + 1;
+      ganoEscudo = true;
+    }
+    setRachaMax(nuevoMax);
+    setEscudos(nuevosEscudos);
+    if (userId) sb.from('axo_state').update({ racha_max: nuevoMax, escudos: nuevosEscudos }).eq('id', userId).then(() => {});
+    if (ganoEscudo) luego(() => showToast('🛡️ ¡Ganaste un escudo de racha! Cubre un día que no puedas'), 3500);
     vibra(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success));
     if (subioEtapa) {
       setEvoNueva({ etapa: evoDe(nuevaRacha), dias: nuevaRacha, skin: nuevaSkin });
@@ -652,7 +681,7 @@ export function AppProvider({ children }) {
   const value = {
     userId, phase, setPhase, screen, setScreen, overlay, setOverlay, toast, showToast,
     profile, setProfile, petName, pet, updatePet, targets, tieneAxo,
-    level, xp, addXp, streak, ultimoDia, skinsUnlocked, desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
+    level, xp, addXp, streak, rachaMax, escudos, ultimoDia, skinsUnlocked, desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
     best, recordBest, log, totals, vasos, addAgua, setWater, viewDate, setViewDate,
     pesoActual, pesoHist, registrarPeso, composicion, registrarComposicion, totalComidas,
     prefs, setPrefs, toggleEvitar, weekPlan, weekEaten, toggleEaten, swapMeal, regenDay, regenWeek,
