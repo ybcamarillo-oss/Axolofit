@@ -96,7 +96,7 @@ export default function PetScreen() {
       <SectT style={tStyle}>Accesorio</SectT>
       <Swatches map={ACCESSORIES} sel={pet.accessory} onPick={(k) => (ACCESSORIES[k].premium ? a.setOverlay('paywall') : a.updatePet({ ...pet, accessory: k }))} render={(k) => <AxoMini paletteKey={pet.palette} accessory={k} estilo={pet.estilo} size={50} />} />
       <SectT style={tStyle}>Outfit</SectT>
-      <Swatches map={OUTFITS} sel={enVestido ? 'vestido_rosa' : pet.outfit} onPick={(k) => (OUTFITS[k].premium ? a.setOverlay('paywall') : a.updatePet({ ...pet, outfit: k }))} render={(k) => <AxoMini paletteKey={pet.palette} outfit={k} evo={computedEvo} size={50} />} />
+      <Swatches map={OUTFITS} sel={enVestido ? 'vestido_lila' : pet.outfit} onPick={(k) => (OUTFITS[k].premium ? a.setOverlay('paywall') : a.updatePet({ ...pet, outfit: k }))} render={(k) => <AxoMini paletteKey={pet.palette} outfit={k} evo={computedEvo} size={50} />} />
       {enVestido && (
         <>
           <SectT style={tStyle}>Color del vestido</SectT>
