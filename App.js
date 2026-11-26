@@ -21,6 +21,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import LogScreen from './src/screens/LogScreen';
 import SemanaScreen from './src/screens/SemanaScreen';
 import StatsScreen from './src/screens/StatsScreen';
+import TipsScreen from './src/screens/TipsScreen';
 import PetScreen from './src/screens/PetScreen';
 import MoreScreen from './src/screens/MoreScreen';
 import { ArcadeScreen, LeaderboardScreen } from './src/screens/ArcadeScreen';
@@ -33,6 +34,7 @@ const PANTALLAS = {
   log: LogScreen,
   semana: SemanaScreen,
   stats: StatsScreen,
+  tips: TipsScreen,
   pet: PetScreen,
   more: MoreScreen,
   arcade: ArcadeScreen,

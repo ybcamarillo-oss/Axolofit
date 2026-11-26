@@ -4,8 +4,7 @@ import { useApp } from '../store';
 import { C, F } from '../theme';
 import { Screen, Btn, Card, CardH, Muted, MiniChart, Tip, Row, Input, sombra } from '../ui';
 import Axo, { AxoMini } from '../components/Axo';
-import { TIPS, TIPS_CATS, PALETTES, SKINS_REGALO, PREMIOS_RACHA, ACCESSORIES } from '../data';
-import { useDiaDeUso, tipDeDia } from '../TipDelDia';
+import { PALETTES, SKINS_REGALO, PREMIOS_RACHA, ACCESSORIES } from '../data';
 
 
 // Vitrina de racha: lo que llevas, tu récord, tus escudos y los premios que vienen.
@@ -105,6 +104,8 @@ export default function StatsScreen() {
 
   return (
     <Screen title="Progreso" back={() => a.setScreen('home')} contentStyle={{ paddingBottom: 100 }}>
+      <Vitrina />
+
       <Card colors={['#FCEFF1', '#EEF7F4']}>
         <CardH>⚖️ Tu peso · {pesoReal.toFixed(1)} kg</CardH>
         <View style={{ alignItems: 'center' }}>
@@ -195,9 +196,7 @@ export default function StatsScreen() {
         </Text>
       </View>
 
-      <BibliotecaTips />
-
-      <Vitrina />
+      <Btn kind="ghost" label="💡 Ver todos los tips" onPress={() => a.setScreen('tips')} style={{ marginBottom: 12 }} />
 
       <Card>
         <CardH>🏆 Logros recientes</CardH>
@@ -276,45 +275,6 @@ function Composicion({ a }) {
   );
 }
 
-function BibliotecaTips() {
-  const [cat, setCat] = useState('todos');
-  const [abierto, setAbierto] = useState(null);
-  const dia = useDiaDeUso();
-  const delDia = tipDeDia(dia);
-  const lista = cat === 'todos' ? TIPS : TIPS.filter((t) => t.c === cat);
-  return (
-    <>
-      <Card>
-        <CardH>🌟 Tip del día</CardH>
-        <Text style={{ fontFamily: F.bodyBold, fontSize: 15, color: C.ink }}>{delDia.e} {delDia.t}</Text>
-        <Muted sm style={{ marginTop: 6 }}>{delDia.d}</Muted>
-        <Text style={{ fontFamily: F.body, fontSize: 11, color: C.gray, marginTop: 8 }}>Fuente: {delDia.f}</Text>
-      </Card>
-      <Card>
-        <CardH>📚 Todos los tips</CardH>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
-          {[['todos', 'Todos'], ...Object.entries(TIPS_CATS)].map(([k, l]) => (
-            <Pressable key={k} onPress={() => setCat(k)} style={[s.cat, cat === k && s.catOn]}>
-              <Text style={{ fontFamily: F.bodyBold, fontSize: 12.5, color: cat === k ? '#fff' : C.ink }}>{l}</Text>
-            </Pressable>
-          ))}
-        </View>
-        {lista.map((t) => (
-          <Pressable key={t.t} onPress={() => setAbierto(abierto === t.t ? null : t.t)} style={s.tipFila}>
-            <Text style={{ fontFamily: F.bodyBold, fontSize: 14.5, color: C.ink }}>{t.e} {t.t}</Text>
-            {abierto === t.t && (
-              <>
-                <Muted sm style={{ marginTop: 6 }}>{t.d}</Muted>
-                <Text style={{ fontFamily: F.body, fontSize: 11, color: C.gray, marginTop: 6 }}>Fuente: {t.f}</Text>
-              </>
-            )}
-          </Pressable>
-        ))}
-        <Text style={{ fontFamily: F.body, fontSize: 11, color: C.gray, marginTop: 8 }}>Información general, no sustituye a tu médico o nutriólogo. Los estudios observacionales muestran asociación, no prueban causa.</Text>
-      </Card>
-    </>
-  );
-}
 
 const s = StyleSheet.create({
   chip: { width: '48.5%', backgroundColor: '#fff', borderRadius: 18, paddingVertical: 14, alignItems: 'center', marginBottom: 10, ...sombra },
