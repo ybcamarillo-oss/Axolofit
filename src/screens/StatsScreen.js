@@ -1,11 +1,71 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useApp } from '../store';
 import { C, F } from '../theme';
 import { Screen, Btn, Card, CardH, Muted, MiniChart, Tip, Row, Input, sombra } from '../ui';
 import Axo, { AxoMini } from '../components/Axo';
-import { TIPS, TIPS_CATS } from '../data';
+import { TIPS, TIPS_CATS, PALETTES, SKINS_REGALO } from '../data';
 import { useDiaDeUso, tipDeDia } from '../TipDelDia';
+
+
+// Vitrina de racha: lo que llevas, tu récord, tus escudos y los premios que vienen.
+function Vitrina() {
+  const a = useApp();
+  const { streak, rachaMax, escudos } = a;
+  const tengo = a.skinsReales || [];
+  // Los regalos caen el día 1 y luego cada 7 días
+  let dia = streak < 1 ? 1 : (Math.floor(streak / 7) + 1) * 7;
+  const porVenir = SKINS_REGALO.filter((k) => !tengo.includes(k)).map((k) => {
+    const d = dia;
+    dia = d === 1 ? 7 : d + 7;
+    return { k, d, faltan: Math.max(1, d - streak) };
+  });
+  return (
+    <>
+      <Card>
+        <CardH>🔥 Tu racha</CardH>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={{ fontFamily: F.display, fontSize: 40, color: C.ink }}>{streak}</Text>
+            <Muted sm>{streak === 1 ? 'día seguido' : 'días seguidos'}</Muted>
+          </View>
+          <View style={s.divisor} />
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={{ fontFamily: F.display, fontSize: 24, color: C.ink }}>{Math.max(rachaMax || 0, streak)}</Text>
+            <Muted sm>tu récord</Muted>
+          </View>
+          <View style={s.divisor} />
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={{ fontSize: 22 }}>{escudos > 0 ? '🛡️'.repeat(escudos) : '—'}</Text>
+            <Muted sm>{escudos === 1 ? 'escudo' : 'escudos'}</Muted>
+          </View>
+        </View>
+        <Muted sm style={{ textAlign: 'center', marginTop: 10 }}>
+          Cada 7 días ganas un escudo: cubre un día que no puedas y tu racha sigue. Tu récord se queda guardado siempre.
+        </Muted>
+      </Card>
+
+      {porVenir.length > 0 && (
+        <Card>
+          <CardH>🎁 Lo que viene</CardH>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingVertical: 2 }}>
+            {porVenir.map((p, i) => (
+              <View key={p.k} style={[s.premio, i === 0 && s.premioYa]}>
+                <View style={{ opacity: i === 0 ? 1 : 0.45 }}>
+                  <AxoMini paletteKey={p.k} evo="joven" mood="feliz" size={72} />
+                </View>
+                <Text style={{ fontFamily: F.bodyBold, fontSize: 13, color: C.ink, marginTop: 4 }}>
+                  {i === 0 ? '' : '🔒 '}{PALETTES[p.k] ? PALETTES[p.k].label : p.k}
+                </Text>
+                <Muted sm>{i === 0 ? (p.faltan === 1 ? 'mañana' : 'en ' + p.faltan + ' días') : 'día ' + p.d}</Muted>
+              </View>
+            ))}
+          </ScrollView>
+        </Card>
+      )}
+    </>
+  );
+}
 
 // Progreso: peso, gráfica, IMC, informe del día y logros.
 export default function StatsScreen() {
@@ -119,6 +179,8 @@ export default function StatsScreen() {
       </View>
 
       <BibliotecaTips />
+
+      <Vitrina />
 
       <Card>
         <CardH>🏆 Logros recientes</CardH>
@@ -242,5 +304,8 @@ const s = StyleSheet.create({
   cat: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 14, backgroundColor: '#F1F2F7' },
   catOn: { backgroundColor: '#7C5CFF' },
   tipFila: { paddingVertical: 11, borderTopWidth: 1, borderTopColor: '#EEF0F6' },
+  divisor: { width: 1, height: 44, backgroundColor: '#EEF0F6' },
+  premio: { width: 104, alignItems: 'center', backgroundColor: '#F7F3FF', borderRadius: 18, paddingVertical: 10, paddingHorizontal: 6 },
+  premioYa: { backgroundColor: '#FDEAF2' },
   tipAxo: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#EAF7F2', borderRadius: 16, padding: 12, marginBottom: 12 },
 });
