@@ -33,10 +33,13 @@ export const PALETTES = {
   melanico: { body: "#5E5E6B", gill: "#3F3F4A", blush: "#73737F", label: "Melánico", premium: true },
   salvaje: { body: "#9C8B63", gill: "#6E5E3C", blush: "#8A7A52", label: "Salvaje", premium: true },
   cobre: { body: "#C98E63", gill: "#A8693F", blush: "#BE8055", label: "Cobre", premium: true },
+  axantico: { body: "#BAC5D2", gill: "#7F8EA3", blush: "#E3A9B8", label: "Axántico", premium: true },
+  mosaico: { body: "#F2E3CF", gill: "#B9825E", blush: "#EE9A86", label: "Mosaico", premium: true },
+  luciernaga: { body: "#CFF5B8", gill: "#2FCB6A", blush: "#8FE3A0", label: "Luciérnaga", premium: true },
   arcoiris: { body: "#C9A7F0", gill: "#8E5BD0", blush: "#FFB3D9", label: "Arcoíris", premium: true },
 };
 // Skins que se regalan al cumplir metas (1ra vez y cada 7 días)
-export const SKINS_REGALO = ["dorado", "leucistico", "galaxia", "albino", "cobre", "melanico", "salvaje", "arcoiris"];
+export const SKINS_REGALO = ["dorado", "leucistico", "galaxia", "albino", "cobre", "melanico", "salvaje", "arcoiris", "axantico", "mosaico", "luciernaga"];
 export const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, conejo: { label: "Gorro conejo", premium: true }, gato: { label: "Gorro gato", premium: true }, mariposa: { label: "Alas mariposa", premium: true }, corona: { label: "Corona", premium: true } };
 export const ESTILOS = { clasico: { label: "Clásico", premium: false }, galan: { label: "Galán", premium: true } };
 // Vestido: el lila es gratis (contrasta con todos los colores de Axo); los demás colores se desbloquean viendo un anuncio o comprándolos ($18 MXN)

@@ -54,7 +54,7 @@ function oscurecer(hex, f) {
 
 export function coloresAxo(paletteKey) {
   const pal = PALETTES[paletteKey] || PALETTES.durazno;
-  const esp = { dorado: ['url(#g)', 'url(#gg)'], galaxia: ['url(#gx)', 'url(#gxg)'], arcoiris: ['url(#rb)', 'url(#rbg)'] }[paletteKey];
+  const esp = { dorado: ['url(#g)', 'url(#gg)'], galaxia: ['url(#gx)', 'url(#gxg)'], arcoiris: ['url(#rb)', 'url(#rbg)'], mosaico: ['url(#mo)', 'url(#mog)'], luciernaga: ['url(#lu)', 'url(#lug)'] }[paletteKey];
   const body = esp ? esp[0] : pal.body;
   const gill = esp ? esp[1] : pal.gill;
   const line = paletteKey === 'galaxia' ? '#1B1140' : paletteKey === 'albino' ? '#B07F2E' : oscurecer(pal.gill, 0.62);
@@ -85,6 +85,30 @@ export function Gradients() {
         <Stop offset="0" stopColor="#9B7BFF" />
         <Stop offset="1" stopColor="#4B2E9E" />
       </RadialGradient>
+      <LinearGradient id="mo" gradientUnits="userSpaceOnUse" x1="40" y1="44" x2="170" y2="196">
+        <Stop offset="0" stopColor="#F6EBDD" />
+        <Stop offset="0.3" stopColor="#F6EBDD" />
+        <Stop offset="0.3" stopColor="#E9B896" />
+        <Stop offset="0.55" stopColor="#E9B896" />
+        <Stop offset="0.55" stopColor="#F6EBDD" />
+        <Stop offset="0.75" stopColor="#F6EBDD" />
+        <Stop offset="0.75" stopColor="#B98A6A" />
+        <Stop offset="1" stopColor="#B98A6A" />
+      </LinearGradient>
+      <LinearGradient id="mog" x1="0" y1="0" x2="1" y2="0">
+        <Stop offset="0" stopColor="#C98E63" />
+        <Stop offset="0.5" stopColor="#F0D3B5" />
+        <Stop offset="1" stopColor="#C98E63" />
+      </LinearGradient>
+      <RadialGradient id="lu" cx="0.45" cy="0.4" r="0.8">
+        <Stop offset="0" stopColor="#F3FFD0" />
+        <Stop offset="0.55" stopColor="#9BEA8C" />
+        <Stop offset="1" stopColor="#35C96B" />
+      </RadialGradient>
+      <LinearGradient id="lug" x1="0" y1="0" x2="0" y2="1">
+        <Stop offset="0" stopColor="#6CF08A" />
+        <Stop offset="1" stopColor="#1FA85A" />
+      </LinearGradient>
       <LinearGradient id="rb" gradientUnits="userSpaceOnUse" x1="100" y1="44" x2="100" y2="196">
         {ARCO.map((c, i) => [<Stop key={`a${i}`} offset={i / 6} stopColor={c} />, <Stop key={`b${i}`} offset={(i + 1) / 6} stopColor={c} />])}
       </LinearGradient>
