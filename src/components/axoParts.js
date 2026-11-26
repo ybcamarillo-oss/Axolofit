@@ -231,7 +231,9 @@ export function Cuerpo({ g }) {
 }
 
 function Cielo({ abajo }) {
-  const en = (s) => (abajo ? s[1] > CORTE : s[1] <= CORTE);
+  // fuera de la carita, para que no compitan con los ojos
+  const cara = (s) => s[0] > 66 && s[0] < 134 && s[1] > 66 && s[1] < 108;
+  const en = (s) => (abajo ? s[1] > CORTE : s[1] <= CORTE && !cara(s));
   return (
     <G>
       {ESTRELLAS.filter(en).map((s) => (
@@ -672,7 +674,7 @@ function OjoGrande({ cx, cy, r = 13, iris, aro }) {
 }
 
 // Colores oscuros: iris ámbar y aro claro para que la mirada siga siendo lo primero que se ve
-const MIRADA = { obsidiana: ['#F6E05E', '#CBD5E0'], melanico: ['#F6E05E', '#A9A9B8'], galaxia: ['#9B7BFF', null] };
+const MIRADA = { obsidiana: ['#F6E05E', '#CBD5E0'], melanico: ['#F6E05E', '#A9A9B8'], galaxia: ['#B49BFF', '#F1EBFF'] };
 export function Ojos({ g, mood }) {
   const f = g.cara;
   const [iris, aro] = MIRADA[g.paletteKey] || [];
