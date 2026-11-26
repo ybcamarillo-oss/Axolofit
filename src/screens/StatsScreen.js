@@ -11,7 +11,7 @@ import { useDiaDeUso, tipDeDia } from '../TipDelDia';
 // Vitrina de racha: lo que llevas, tu récord, tus escudos y los premios que vienen.
 function Vitrina() {
   const a = useApp();
-  const { streak, rachaMax, escudos } = a;
+  const { streak, rachaMax, escudos, medSemanas } = a;
   const tengo = a.skinsReales || [];
   // Los regalos caen el día 1 y luego cada 7 días
   let dia = streak < 1 ? 1 : (Math.floor(streak / 7) + 1) * 7;
@@ -48,6 +48,9 @@ function Vitrina() {
           </View>
         </View>
         <Muted sm style={{ textAlign: 'center', marginTop: 10 }}>
+          📏 Te mediste {medSemanas} {medSemanas === 1 ? 'semana' : 'semanas'}. Pesarte y medirte es solo información para llevar mejor control: da igual si el número sube o baja, lo que cuenta es registrarlo.
+        </Muted>
+        <Muted sm style={{ textAlign: 'center', marginTop: 6 }}>
           Cada 7 días ganas un escudo: cubre un día que no puedas y tu racha sigue. Tu récord se queda guardado siempre.
         </Muted>
       </Card>
@@ -113,6 +116,9 @@ export default function StatsScreen() {
             IMC: <Text style={{ fontFamily: F.bodyBold }}>{imc.toFixed(1)}</Text> · {imcCat}
           </Muted>
         )}
+        <Muted sm style={{ textAlign: 'center', marginTop: 8 }}>
+          Lo ideal es pesarte una vez por semana. Es solo información para llevar mejor control, no una calificación.
+        </Muted>
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 10 }}>
           <Input placeholder="Peso de hoy (kg)" keyboardType="decimal-pad" value={pesoInput} onChangeText={setPesoInput} style={{ flex: 1, marginBottom: 0, backgroundColor: '#fff' }} />
           <Btn label="Registrar" onPress={registrar} />

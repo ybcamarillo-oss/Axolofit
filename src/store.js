@@ -3,7 +3,7 @@ import { AppState, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { sb } from './supabase';
-import { DEMO, computeProfile, BACKGROUNDS, SKINS_REGALO, MENU_DB, MEAL_SPLIT, PHRASES, AXO_REACCIONES, PREMIOS_RACHA } from './data';
+import { DEMO, computeProfile, BACKGROUNDS, SKINS_REGALO, MENU_DB, MEAL_SPLIT, PHRASES, AXO_REACCIONES, PREMIOS_RACHA, PREMIOS_MEDICION } from './data';
 import { hoyLocal, genWeek, genDay, cambioParecido, lunesDe } from './plan';
 import { estadoAvisos, pedirAvisos, programarAvisos, cancelarAvisos } from './notifications';
 
@@ -54,6 +54,8 @@ export function AppProvider({ children }) {
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
   const [ultimoDia, setUltimoDia] = useState(null);
+  const [medSemanas, setMedSemanas] = useState(0); // semanas en las que se midió (solo cuenta el acto, no el número)
+  const [medUltSem, setMedUltSem] = useState(null);
   const [rachaMax, setRachaMax] = useState(0); // récord personal: se queda guardado aunque la racha se rompa
   const [escudos, setEscudos] = useState(0); // escudos de racha (máx. 2): cubren un día fallado
   const [skinsUnlocked, setSkinsUnlocked] = useState([]);
@@ -232,6 +234,8 @@ export function AppProvider({ children }) {
           setUltimoDia(ultDia);
         }
         setEscudos(escudosHoy);
+        setMedSemanas(axo.med_semanas || 0);
+        setMedUltSem(axo.med_ult_sem || null);
         setSkinsUnlocked(axo.skins ? axo.skins.split(',').filter(Boolean) : []);
         setVasos(axo.vasos_fecha === hoy && axo.vasos_hoy ? axo.vasos_hoy : 0);
       }
@@ -475,7 +479,26 @@ export function AppProvider({ children }) {
       }
     }
     showToast('¡Peso registrado! 💪');
+    contarMedicion();
     return true;
+  };
+
+  // Se premia medirse, nunca el resultado: da igual si el número subió, bajó o se quedó igual.
+  const contarMedicion = () => {
+    const sem = hoyLocal(lunesDe());
+    if (medUltSem === sem) return;
+    const n = medSemanas + 1;
+    setMedUltSem(sem);
+    setMedSemanas(n);
+    addXp(20);
+    if (userId) sb.from('axo_state').update({ med_semanas: n, med_ult_sem: sem }).eq('id', userId).then(() => {});
+    const premio = PREMIOS_MEDICION.find((pr) => pr.semanas === n && !skinsUnlocked.includes(pr.k));
+    if (premio) {
+      const con = [...skinsUnlocked, premio.k];
+      setSkinsUnlocked(con);
+      if (userId) sb.from('axo_state').update({ skins: con.join(',') }).eq('id', userId).then(() => {});
+      luego(() => showToast(premio.t), 4200);
+    } else luego(() => showToast('📏 Medición de la semana lista · +20 XP'), 2600);
   };
 
   /* ---------- Báscula inteligente ---------- */
@@ -507,6 +530,7 @@ export function AppProvider({ children }) {
     }
     setComposicion((h) => [...h.filter((r) => r.fecha !== fecha), fila].sort((a, b) => a.fecha.localeCompare(b.fecha)));
     showToast('¡Medición guardada! 💪');
+    contarMedicion();
     return true;
   };
 
@@ -696,7 +720,7 @@ export function AppProvider({ children }) {
   const value = {
     userId, phase, setPhase, screen, setScreen, overlay, setOverlay, toast, showToast,
     profile, setProfile, petName, pet, updatePet, targets, tieneAxo,
-    level, xp, addXp, streak, rachaMax, escudos, ultimoDia, reaccion, skinsReales: skinsUnlocked, skinsUnlocked: [...skinsUnlocked, ...PRUEBA_SKINS.filter((k) => !skinsUnlocked.includes(k))], desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
+    level, xp, addXp, streak, rachaMax, escudos, ultimoDia, reaccion, medSemanas, medUltSem, skinsReales: skinsUnlocked, skinsUnlocked: [...skinsUnlocked, ...PRUEBA_SKINS.filter((k) => !skinsUnlocked.includes(k))], desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
     best, recordBest, log, totals, vasos, addAgua, setWater, viewDate, setViewDate,
     pesoActual, pesoHist, registrarPeso, composicion, registrarComposicion, totalComidas,
     prefs, setPrefs, toggleEvitar, weekPlan, weekEaten, toggleEaten, swapMeal, regenDay, regenWeek,
