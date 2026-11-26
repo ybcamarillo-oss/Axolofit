@@ -54,10 +54,10 @@ function oscurecer(hex, f) {
 
 export function coloresAxo(paletteKey) {
   const pal = PALETTES[paletteKey] || PALETTES.durazno;
-  const esp = { dorado: ['url(#g)', 'url(#gg)'], galaxia: ['url(#gx)', 'url(#gxg)'], arcoiris: ['url(#rb)', 'url(#rbg)'], mosaico: ['url(#mo)', 'url(#mog)'], luciernaga: ['url(#lu)', 'url(#lug)'] }[paletteKey];
+  const esp = { dorado: ['url(#g)', 'url(#gg)'], galaxia: ['url(#gx)', 'url(#gxg)'], arcoiris: ['url(#rb)', 'url(#rbg)'], luciernaga: ['url(#lu)', 'url(#lug)'], perla: ['url(#pe)', 'url(#peg)'] }[paletteKey];
   const body = esp ? esp[0] : pal.body;
   const gill = esp ? esp[1] : pal.gill;
-  const line = paletteKey === 'galaxia' ? '#1B1140' : paletteKey === 'albino' ? '#B07F2E' : oscurecer(pal.gill, 0.62);
+  const line = paletteKey === 'perla' ? '#B9A7E8' : paletteKey === 'galaxia' ? '#1B1140' : paletteKey === 'albino' ? '#B07F2E' : oscurecer(pal.gill, 0.62);
   return { pal, body, gill, line };
 }
 
@@ -85,6 +85,16 @@ export function Gradients() {
         <Stop offset="0" stopColor="#9B7BFF" />
         <Stop offset="1" stopColor="#4B2E9E" />
       </RadialGradient>
+      <RadialGradient id="pe" cx="0.38" cy="0.3" r="0.95">
+        <Stop offset="0" stopColor="#FFFFFF" />
+        <Stop offset="0.55" stopColor="#F6F2FF" />
+        <Stop offset="1" stopColor="#E3DAF7" />
+      </RadialGradient>
+      <LinearGradient id="peg" x1="0" y1="0" x2="1" y2="1">
+        <Stop offset="0" stopColor="#8FEDE0" />
+        <Stop offset="0.5" stopColor="#C9B3F2" />
+        <Stop offset="1" stopColor="#FBB6CE" />
+      </LinearGradient>
       <LinearGradient id="mo" gradientUnits="userSpaceOnUse" x1="40" y1="44" x2="170" y2="196">
         <Stop offset="0" stopColor="#F6EBDD" />
         <Stop offset="0.3" stopColor="#F6EBDD" />
@@ -215,6 +225,7 @@ export function Cuerpo({ g }) {
         </G>
       )}
       {paletteKey === 'galaxia' && <Cielo abajo />}
+      <Detalle g={g} abajo />
     </G>
   );
 }
@@ -231,6 +242,66 @@ function Cielo({ abajo }) {
       ))}
     </G>
   );
+}
+
+// Detalles que distinguen cada skin raro: destellos plateados, manchas, brillo verde o tornasol.
+const PLATA = [[76, 64, 4.4], [122, 58, 3.6], [134, 92, 3], [84, 118, 3.8], [118, 138, 3.4], [94, 158, 3]];
+const PARCHES = [[76, 68, 17, 12, -18, 1], [126, 94, 15, 11, 14, 0], [88, 132, 19, 13, -8, 1], [128, 152, 14, 10, 20, 0], [100, 108, 13, 9, 30, 0], [70, 158, 12, 8, -24, 1]];
+const LUCES = [[80, 64, 4], [122, 74, 3.2], [70, 104, 3.6], [128, 128, 4.2], [96, 152, 3.4], [112, 170, 2.8]];
+function Detalle({ g, abajo }) {
+  const { paletteKey, pal } = g;
+  const en = (s) => (abajo ? s[1] > CORTE : s[1] <= CORTE);
+  if (paletteKey === 'axantico')
+    return (
+      <G>
+        {PLATA.filter(en).map((s) => (
+          <Path key={s.join()} d={destello(s[0], s[1], s[2])} fill="#FFFFFF" opacity={0.9} />
+        ))}
+        {!abajo && <Ellipse cx={82} cy={62} rx={24} ry={12} fill="#FFFFFF" opacity={0.55} transform="rotate(-22 82 62)" />}
+        {abajo && <Ellipse cx={92} cy={140} rx={18} ry={9} fill="#FFFFFF" opacity={0.4} transform="rotate(-20 92 140)" />}
+      </G>
+    );
+  if (paletteKey === 'mosaico')
+    return (
+      <G>
+        {PARCHES.filter((s) => en([s[0], s[1]])).map((s) => (
+          <Ellipse key={s.join()} cx={s[0]} cy={s[1]} rx={s[2]} ry={s[3]} fill={s[5] ? pal.gill : '#8A5B3C'} opacity={s[5] ? 0.85 : 0.6} transform={`rotate(${s[4]} ${s[0]} ${s[1]})`} />
+        ))}
+      </G>
+    );
+  if (paletteKey === 'luciernaga')
+    return (
+      <G>
+        {LUCES.filter(en).map((s) => (
+          <G key={s.join()}>
+            <Circle cx={s[0]} cy={s[1]} r={s[2] * 2.1} fill="#D6FF8A" opacity={0.3} />
+            <Circle cx={s[0]} cy={s[1]} r={s[2]} fill="#F4FFD6" opacity={0.95} />
+          </G>
+        ))}
+      </G>
+    );
+  if (paletteKey === 'perla')
+    return (
+      <G>
+        {!abajo && (
+          <>
+            <Ellipse cx={84} cy={66} rx={21} ry={10} fill="#FFFFFF" opacity={0.75} transform="rotate(-22 84 66)" />
+            <Ellipse cx={118} cy={98} rx={16} ry={9} fill="#A7E8E0" opacity={0.35} transform="rotate(16 118 98)" />
+            <Ellipse cx={74} cy={100} rx={14} ry={8} fill="#F3B9D4" opacity={0.35} transform="rotate(-12 74 100)" />
+          </>
+        )}
+        {abajo && (
+          <>
+            <Ellipse cx={112} cy={136} rx={18} ry={10} fill="#BFE9FF" opacity={0.35} transform="rotate(18 112 136)" />
+            <Ellipse cx={88} cy={160} rx={15} ry={9} fill="#F6C9E4" opacity={0.35} transform="rotate(-14 88 160)" />
+          </>
+        )}
+        {[[78, 60, 3], [126, 86, 2.4], [96, 150, 2.8]].filter(en).map((s) => (
+          <Path key={s.join()} d={destello(s[0], s[1], s[2])} fill="#FFFFFF" opacity={0.95} />
+        ))}
+      </G>
+    );
+  return null;
 }
 
 /* ---------- BRACITOS (como en el ícono original: dos rayitas y una manita de tres deditos) ---------- */
@@ -356,6 +427,7 @@ export function CabezaBase({ g, mood }) {
           </G>
         )}
         {paletteKey === 'galaxia' && <Cielo />}
+        <Detalle g={g} />
         <G fill={pal.gill} opacity={0.45}>
           <Circle cx={78} cy={58} r={3} />
           <Circle cx={92} cy={50} r={3.4} />

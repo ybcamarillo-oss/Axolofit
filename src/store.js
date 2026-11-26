@@ -23,7 +23,7 @@ const vibra = (fn) => {
 };
 
 // PRUEBA TEMPORAL: colores nuevos visibles ya para probarlos (no se guardan). Para quitarlo, dejar la lista vacía: []
-const PRUEBA_SKINS = ['axantico', 'mosaico', 'luciernaga'];
+const PRUEBA_SKINS = ['axantico', 'mosaico', 'luciernaga', 'perla'];
 
 export function AppProvider({ children }) {
   const [userId, setUserId] = useState(null);
