@@ -135,10 +135,11 @@ export function AppProvider({ children }) {
   }, [userId, profile, prefs, weekPlan, weekEaten, pet.bg, pet.estilo]);
 
   useEffect(() => {
-    if (phase !== 'app') return;
+    if (!userId || pet.palette === PET0.palette) return;
     const v = { paletteKey: pet.palette, accessory: pet.accessory, outfit: pet.outfit, estilo: pet.estilo, evo: evoDe(streak) };
     AsyncStorage.setItem('axo_ultimo', JSON.stringify(v)).catch(() => {});
-  }, [phase, pet.palette, pet.accessory, pet.outfit, pet.estilo, streak]);
+    setUltimoAxo(v);
+  }, [userId, pet.palette, pet.accessory, pet.outfit, pet.estilo, streak]);
 
   /* ---------- Cargar todo desde Supabase ---------- */
   const cargarDatos = async (uid) => {
