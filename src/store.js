@@ -22,6 +22,9 @@ const vibra = (fn) => {
   } catch (e) {}
 };
 
+// PRUEBA TEMPORAL: colores nuevos visibles ya para probarlos (no se guardan). Para quitarlo, dejar la lista vacía: []
+const PRUEBA_SKINS = ['axantico', 'mosaico', 'luciernaga'];
+
 export function AppProvider({ children }) {
   const [userId, setUserId] = useState(null);
   const [phase, setPhase] = useState('cargando'); // 'cargando' | 'auth' | 'onboarding' | 'app'
@@ -681,7 +684,7 @@ export function AppProvider({ children }) {
   const value = {
     userId, phase, setPhase, screen, setScreen, overlay, setOverlay, toast, showToast,
     profile, setProfile, petName, pet, updatePet, targets, tieneAxo,
-    level, xp, addXp, streak, rachaMax, escudos, ultimoDia, skinsUnlocked, desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
+    level, xp, addXp, streak, rachaMax, escudos, ultimoDia, skinsUnlocked: [...skinsUnlocked, ...PRUEBA_SKINS.filter((k) => !skinsUnlocked.includes(k))], desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
     best, recordBest, log, totals, vasos, addAgua, setWater, viewDate, setViewDate,
     pesoActual, pesoHist, registrarPeso, composicion, registrarComposicion, totalComidas,
     prefs, setPrefs, toggleEvitar, weekPlan, weekEaten, toggleEaten, swapMeal, regenDay, regenWeek,
