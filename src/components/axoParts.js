@@ -280,6 +280,21 @@ function Detalle({ g, abajo }) {
         ))}
       </G>
     );
+  if (paletteKey === 'obsidiana')
+    return (
+      <G>
+        {!abajo && (
+          <>
+            <Path d="M62 78 L92 50 L104 58 L70 92 Z" fill="#FFFFFF" opacity={0.14} />
+            <Path d="M118 56 L134 72 L126 86 L110 66 Z" fill="#B794F4" opacity={0.3} />
+          </>
+        )}
+        {abajo && <Path d="M80 128 L104 116 L112 128 L86 146 Z" fill="#B794F4" opacity={0.22} />}
+        {[[84, 62, 3.4], [126, 94, 2.8], [92, 140, 3], [120, 158, 2.4]].filter(en).map((s) => (
+          <Path key={s.join()} d={destello(s[0], s[1], s[2])} fill="#E9D8FD" opacity={0.95} />
+        ))}
+      </G>
+    );
   if (paletteKey === 'perla')
     return (
       <G>
@@ -642,12 +657,13 @@ export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
 /* ---------- OJOS y BOCA (carita nueva) ---------- */
 const arco = (cx, cy) => `M${cx - 9} ${cy + 3} Q${cx} ${cy - 9} ${cx + 9} ${cy + 3}`;
 
-function OjoGrande({ cx, cy, r = 13 }) {
+function OjoGrande({ cx, cy, r = 13, iris, aro }) {
   const k = r / 13;
   return (
     <G>
+      {aro && <Circle cx={cx} cy={cy} r={r + 1.6} fill={aro} opacity={0.9} />}
       <Circle cx={cx} cy={cy} r={r} fill={INK} />
-      <Ellipse cx={cx} cy={cy + 6 * k} rx={8 * k} ry={4.5 * k} fill="#9C7BD8" opacity={0.55} />
+      <Ellipse cx={cx} cy={cy + 6 * k} rx={8 * k} ry={4.5 * k} fill={iris || "#9C7BD8"} opacity={0.6} />
       <Circle cx={cx - 4.5 * k} cy={cy - 5 * k} r={4.8 * k} fill="#fff" />
       <Circle cx={cx + 5 * k} cy={cy + 5 * k} r={2.3 * k} fill="#fff" opacity={0.9} />
       <Circle cx={cx + 5.5 * k} cy={cy - 5.5 * k} r={1.4 * k} fill="#fff" opacity={0.8} />
@@ -655,8 +671,11 @@ function OjoGrande({ cx, cy, r = 13 }) {
   );
 }
 
+// Colores oscuros: iris ámbar y aro claro para que la mirada siga siendo lo primero que se ve
+const MIRADA = { obsidiana: ['#F6E05E', '#CBD5E0'], melanico: ['#F6E05E', '#A9A9B8'], galaxia: ['#9B7BFF', null] };
 export function Ojos({ g, mood }) {
   const f = g.cara;
+  const [iris, aro] = MIRADA[g.paletteKey] || [];
   const xi = 100 - f.dx;
   const xd = 100 + f.dx;
   let c;
@@ -674,8 +693,8 @@ export function Ojos({ g, mood }) {
       <G transform={g.faceT}>
         <Path d={`M${xi - 12} ${y - r - 3} L${xi + 7} ${y - r - 8}`} stroke={INK} strokeWidth={2.6} strokeLinecap="round" opacity={0.75} />
         <Path d={`M${xd - 7} ${y - r - 8} L${xd + 12} ${y - r - 3}`} stroke={INK} strokeWidth={2.6} strokeLinecap="round" opacity={0.75} />
-        <OjoGrande cx={xi} cy={y} r={r} />
-        <OjoGrande cx={xd} cy={y} r={r} />
+        <OjoGrande cx={xi} cy={y} r={r} iris={iris} aro={aro} />
+        <OjoGrande cx={xd} cy={y} r={r} iris={iris} aro={aro} />
         <Ellipse cx={xi} cy={y + r * 0.75} rx={r * 0.62} ry={2.4} fill="#BFE6FF" opacity={0.8} />
         <Ellipse cx={xd} cy={y + r * 0.75} rx={r * 0.62} ry={2.4} fill="#BFE6FF" opacity={0.8} />
       </G>
@@ -684,8 +703,8 @@ export function Ojos({ g, mood }) {
     // feliz y nace: ojos grandes con brillos
     c = (
       <G>
-        <OjoGrande cx={xi} cy={f.y} r={f.r} />
-        <OjoGrande cx={xd} cy={f.y} r={f.r} />
+        <OjoGrande cx={xi} cy={f.y} r={f.r} iris={iris} aro={aro} />
+        <OjoGrande cx={xd} cy={f.y} r={f.r} iris={iris} aro={aro} />
       </G>
     );
   }
