@@ -3,7 +3,7 @@ import { AppState, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { sb } from './supabase';
-import { DEMO, computeProfile, BACKGROUNDS, SKINS_REGALO, MENU_DB, MEAL_SPLIT, PHRASES, AXO_REACCIONES } from './data';
+import { DEMO, computeProfile, BACKGROUNDS, SKINS_REGALO, MENU_DB, MEAL_SPLIT, PHRASES, AXO_REACCIONES, PREMIOS_RACHA } from './data';
 import { hoyLocal, genWeek, genDay, cambioParecido, lunesDe } from './plan';
 import { estadoAvisos, pedirAvisos, programarAvisos, cancelarAvisos } from './notifications';
 
@@ -438,6 +438,14 @@ export function AppProvider({ children }) {
     setEscudos(nuevosEscudos);
     if (userId) sb.from('axo_state').update({ racha_max: nuevoMax, escudos: nuevosEscudos }).eq('id', userId).then(() => {});
     if (ganoEscudo) luego(() => showToast('🛡️ ¡Ganaste un escudo de racha! Cubre un día que no puedas'), 3500);
+    // Premios de racha larga: coronita de flores, aura dorada y corona real
+    const premio = PREMIOS_RACHA.find((pr) => pr.dias === nuevaRacha && !skins.includes(pr.k));
+    if (premio && ultimoDia !== hoyStr) {
+      const conPremio = [...skins, premio.k];
+      setSkinsUnlocked(conPremio);
+      if (userId) sb.from('axo_state').update({ skins: conPremio.join(',') }).eq('id', userId).then(() => {});
+      luego(() => showToast(premio.t), 5000);
+    }
     vibra(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success));
     if (subioEtapa) {
       setEvoNueva({ etapa: evoDe(nuevaRacha), dias: nuevaRacha, skin: nuevaSkin });
@@ -683,7 +691,7 @@ export function AppProvider({ children }) {
   const abandonado = diasAbandono >= 2 && streak === 0 && hungry;
   // Cara de Axo según lo que está pasando
   const mood = eating ? 'come' : kissing ? 'amor' : abandonado || hungry ? 'triste' : 'feliz';
-  const axoProps = { paletteKey: pet.palette, accessory: pet.accessory, outfit: pet.outfit, estilo: pet.estilo, chub };
+  const axoProps = { paletteKey: pet.palette, accessory: pet.accessory, outfit: pet.outfit, estilo: pet.estilo, chub, aura: skinsUnlocked.includes('aura') };
 
   const value = {
     userId, phase, setPhase, screen, setScreen, overlay, setOverlay, toast, showToast,

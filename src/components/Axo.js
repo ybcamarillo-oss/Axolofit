@@ -53,6 +53,7 @@ export default function Axo({
   accessory = 'ninguno',
   outfit = 'ninguno',
   estilo = 'clasico',
+  aura = false,
   size = 220,
   onPress,
 }) {
@@ -163,7 +164,7 @@ export default function Axo({
       {(evo === 'adulto' || evo === 'mistico') && (
         <Animated.View style={[full, evo === 'mistico' ? twinkleStyle : null]}>
           <Layer w={w} h={h}>
-            <Aura g={g} evo={evo} />
+            <Aura g={g} evo={evo} dorada={aura} />
           </Layer>
         </Animated.View>
       )}

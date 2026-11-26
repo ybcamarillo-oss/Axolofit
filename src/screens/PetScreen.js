@@ -92,11 +92,11 @@ export default function PetScreen() {
       <SectT style={tStyle}>Color / Skin</SectT>
       <Swatches map={PALETTES} sel={pet.palette} onPick={(k) => a.updatePet({ ...pet, palette: k })} render={(k) => <AxoMini paletteKey={k} estilo={pet.estilo} size={50} />} />
       <SectT style={tStyle}>Estilo</SectT>
-      <Swatches map={ESTILOS} sel={pet.estilo} onPick={(k) => (ESTILOS[k].premium ? a.setOverlay('paywall') : a.updatePet({ ...pet, estilo: k }))} render={(k) => <AxoMini paletteKey={pet.palette} estilo={k} size={50} />} />
+      <Swatches map={ESTILOS} sel={pet.estilo} onPick={(k) => (ESTILOS[k].premium && !a.skinsUnlocked.includes(k) ? a.setOverlay('paywall') : a.updatePet({ ...pet, estilo: k }))} render={(k) => <AxoMini paletteKey={pet.palette} estilo={k} size={50} />} />
       <SectT style={tStyle}>Accesorio</SectT>
-      <Swatches map={ACCESSORIES} sel={pet.accessory} onPick={(k) => (ACCESSORIES[k].premium ? a.setOverlay('paywall') : a.updatePet({ ...pet, accessory: k }))} render={(k) => <AxoMini paletteKey={pet.palette} accessory={k} estilo={pet.estilo} size={50} />} />
+      <Swatches map={ACCESSORIES} sel={pet.accessory} onPick={(k) => (ACCESSORIES[k].premium && !a.skinsUnlocked.includes(k) ? a.setOverlay('paywall') : a.updatePet({ ...pet, accessory: k }))} render={(k) => <AxoMini paletteKey={pet.palette} accessory={k} estilo={pet.estilo} size={50} />} />
       <SectT style={tStyle}>Outfit</SectT>
-      <Swatches map={OUTFITS} sel={enVestido ? 'vestido_lila' : pet.outfit} onPick={(k) => (OUTFITS[k].premium ? a.setOverlay('paywall') : a.updatePet({ ...pet, outfit: k }))} render={(k) => <AxoMini paletteKey={pet.palette} outfit={k} evo={computedEvo} size={50} />} />
+      <Swatches map={OUTFITS} sel={enVestido ? 'vestido_lila' : pet.outfit} onPick={(k) => (OUTFITS[k].premium && !a.skinsUnlocked.includes(k) ? a.setOverlay('paywall') : a.updatePet({ ...pet, outfit: k }))} render={(k) => <AxoMini paletteKey={pet.palette} outfit={k} evo={computedEvo} size={50} />} />
       {enVestido && (
         <>
           <SectT style={tStyle}>Color del vestido</SectT>
@@ -133,7 +133,7 @@ export default function PetScreen() {
       <Swatches
         map={BACKGROUNDS}
         sel={pet.bg}
-        onPick={(k) => (BACKGROUNDS[k].premium ? a.setOverlay('paywall') : a.updatePet({ ...pet, bg: k }))}
+        onPick={(k) => (BACKGROUNDS[k].premium && !a.skinsUnlocked.includes(k) ? a.setOverlay('paywall') : a.updatePet({ ...pet, bg: k }))}
         render={(k, v) => <LinearGradient colors={[v.from, v.to]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 46, height: 46, borderRadius: 23, marginVertical: 4.5 }} />}
       />
       <Btn kind="soft" label="👑 Conoce AxoloFit Premium" onPress={() => a.setOverlay('paywall')} style={{ marginTop: 16 }} />

@@ -42,7 +42,9 @@ export const PALETTES = {
 };
 // Skins que se regalan al cumplir metas (1ra vez y cada 7 días)
 export const SKINS_REGALO = ["dorado", "leucistico", "galaxia", "albino", "cobre", "melanico", "salvaje", "arcoiris", "axantico", "mosaico", "luciernaga", "obsidiana", "perla"];
-export const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, conejo: { label: "Gorro conejo", premium: true }, gato: { label: "Gorro gato", premium: true }, mariposa: { label: "Alas mariposa", premium: true }, corona: { label: "Corona", premium: true } };
+export const ACCESSORIES = { ninguno: { label: "Ninguno", premium: false }, flor: { label: "Florecita", premium: false }, monito: { label: "Moñito", premium: false }, gorra: { label: "Gorra", premium: false }, fiesta: { label: "Gorro", premium: false }, conejo: { label: "Gorro conejo", premium: true }, gato: { label: "Gorro gato", premium: true }, mariposa: { label: "Alas mariposa", premium: true }, corona: { label: "Corona", premium: true }, flores: { label: "Coronita de flores", premium: true }, corona_real: { label: "Corona real", premium: true } };
+// Premios por racha larga (se regalan solos al llegar al día)
+export const PREMIOS_RACHA = [{ dias: 3, k: "flores", t: "¡Coronita de flores para ti! 🌸" }, { dias: 100, k: "aura", t: "¡Aura dorada desbloqueada! ✨ Solo la tienen las rachas de 100 días" }, { dias: 365, k: "corona_real", t: "¡Un año juntos! Tu corona real 👑" }];
 export const ESTILOS = { clasico: { label: "Clásico", premium: false }, galan: { label: "Galán", premium: true } };
 // Vestido: el lila es gratis (contrasta con todos los colores de Axo); los demás colores se desbloquean viendo un anuncio o comprándolos ($18 MXN)
 export const VESTIDOS = {

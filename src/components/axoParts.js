@@ -175,7 +175,17 @@ export function geom({ paletteKey = 'durazno', evo = 'cria', chub = 1 }) {
 }
 
 /* ---------- AURA (adulto: dorada · místico: morada con destellos) ---------- */
-export function Aura({ g, evo }) {
+export function Aura({ g, evo, dorada }) {
+  if (dorada)
+    return (
+      <G transform={g.T}>
+        <Circle cx={100} cy={118} r={92} fill="#FFD98A" opacity={0.2} />
+        <Circle cx={100} cy={118} r={78} fill="#FFE9A8" opacity={0.3} />
+        {[[36, 60, 6], [164, 74, 5.4], [44, 160, 5], [158, 152, 6], [100, 28, 7], [24, 116, 4.6], [176, 120, 4.6]].map((d) => (
+          <Path key={d.join()} d={destello(d[0], d[1], d[2], 0.3)} fill="#FFF3C4" opacity={0.95} />
+        ))}
+      </G>
+    );
   if (evo !== 'adulto' && evo !== 'mistico') return null;
   const mistico = evo === 'mistico';
   return (
@@ -811,6 +821,31 @@ export function Accesorio({ g, k, estilo }) {
             <Circle cx="0" cy="0" r="5" fill="#FFD15C" />
           </G>
         )}
+        {accessory === "flores" && (
+          <G transform="translate(100,48)">
+            {[[-26, 4, 0.8, '#FFC2D6'], [-13, -6, 1, '#FFF3B0'], [0, -11, 1.15, '#FF9EC0'], [13, -6, 1, '#D9C2FF'], [26, 4, 0.8, '#FFC2D6']].map(([x, y, e, col]) => (
+              <G key={x} transform={`translate(${x},${y}) scale(${e})`}>
+                {[0, 72, 144, 216, 288].map((r) => (
+                  <Ellipse key={r} cx="0" cy="-6.5" rx="4.2" ry="6.5" fill={col} transform={`rotate(${r})`} />
+                ))}
+                <Circle cx="0" cy="0" r="3.2" fill="#FFD15C" />
+              </G>
+            ))}
+            <Path d="M-30 6 Q 0 -2 30 6" stroke="#8FD6A8" strokeWidth="3" fill="none" strokeLinecap="round" />
+          </G>
+        )}
+        {accessory === "corona_real" && (
+          <G transform="translate(100,46)">
+            <Path d="M-26 6 L -26 -18 L -13 -6 L 0 -26 L 13 -6 L 26 -18 L 26 6 Z" fill="url(#g)" stroke="#C98328" strokeWidth="2" strokeLinejoin="round" />
+            <Rect x="-26" y="4" width="52" height="7" rx="3.5" fill="#F5B041" stroke="#C98328" strokeWidth="1.6" />
+            <Circle cx="0" cy="-27" r="4.6" fill="#FF8FAB" stroke="#E0556E" strokeWidth="1.2" />
+            <Circle cx="-18" cy="-15" r="3" fill="#8FEDE0" />
+            <Circle cx="18" cy="-15" r="3" fill="#C9B3F2" />
+            <Circle cx="0" cy="-2" r="3.4" fill="#FFF3B0" />
+            <Path d={destello(-32, -14, 4)} fill="#FFF8E1" opacity={0.95} />
+            <Path d={destello(33, -6, 3.2)} fill="#FFF8E1" opacity={0.9} />
+          </G>
+        )}
         {accessory === "fiesta" && (
           <G transform="translate(100,46)"><Path d="M0 -44 L 17 2 L -17 2 Z" fill="#7C5CFF" /><Path d="M0 -44 L 6 -24 L -6 -24 Z" fill="#FFD15C" /><Circle cx="0" cy="-46" r="6" fill="#FF6F9C" /></G>
         )}
@@ -866,7 +901,7 @@ export function Accesorio({ g, k, estilo }) {
 }
 
 /* ---------- AXO QUIETO (un solo SVG): miniaturas, listas, juegos ---------- */
-export function AxoMini({ paletteKey = 'durazno', mood = 'feliz', evo = 'cria', chub = 1, accessory = 'ninguno', outfit = 'ninguno', estilo = 'clasico', size = 60, style }) {
+export function AxoMini({ aura, paletteKey = 'durazno', mood = 'feliz', evo = 'cria', chub = 1, accessory = 'ninguno', outfit = 'ninguno', estilo = 'clasico', size = 60, style }) {
   const g = geom({ paletteKey, evo, chub });
   const w = size;
   const h = size * (VB_H / VB_W);
@@ -875,7 +910,7 @@ export function AxoMini({ paletteKey = 'durazno', mood = 'feliz', evo = 'cria', 
     <Svg width={w} height={h} viewBox={`0 0 ${VB_W} ${VB_H}`} style={style}>
       <Gradients />
       <Ellipse cx={100} cy={g.sombra.cy} rx={g.sombra.rx} ry={g.sombra.ry} fill="#00000012" />
-      <Aura g={g} evo={evo} />
+      <Aura g={g} evo={evo} dorada={aura} />
       {accessory === 'mariposa' && <Alas g={g} />}
       <Cuerpo g={g} />
       <Branquias g={g} side="left" />

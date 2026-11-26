@@ -4,7 +4,7 @@ import { useApp } from '../store';
 import { C, F } from '../theme';
 import { Screen, Btn, Card, CardH, Muted, MiniChart, Tip, Row, Input, sombra } from '../ui';
 import Axo, { AxoMini } from '../components/Axo';
-import { TIPS, TIPS_CATS, PALETTES, SKINS_REGALO } from '../data';
+import { TIPS, TIPS_CATS, PALETTES, SKINS_REGALO, PREMIOS_RACHA, ACCESSORIES } from '../data';
 import { useDiaDeUso, tipDeDia } from '../TipDelDia';
 
 
@@ -20,6 +20,13 @@ function Vitrina() {
     dia = d === 1 ? 7 : d + 7;
     return { k, d, faltan: Math.max(1, d - streak) };
   });
+  const otros = PREMIOS_RACHA.filter((pr) => !tengo.includes(pr.k) && pr.dias > streak).map((pr) => ({
+    k: pr.k,
+    d: pr.dias,
+    faltan: pr.dias - streak,
+    label: pr.k === 'aura' ? 'Aura dorada' : ACCESSORIES[pr.k] ? ACCESSORIES[pr.k].label : pr.k,
+  }));
+  const lista = [...porVenir, ...otros].sort((x, y) => x.d - y.d);
   return (
     <>
       <Card>
@@ -45,17 +52,21 @@ function Vitrina() {
         </Muted>
       </Card>
 
-      {porVenir.length > 0 && (
+      {lista.length > 0 && (
         <Card>
           <CardH>🎁 Lo que viene</CardH>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingVertical: 2 }}>
-            {porVenir.map((p, i) => (
+            {lista.map((p, i) => (
               <View key={p.k} style={[s.premio, i === 0 && s.premioYa]}>
                 <View style={{ opacity: i === 0 ? 1 : 0.45 }}>
-                  <AxoMini paletteKey={p.k} evo="joven" mood="feliz" size={72} />
+                  {p.label ? (
+                    <AxoMini paletteKey={a.pet.palette} evo="joven" mood="feliz" size={72} accessory={p.k === 'aura' ? 'ninguno' : p.k} aura={p.k === 'aura'} />
+                  ) : (
+                    <AxoMini paletteKey={p.k} evo="joven" mood="feliz" size={72} />
+                  )}
                 </View>
                 <Text style={{ fontFamily: F.bodyBold, fontSize: 13, color: C.ink, marginTop: 4 }}>
-                  {i === 0 ? '' : '🔒 '}{PALETTES[p.k] ? PALETTES[p.k].label : p.k}
+                  {i === 0 ? '' : '🔒 '}{p.label || (PALETTES[p.k] ? PALETTES[p.k].label : p.k)}
                 </Text>
                 <Muted sm>{i === 0 ? (p.faltan === 1 ? 'mañana' : 'en ' + p.faltan + ' días') : 'día ' + p.d}</Muted>
               </View>
