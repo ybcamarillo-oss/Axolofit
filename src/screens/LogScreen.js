@@ -43,7 +43,16 @@ export default function LogScreen() {
         <Text style={{ fontSize: 16 }}>🔎</Text>
         <TextInput placeholder="Busca: tacos, pozole, concha…" placeholderTextColor={C.gray} value={q} onChangeText={setQ} style={{ flex: 1, fontFamily: F.body, fontSize: 15, color: C.ink, padding: 0 }} />
       </View>
-      {results.length === 0 && <Muted sm style={{ textAlign: 'center', marginTop: 10 }}>No lo encontré en la lista. Prueba con “Describir” y la IA lo calcula.</Muted>}
+      {q.trim().length > 1 && (
+        <Pressable onPress={() => a.setOverlay('voice:' + q.trim())} style={({ pressed }) => [s.iaRow, { opacity: pressed ? 0.85 : 1 }]}>
+          <Text style={{ fontSize: 16 }}>✨</Text>
+          <Text style={{ flex: 1, fontFamily: F.bodyBold, fontSize: 14.5, color: C.ink }}>
+            Buscar “{q.trim()}” con IA
+            <Text style={{ fontFamily: F.body, color: C.muted, fontSize: 12.5 }}>{results.length === 0 ? ' · no está en la lista' : ' · calcula tus macros'}</Text>
+          </Text>
+          <Text style={{ fontFamily: F.display, fontSize: 18, color: C.brown }}>›</Text>
+        </Pressable>
+      )}
       {results.map((f) => (
         <Row key={f.id}>
           <Text style={{ flex: 1, fontFamily: F.bodyBold, fontSize: 14.5, color: C.ink }}>
@@ -63,6 +72,7 @@ const s = StyleSheet.create({
   line: { fontFamily: F.bodyBold, fontSize: 14, color: C.ink, backgroundColor: '#fff', borderRadius: 16, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', marginBottom: 2 },
   method: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 18, padding: 12, ...sombra },
   mIc: { width: 42, height: 42, borderRadius: 14, backgroundColor: C.pinkSoft, alignItems: 'center', justifyContent: 'center' },
+  iaRow: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: C.pinkSoft, borderRadius: 16, paddingHorizontal: 14, paddingVertical: 12, marginTop: 4, marginBottom: 6, ...sombra },
   search: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 16, borderWidth: 2, borderColor: C.line, paddingHorizontal: 14, paddingVertical: 11, marginBottom: 6 },
   addBtn: { width: 34, height: 34, borderRadius: 12, backgroundColor: C.pinkLight, alignItems: 'center', justifyContent: 'center' },
 });

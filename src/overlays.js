@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, TextInput, Image, Dimensions, StyleSheet, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, withDelay, Easing } from 'react-native-reanimated';
@@ -76,8 +76,8 @@ const Pensando = ({ texto, a }) => (
 );
 
 /* ---------- Describir lo que comiste ---------- */
-function Voice({ a }) {
-  const [texto, setTexto] = useState('');
+function Voice({ a, inicial = '' }) {
+  const [texto, setTexto] = useState(inicial);
   const [etapa, setEtapa] = useState('escribir');
   const [resultado, setResultado] = useState(null);
   const [extras, setExtras] = useState('');
@@ -100,6 +100,14 @@ function Voice({ a }) {
       setEtapa('escribir');
     }
   };
+  // Si llegó desde la búsqueda de la lupa, analiza solo
+  const autoRef = useRef(false);
+  useEffect(() => {
+    if (inicial.trim() && !autoRef.current) {
+      autoRef.current = true;
+      analizar();
+    }
+  }, []);
   const analizarConExtras = async () => {
     if (!extras.trim()) return setEtapa('resultado');
     setEtapa('cargando');
@@ -109,11 +117,23 @@ function Voice({ a }) {
     } catch (e) {}
     setEtapa('resultado');
   };
-  const confirmar = () => {
-    if (!resultado) return;
+  const registrar = (r) => {
+    if (!r) return;
     a.setOverlay(null);
-    a.addFood({ id: 'ai_' + Date.now(), n: resultado.nombre, u: resultado.porcion, kcal: num(resultado.kcal), p: num(resultado.proteina), c: num(resultado.carbos), g: num(resultado.grasa) });
-    a.showToast('✅ ' + resultado.nombre + ' registrado');
+    a.addFood({ id: 'ai_' + Date.now(), n: r.nombre, u: r.porcion, kcal: num(r.kcal), p: num(r.proteina), c: num(r.carbos), g: num(r.grasa) });
+    a.showToast('✅ ' + r.nombre + ' · ' + num(r.kcal) + ' kcal registrado');
+  };
+  const confirmar = () => registrar(resultado);
+  // Con extras: ajusta los macros y registra de una vez, sin pantalla intermedia
+  const extrasYRegistrar = async () => {
+    if (!extras.trim()) return registrar(resultado);
+    setEtapa('cargando');
+    try {
+      const ajuste = await preguntarIA({ prompt: promptExtras(texto, resultado, extras) });
+      registrar({ ...resultado, ...ajuste });
+    } catch (e) {
+      registrar(resultado);
+    }
   };
   const area = { borderRadius: 12, borderWidth: 1.5, borderColor: '#e8eaf0', padding: 12, fontFamily: F.body, fontSize: 15, color: C.ink, textAlignVertical: 'top' };
 
@@ -140,8 +160,9 @@ function Voice({ a }) {
           </View>
           <Text style={{ fontFamily: F.body, fontSize: 14, color: '#4a4f6a', marginBottom: 8 }}>{resultado.pregunta_extras}</Text>
           <TextInput value={extras} onChangeText={setExtras} placeholder="Ej: sí, con una cucharada de aceite y salsa" placeholderTextColor={C.gray} multiline style={[area, { minHeight: 70, fontSize: 14 }]} />
-          <Btn big label="Actualizar macros" onPress={analizarConExtras} style={{ marginTop: 10 }} />
-          <Btn kind="ghost" label="No hubo extras" onPress={() => setEtapa('resultado')} style={{ marginTop: 4 }} />
+          <Btn big label="✅ Registrar con esto" onPress={extrasYRegistrar} style={{ marginTop: 10 }} />
+          <Btn kind="ghost" label="No hubo extras · registrar así" onPress={() => registrar(resultado)} style={{ marginTop: 4 }} />
+          <Btn kind="ghost" label="Ver los macros antes de registrar" onPress={analizarConExtras} style={{ marginTop: 2 }} />
         </>
       )}
       {etapa === 'resultado' && resultado && (
@@ -491,6 +512,7 @@ export default function Overlays() {
   const close = () => a.setOverlay(null);
 
   if (o === 'voice') return <Voice a={a} />;
+  if (typeof o === 'string' && o.startsWith('voice:')) return <Voice a={a} inicial={o.slice(6)} />;
   if (o === 'photo') return <Photo a={a} />;
   if (o === 'recipe') return <Recipe a={a} />;
   if (o === 'menu') return <Menu a={a} />;
