@@ -3,7 +3,7 @@ import { AppState, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { sb } from './supabase';
-import { DEMO, computeProfile, BACKGROUNDS, SKINS_REGALO, MENU_DB, MEAL_SPLIT, PHRASES } from './data';
+import { DEMO, computeProfile, BACKGROUNDS, SKINS_REGALO, MENU_DB, MEAL_SPLIT, PHRASES, AXO_REACCIONES } from './data';
 import { hoyLocal, genWeek, genDay, cambioParecido, lunesDe } from './plan';
 import { estadoAvisos, pedirAvisos, programarAvisos, cancelarAvisos } from './notifications';
 
@@ -617,9 +617,12 @@ export function AppProvider({ children }) {
     return est;
   };
 
-  /* ---------- Axo: besos, nacimiento ---------- */
+  /* ---------- Axo: reacciones, nacimiento ---------- */
+  const [reaccion, setReaccion] = useState(null);
   const blowKiss = () => {
     vibra(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light));
+    // Axo reacciona distinto cada vez que lo tocan
+    setReaccion(AXO_REACCIONES[Math.floor(Math.random() * AXO_REACCIONES.length)]);
     setKissing(true);
     luego(() => setKissing(false), 1700);
   };
@@ -627,6 +630,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (phase !== 'app') return;
     const iv = setInterval(() => {
+      setReaccion(null);
       setKissing(true);
       setTimeout(() => setKissing(false), 1500);
     }, 13000);
@@ -684,7 +688,7 @@ export function AppProvider({ children }) {
   const value = {
     userId, phase, setPhase, screen, setScreen, overlay, setOverlay, toast, showToast,
     profile, setProfile, petName, pet, updatePet, targets, tieneAxo,
-    level, xp, addXp, streak, rachaMax, escudos, ultimoDia, skinsUnlocked: [...skinsUnlocked, ...PRUEBA_SKINS.filter((k) => !skinsUnlocked.includes(k))], desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
+    level, xp, addXp, streak, rachaMax, escudos, ultimoDia, reaccion, skinsUnlocked: [...skinsUnlocked, ...PRUEBA_SKINS.filter((k) => !skinsUnlocked.includes(k))], desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
     best, recordBest, log, totals, vasos, addAgua, setWater, viewDate, setViewDate,
     pesoActual, pesoHist, registrarPeso, composicion, registrarComposicion, totalComidas,
     prefs, setPrefs, toggleEvitar, weekPlan, weekEaten, toggleEaten, swapMeal, regenDay, regenWeek,

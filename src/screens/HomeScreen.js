@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '../store';
-import { FOODS, MEAL_SPLIT } from '../data';
+import { FOODS, MEAL_SPLIT, AXO_IDLE } from '../data';
 import { DIAS, DIAS_LABEL, hoyLocal, fmtFecha, semanaDe } from '../plan';
 import { C, F } from '../theme';
 import { Btn, Card, CardH, Muted, Ring, RingC, GlassIcon, Row, sombra } from '../ui';
@@ -18,6 +18,8 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { petName, targets, totals, vasos, streak, level, xp, log, viewDate, celebrated, eating, kissing, hungry, abandonado, diasAbandono, weekEaten, darkBg, avisos } = a;
   const hoy = hoyLocal();
+  // frase tranquila de Axo: cambia sola, sin pedirle nada a la persona
+  const idle = useMemo(() => AXO_IDLE[Math.floor(Math.random() * AXO_IDLE.length)], [hoy, a.computedEvo]);
   const weekDates = semanaDe();
 
   const frase = a.naciendo
@@ -25,7 +27,7 @@ export default function HomeScreen() {
     : eating
     ? '¡Miam, miam! 😋 (se soba la pancita)'
     : kissing
-    ? '¡' + petName + ' te manda un beso! 💗'
+    ? a.reaccion || '¡' + petName + ' te manda un beso! 💗'
     : celebrated
     ? '¡' + petName + ' está feliz! 💗'
     : abandonado
@@ -34,7 +36,7 @@ export default function HomeScreen() {
     ? '¡Acabo de nacer! Dame de comer 🥺'
     : hungry
     ? 'Tengo hambre… ¿me das de comer? 🥺'
-    : 'Tócame para un besito 💗';
+    : idle;
 
   return (
     <LinearGradient colors={[a.bg.from, a.bg.to]} style={{ flex: 1, paddingTop: insets.top }}>
