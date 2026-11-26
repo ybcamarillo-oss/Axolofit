@@ -67,14 +67,14 @@ export function Gradients() {
   return (
     <Defs>
       <LinearGradient id="g" x1="0" y1="0" x2="0.35" y2="1">
-        <Stop offset="0" stopColor="#FFF4BE" />
-        <Stop offset="0.38" stopColor="#FFD23F" />
-        <Stop offset="0.72" stopColor="#E8A317" />
-        <Stop offset="1" stopColor="#B9790B" />
+        <Stop offset="0" stopColor="#FFF8E1" />
+        <Stop offset="0.38" stopColor="#FCE196" />
+        <Stop offset="0.72" stopColor="#F5B041" />
+        <Stop offset="1" stopColor="#C98328" />
       </LinearGradient>
       <LinearGradient id="gg" x1="0" y1="0" x2="0" y2="1">
-        <Stop offset="0" stopColor="#FFDE6A" />
-        <Stop offset="1" stopColor="#D08E0E" />
+        <Stop offset="0" stopColor="#FCE196" />
+        <Stop offset="1" stopColor="#E09B2D" />
       </LinearGradient>
       <RadialGradient id="gx" cx="0.4" cy="0.32" r="0.95">
         <Stop offset="0" stopColor="#7B57D6" />
@@ -491,7 +491,7 @@ export function Frente({ g, outfit = 'ninguno', brazos = 'abajo' }) {
   const vestido = outfit && outfit.startsWith('vestido_') ? VESTIDOS[outfit.slice(8)] || VESTIDOS.rosa : null;
   return (
     <G transform={g.T}>
-      <Ellipse cx={100} cy={150} rx={g.bRx} ry={30} fill="#ffffff" opacity={0.4} />
+      <Ellipse cx={100} cy={150} rx={g.bRx} ry={30} fill={g.pal.belly || "#ffffff"} opacity={g.pal.belly ? 0.9 : 0.4} />
       {/* La ropa se recorta con la forma del cuerpo de Axo: queda redondita y pegada, sin hombros cuadrados */}
       <ClipPath id={'ropa' + g.clipId}>
         <Ellipse cx={100} cy={143} rx={tRx + 2.5} ry={47.5} />

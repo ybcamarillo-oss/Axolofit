@@ -23,10 +23,10 @@ export const FOODS = [
 export const PALETTES = {
   durazno: { body: "#F0C3AC", gill: "#DD9E83", blush: "#EE9A86", label: "Durazno", premium: false },
   rosa: { body: "#F4B7C6", gill: "#E388A0", blush: "#EE8FA5", label: "Rosa", premium: false },
-  menta: { body: "#A9E3D0", gill: "#4FBFA0", blush: "#7FD9BD", label: "Menta", premium: false },
+  menta: { body: "#BCEAD5", belly: "#E8F8F5", gill: "#76C893", blush: "#FF9AA2", label: "Menta", premium: false },
   cielo: { body: "#B4D4FB", gill: "#6FA3F0", blush: "#8FBDF5", label: "Cielo", premium: false },
-  morado: { body: "#C9A7F0", gill: "#8E5BD0", blush: "#BC8FE6", label: "Morado", premium: false },
-  dorado: { body: "#FFE08A", gill: "#F2B705", blush: "#FFD15C", label: "Dorado", premium: true },
+  morado: { body: "#D8C2FF", belly: "#F3EBFF", gill: "#9D7CE8", blush: "#FF8FAB", label: "Lavanda", premium: false },
+  dorado: { body: "#FCE196", belly: "#FFF8E1", gill: "#F5B041", blush: "#FF8577", label: "Miel", premium: true },
   galaxia: { body: "#C9B6FF", gill: "#7C5CFF", blush: "#A98FFF", label: "Galaxia", premium: true },
   leucistico: { body: "#FBE7EA", gill: "#FF7088", blush: "#F6C9D2", label: "Leucístico", premium: true },
   albino: { body: "#F7E6A0", gill: "#EFC850", blush: "#F2DA8A", label: "Albino", premium: true },
