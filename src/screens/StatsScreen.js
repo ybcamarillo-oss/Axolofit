@@ -19,10 +19,10 @@ function Vitrina() {
     dia = d === 1 ? 7 : d + 7;
     return { k, d, faltan: Math.max(1, d - streak) };
   });
-  const otros = PREMIOS_RACHA.filter((pr) => !tengo.includes(pr.k) && pr.dias > streak).map((pr) => ({
+  const otros = PREMIOS_RACHA.filter((pr) => !tengo.includes(pr.k)).map((pr) => ({
     k: pr.k,
     d: pr.dias,
-    faltan: pr.dias - streak,
+    faltan: Math.max(1, pr.dias - streak),
     label: pr.k === 'aura' ? 'Aura dorada' : ACCESSORIES[pr.k] ? ACCESSORIES[pr.k].label : pr.k,
   }));
   const lista = [...porVenir, ...otros].sort((x, y) => x.d - y.d);

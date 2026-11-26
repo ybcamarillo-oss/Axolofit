@@ -135,11 +135,11 @@ export function AppProvider({ children }) {
   }, [userId, profile, prefs, weekPlan, weekEaten, pet.bg, pet.estilo]);
 
   useEffect(() => {
-    if (!userId || pet.palette === PET0.palette) return;
+    if (!userId || !tieneAxo) return;
     const v = { paletteKey: pet.palette, accessory: pet.accessory, outfit: pet.outfit, estilo: pet.estilo, evo: evoDe(streak) };
     AsyncStorage.setItem('axo_ultimo', JSON.stringify(v)).catch(() => {});
     setUltimoAxo(v);
-  }, [userId, pet.palette, pet.accessory, pet.outfit, pet.estilo, streak]);
+  }, [userId, tieneAxo, pet.palette, pet.accessory, pet.outfit, pet.estilo, streak]);
 
   /* ---------- Cargar todo desde Supabase ---------- */
   const cargarDatos = async (uid) => {
@@ -459,7 +459,7 @@ export function AppProvider({ children }) {
     if (userId) sb.from('axo_state').update({ racha_max: nuevoMax, escudos: nuevosEscudos }).eq('id', userId).then(() => {});
     if (ganoEscudo) luego(() => showToast('🛡️ ¡Ganaste un escudo de racha! Cubre un día que no puedas'), 3500);
     // Premios de racha larga: coronita de flores, aura dorada y corona real
-    const premio = PREMIOS_RACHA.find((pr) => pr.dias === nuevaRacha && !skins.includes(pr.k));
+    const premio = PREMIOS_RACHA.find((pr) => nuevaRacha >= pr.dias && !skins.includes(pr.k));
     if (premio && ultimoDia !== hoyStr) {
       const conPremio = [...skins, premio.k];
       setSkinsUnlocked(conPremio);
