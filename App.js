@@ -14,6 +14,7 @@ import { C, F } from './src/theme';
 import { AxoMini } from './src/components/Axo';
 import Overlays from './src/overlays';
 import TipDelDia from './src/TipDelDia';
+import { TAM_AXO } from './src/data';
 import AuthScreen from './src/screens/AuthScreen';
 import Onboarding from './src/screens/Onboarding';
 import HomeScreen from './src/screens/HomeScreen';
@@ -76,7 +77,7 @@ function Raiz() {
   if (a.phase === 'cargando')
     return (
       <LinearGradient colors={['#F3ECFF', '#E7F7F4']} style={st.centro}>
-        <AxoMini paletteKey="durazno" size={240} />
+        <AxoMini {...(a.ultimoAxo || { paletteKey: 'durazno', evo: 'cria' })} size={TAM_AXO[(a.ultimoAxo && a.ultimoAxo.evo) || 'cria']} />
         <Text style={{ fontFamily: F.body, color: C.muted, fontSize: 17, marginTop: 12 }}>Cargando a tu Axo…</Text>
       </LinearGradient>
     );

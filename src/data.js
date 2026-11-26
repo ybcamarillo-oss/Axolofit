@@ -57,6 +57,8 @@ export const VESTIDOS = {
   amarillo: { label: "Amarillo", base: "#FBE08A", dark: "#E3B93E" },
   coral: { label: "Coral", base: "#FBA68F", dark: "#E57A5E" },
 };
+// Tamaño de Axo por etapa: el mismo en la pantalla de carga y en Inicio, para que no "crezca" al entrar
+export const TAM_AXO = { cria: 250, joven: 285, adulto: 320, mistico: 320 };
 export const PRECIO_COLOR = "$18 MXN";
 
 export const OUTFITS = { ninguno: { label: "Ninguno", premium: false }, vestido_lila: { label: "Vestido", premium: false }, jersey: { label: "Jersey verde", premium: false }, sarape: { label: "Sarape", premium: false }, hoodieRojo: { label: "Hoodie rojo", premium: false }, hoodieAzul: { label: "Hoodie azul", premium: false }, playeraRaya: { label: "Playera rayada", premium: false }, poloRosa: { label: "Polo rosa", premium: true }, chivas: { label: "Rojiblanca", premium: true }, azulDiag: { label: "Azul diagonal", premium: true }, pumas: { label: "Felino azul y oro", premium: true } };

@@ -118,12 +118,27 @@ export function AppProvider({ children }) {
 
   /* ---------- Guardado local (lo que la PWA no guardaba) ---------- */
   // Perfil completo, preferencias, plan semanal y palomitas se guardan en el teléfono.
+  // Cómo se veía Axo la última vez: así la pantalla de carga ya lo muestra con su color, sin cambiarlo al entrar
+  const [ultimoAxo, setUltimoAxo] = useState(null);
+  useEffect(() => {
+    AsyncStorage.getItem('axo_ultimo')
+      .then((v) => {
+        if (v) setUltimoAxo(JSON.parse(v));
+      })
+      .catch(() => {});
+  }, []);
   const claveLocal = (uid) => 'axo_local_' + uid;
   useEffect(() => {
     if (!userId || !localListo.current) return;
     const semana = hoyLocal(lunesDe());
     AsyncStorage.setItem(claveLocal(userId), JSON.stringify({ profile, prefs, weekPlan, weekEaten, semana, bg: pet.bg, estilo: pet.estilo })).catch(() => {});
   }, [userId, profile, prefs, weekPlan, weekEaten, pet.bg, pet.estilo]);
+
+  useEffect(() => {
+    if (phase !== 'app') return;
+    const v = { paletteKey: pet.palette, accessory: pet.accessory, outfit: pet.outfit, estilo: pet.estilo, evo: evoDe(streak) };
+    AsyncStorage.setItem('axo_ultimo', JSON.stringify(v)).catch(() => {});
+  }, [phase, pet.palette, pet.accessory, pet.outfit, pet.estilo, streak]);
 
   /* ---------- Cargar todo desde Supabase ---------- */
   const cargarDatos = async (uid) => {
@@ -720,7 +735,7 @@ export function AppProvider({ children }) {
   const value = {
     userId, phase, setPhase, screen, setScreen, overlay, setOverlay, toast, showToast,
     profile, setProfile, petName, pet, updatePet, targets, tieneAxo,
-    level, xp, addXp, streak, rachaMax, escudos, ultimoDia, reaccion, medSemanas, medUltSem, skinsReales: skinsUnlocked, skinsUnlocked: [...skinsUnlocked, ...PRUEBA_SKINS.filter((k) => !skinsUnlocked.includes(k))], desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
+    level, xp, addXp, streak, rachaMax, escudos, ultimoDia, reaccion, ultimoAxo, medSemanas, medUltSem, skinsReales: skinsUnlocked, skinsUnlocked: [...skinsUnlocked, ...PRUEBA_SKINS.filter((k) => !skinsUnlocked.includes(k))], desbloquear, regaloSkin, setRegaloSkin, evoNueva, setEvoNueva,
     best, recordBest, log, totals, vasos, addAgua, setWater, viewDate, setViewDate,
     pesoActual, pesoHist, registrarPeso, composicion, registrarComposicion, totalComidas,
     prefs, setPrefs, toggleEvitar, weekPlan, weekEaten, toggleEaten, swapMeal, regenDay, regenWeek,

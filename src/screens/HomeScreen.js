@@ -3,14 +3,14 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '../store';
-import { FOODS, MEAL_SPLIT, AXO_IDLE } from '../data';
+import { FOODS, MEAL_SPLIT, AXO_IDLE, TAM_AXO as TAM } from '../data';
 import { DIAS, DIAS_LABEL, hoyLocal, fmtFecha, semanaDe } from '../plan';
 import { C, F } from '../theme';
 import { Btn, Card, CardH, Muted, Ring, RingC, GlassIcon, Row, sombra } from '../ui';
 import Axo from '../components/Axo';
 import Nacimiento from '../components/Nacimiento';
 
-const TAM = { cria: 250, joven: 285, adulto: 320, mistico: 320 };
+
 const sombraFab = { elevation: 6, shadowColor: '#E79FAE', shadowOpacity: 0.5, shadowRadius: 10, shadowOffset: { width: 0, height: 6 } };
 
 export default function HomeScreen() {
