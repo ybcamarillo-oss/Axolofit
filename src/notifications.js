@@ -63,9 +63,44 @@ export async function programarAvisos(nombre = 'Axo') {
     });
   }
 
+  // Agua y movimiento se turnan por día para no saturar: nunca llegan los dos el mismo día.
+  // En expo el día de la semana va de 1 (domingo) a 7 (sábado).
+  const agua = [
+    { title: '💧 Un vasito de agua', body: 'Mantenerte hidratado es de las cosas que más ayudan. ¿Vamos por un vaso?' },
+    { title: '💧 ¿Ya tomaste agua?', body: `A ${nombre} le encanta el agua. Acompáñalo con un vaso.` },
+    { title: '💧 Pausa de agua', body: 'Un vaso ahora y otro antes de comer: así de fácil.' },
+    { title: '💧 Hidrátate', body: 'A veces el hambre de media tarde en realidad es sed.' },
+  ];
+  const mover = [
+    { title: '👟 ¿Ya te moviste hoy?', body: 'Con una caminata cortita ya cuenta. ¿Salimos un rato?' },
+    { title: '👟 Hora de estirarte', body: `${nombre} quiere brincar. Levántate y estírate tantito.` },
+    { title: '👟 Un ratito de movimiento', body: '10 minutos caminando también suman a tu semana.' },
+  ];
+  const diasAgua = [1, 3, 5, 7]; // domingo, martes, jueves, sábado
+  const diasMover = [2, 4, 6]; // lunes, miércoles, viernes
+  for (let i = 0; i < diasAgua.length; i++) {
+    const a = agua[i % agua.length];
+    await Notifications.scheduleNotificationAsync({
+      content: { title: a.title, body: a.body },
+      trigger: { type: T.WEEKLY, weekday: diasAgua[i], hour: 11, minute: 30, channelId: CANAL },
+    });
+  }
+  for (let i = 0; i < diasMover.length; i++) {
+    const a = mover[i % mover.length];
+    await Notifications.scheduleNotificationAsync({
+      content: { title: a.title, body: a.body },
+      trigger: { type: T.WEEKLY, weekday: diasMover[i], hour: 17, minute: 30, channelId: CANAL },
+    });
+  }
+
+  // Vuelve a contarse cada vez que abre la app, así solo llegan si de verdad no ha venido.
   await Notifications.scheduleNotificationAsync({
     content: { title: `${nombre} te extraña 🥺`, body: 'Hace dos días que no vienes. Tu racha te está esperando.' },
     trigger: { type: T.TIME_INTERVAL, seconds: 48 * 60 * 60, channelId: CANAL },
+  });
+  await Notifications.scheduleNotificationAsync({
+    content: { title: `${nombre} te guardó tu lugar 💗`, body: 'Llevas varios días sin visitarme. Registrar tus alimentos te ayuda a cumplir tus objetivos, y aquí seguimos cuando quieras.' },
+    trigger: { type: T.TIME_INTERVAL, seconds: 5 * 24 * 60 * 60, channelId: CANAL },
   });
 }
 
